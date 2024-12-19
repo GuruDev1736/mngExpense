@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.taskease.collegeapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.taskease.collegeapp"
@@ -33,16 +33,37 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    // Enable viewBinding (no need to duplicate in buildFeatures)
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Network
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    // UI
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+    implementation("com.airbnb.android:lottie:6.3.0")
+
+    // Image Loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 }

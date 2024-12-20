@@ -68,6 +68,7 @@ class LoginActivity : AppCompatActivity() {
                             SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.USERNAME,data.CONTENT.userName)
                             SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.ROLE,data.CONTENT.userRole)
                             SharedPreferencesManager.saveInt(this@LoginActivity,SharedPreferencesManager.USERID,data.CONTENT.userId)
+                            SharedPreferencesManager.saveInt(this@LoginActivity,SharedPreferencesManager.DEPARTMENTID,data.CONTENT.departmentId)
 
                             Constant.toast(this@LoginActivity,data.MSG)
                             startActivity(Intent(this@LoginActivity, HomeActivity::class.java))

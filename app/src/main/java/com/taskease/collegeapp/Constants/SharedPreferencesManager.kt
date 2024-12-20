@@ -12,6 +12,7 @@ object SharedPreferencesManager {
     const val PASSWORD = "password"
     const val TOKEN = "token"
     const val USERNAME = "username"
+    const val DEPARTMENTID = "departmentId"
     const val PROFILEPIC = "profilepic"
     const val USERID = "userid"
     const val WINGID = "wingid"

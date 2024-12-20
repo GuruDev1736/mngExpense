@@ -6,15 +6,14 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
-import androidx.viewpager2.widget.ViewPager2
 import com.taskease.collegeapp.Activities.Faculty.NoticeActivity
-import com.taskease.collegeapp.Activities.Faculty.SpreadSheetActivity
+import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.ShowSpreadSheetActivity
+import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.SpreadSheetActivity
 import com.taskease.collegeapp.Adapter.BannerAdapter
 import com.taskease.collegeapp.Adapter.DashboardAdapter
 import com.taskease.collegeapp.Constants.Constant
@@ -55,7 +54,7 @@ class HomeFragment : Fragment() {
 
         if (role == "ROLE_FACULTY") {
             val list = ArrayList<DashboardItem>()
-            list.add(DashboardItem(R.drawable.excel,"Add Spread Sheet", SpreadSheetActivity::class.java))
+            list.add(DashboardItem(R.drawable.excel,"Add Spread Sheet", ShowSpreadSheetActivity::class.java))
             list.add(DashboardItem(R.drawable.assignment,"Add Assignment", SpreadSheetActivity::class.java))
             list.add(DashboardItem(R.drawable.notice,"Notice", NoticeActivity::class.java))
             list.add(DashboardItem(R.drawable.workload,"Add WorkLoad Report", SpreadSheetActivity::class.java))

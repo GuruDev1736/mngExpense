@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.taskease.collegeapp" />
+                  <option name="mobileSdkAppId" value="1:787970377688:android:40dbeb021a7a5292e154ad" />
+                  <option name="projectId" value="hostel-visiting-app" />
+                  <option name="projectNumber" value="787970377688" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

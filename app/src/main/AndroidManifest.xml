@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -21,10 +20,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Faculty.SpreadSheet.ShowSpreadSheetActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Faculty.NoticeActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.Faculty.SpreadSheetActivity"
+            android:name=".Activities.Faculty.SpreadSheet.SpreadSheetActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.HomeActivity"
@@ -54,7 +56,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
     </application>
 
 </manifest>

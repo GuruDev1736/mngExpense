@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -66,4 +67,11 @@ dependencies {
 
     // Image Loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    implementation ("com.google.firebase:firebase-messaging:24.1.0")
+
+    implementation (platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation ("com.google.firebase:firebase-messaging-ktx")
+    implementation ("com.guolindev.permissionx:permissionx:1.8.1")
+
 }

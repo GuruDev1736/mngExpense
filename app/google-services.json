@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "787970377688",
+    "firebase_url": "https://hostel-visiting-app-default-rtdb.firebaseio.com",
+    "project_id": "hostel-visiting-app",
+    "storage_bucket": "hostel-visiting-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:787970377688:android:40dbeb021a7a5292e154ad",
+        "android_client_info": {
+          "package_name": "com.taskease.collegeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKq0aXJq8lZE0mG5XIVZhltbKgk0KUZCg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

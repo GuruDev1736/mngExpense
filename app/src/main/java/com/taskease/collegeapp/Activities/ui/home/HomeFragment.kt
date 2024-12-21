@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
+import com.taskease.collegeapp.Activities.Faculty.Assignment.ShowAssignmentActivity
 import com.taskease.collegeapp.Activities.Faculty.NoticeActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.ShowSpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.SpreadSheetActivity
@@ -55,7 +56,7 @@ class HomeFragment : Fragment() {
         if (role == "ROLE_FACULTY") {
             val list = ArrayList<DashboardItem>()
             list.add(DashboardItem(R.drawable.excel,"Add Spread Sheet", ShowSpreadSheetActivity::class.java))
-            list.add(DashboardItem(R.drawable.assignment,"Add Assignment", SpreadSheetActivity::class.java))
+            list.add(DashboardItem(R.drawable.assignment,"Add Assignment", ShowAssignmentActivity::class.java))
             list.add(DashboardItem(R.drawable.notice,"Notice", NoticeActivity::class.java))
             list.add(DashboardItem(R.drawable.workload,"Add WorkLoad Report", SpreadSheetActivity::class.java))
             list.add(DashboardItem(R.drawable.attendance,"Add Attendance", SpreadSheetActivity::class.java))
@@ -85,38 +86,45 @@ class HomeFragment : Fragment() {
         val progressDialog = CustomProgressDialog(requireContext())
         progressDialog.show()
 
-        val token = SharedPreferencesManager.getString(requireContext(), SharedPreferencesManager.TOKEN)
+        try {
+            val token = SharedPreferencesManager.getString(requireContext(), SharedPreferencesManager.TOKEN)
 
-        RetrofitInstance.getInstance().getBanners(token).enqueue(object : Callback<BannerResponseModel> {
-            override fun onResponse(
-                p0: Call<BannerResponseModel>,
-                p1: Response<BannerResponseModel>
-            ) {
-                if (p1.isSuccessful) {
-                    progressDialog.dismiss()
-                    val data = p1.body()
-                    if (data != null && data.STS == "200") {
-                        data.CONTENT.let { banners ->
-                            banners.forEach { banner ->
-                                imageUrls.add(banner.imageLink)
+            RetrofitInstance.getInstance().getBanners(token).enqueue(object : Callback<BannerResponseModel> {
+                override fun onResponse(
+                    p0: Call<BannerResponseModel>,
+                    p1: Response<BannerResponseModel>
+                ) {
+                    if (p1.isSuccessful) {
+                        progressDialog.dismiss()
+                        val data = p1.body()
+                        if (data != null && data.STS == "200") {
+                            data.CONTENT.let { banners ->
+                                banners.forEach { banner ->
+                                    imageUrls.add(banner.imageLink)
+                                }
+                                setupBannerAdapter()
+                                startAutoSlide()
                             }
-                            setupBannerAdapter()
-                            startAutoSlide()
+                        } else {
+                            Constant.toast(requireContext(), data?.MSG ?: "Error")
                         }
                     } else {
-                        Constant.toast(requireContext(), data?.MSG ?: "Error")
+                        Constant.toast(requireContext(), p1.message().toString())
+                        progressDialog.dismiss()
                     }
-                } else {
-                    Constant.toast(requireContext(), p1.message().toString())
+                }
+
+                override fun onFailure(p0: Call<BannerResponseModel>, p1: Throwable) {
+                    Constant.toast(requireContext(), p1.message.toString())
                     progressDialog.dismiss()
                 }
-            }
-
-            override fun onFailure(p0: Call<BannerResponseModel>, p1: Throwable) {
-                Constant.toast(requireContext(), p1.message.toString())
-                progressDialog.dismiss()
-            }
-        })
+            })
+        }catch (e : Exception)
+        {
+            Constant.toast(requireContext(),"Something went wrong")
+            e.printStackTrace()
+            progressDialog.dismiss()
+        }
     }
 
 

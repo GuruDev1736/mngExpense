@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="8dp"
+    android:id="@+id/layout"
     android:background="?attr/selectableItemBackground">
 
     <ImageView
@@ -43,10 +44,11 @@
     </LinearLayout>
 
     <!-- Button or Icon for Extra Options (Optional) -->
-    <ImageView
+    <ImageButton
         android:id="@+id/imgMoreOptions"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:backgroundTint="@color/white"
         android:src="@drawable/baseline_more_vert_24"
         android:contentDescription="More Options"
         android:layout_gravity="center_vertical" />

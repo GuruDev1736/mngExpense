@@ -22,11 +22,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             notificationHelper.showNotification(title, message)
             Log.d("FCM", "Message Notification Body: ${it.body}")
         }
-
-        // Handle data payload if needed
-        remoteMessage.data.let {
-            Log.d("FCM", "Message data payload: $it")
-        }
     }
 
     override fun onNewToken(token: String) {

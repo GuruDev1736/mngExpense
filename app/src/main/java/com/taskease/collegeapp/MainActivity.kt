@@ -33,6 +33,9 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+
+
+
         FirebaseMessaging.getInstance().subscribeToTopic("all")
             .addOnCompleteListener { task ->
                 var msg = "Subscribed to topic"
@@ -58,7 +61,6 @@ class MainActivity : AppCompatActivity() {
             .permissions(Manifest.permission.POST_NOTIFICATIONS)
             .request { allGranted, grantedList, deniedList ->
                 if (allGranted) {
-                    Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
                     Handler(Looper.getMainLooper()).postDelayed({
                         startActivity(Intent(this@MainActivity, LoginActivity::class.java))
                         finish()

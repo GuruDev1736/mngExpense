@@ -54,34 +54,45 @@ class ShowSpreadSheetActivity : AppCompatActivity() {
         val progressDialog = CustomProgressDialog(this)
         progressDialog.show()
 
-        val token = SharedPreferencesManager.getString(this, SharedPreferencesManager.TOKEN)
-        val departmentId = SharedPreferencesManager.getInt(this, SharedPreferencesManager.DEPARTMENTID)
+        try {
+            val token = SharedPreferencesManager.getString(this, SharedPreferencesManager.TOKEN)
+            val departmentId = SharedPreferencesManager.getInt(this, SharedPreferencesManager.DEPARTMENTID)
+            val userId = SharedPreferencesManager.getInt(this, SharedPreferencesManager.USERID)
 
-        RetrofitInstance.getInstance().getAllSpreadSheet(token,"SPREADSHEET",departmentId)
-            .enqueue(object : Callback<SpreadSheetResponseModel>{
-                override fun onResponse(
-                    p0: Call<SpreadSheetResponseModel>,
-                    p1: Response<SpreadSheetResponseModel>
-                ) {
-                    if (p1.isSuccessful)
-                    {
-                        progressDialog.dismiss()
-                        val data = p1.body()
-                        if (data!=null)
+            RetrofitInstance.getInstance().getAllSpreadSheetByUser(token,"SPREADSHEET",departmentId,userId)
+                .enqueue(object : Callback<SpreadSheetResponseModel>{
+                    override fun onResponse(
+                        p0: Call<SpreadSheetResponseModel>,
+                        p1: Response<SpreadSheetResponseModel>
+                    ) {
+                        if (p1.isSuccessful)
                         {
-                            if (data.STS == "200")
+                            progressDialog.dismiss()
+                            val data = p1.body()
+                            if (data!=null)
                             {
-                                if (data.CONTENT.isEmpty())
+                                if (data.STS == "200")
                                 {
-                                    Constant.toast(this@ShowSpreadSheetActivity,"No Data Found")
-                                    binding.noData.visibility = View.VISIBLE
+                                    if (data.CONTENT.isEmpty())
+                                    {
+                                        Constant.toast(this@ShowSpreadSheetActivity,"No Data Found")
+                                        binding.noData.visibility = View.VISIBLE
+                                    }
+                                    else
+                                    {
+                                        binding.noData.visibility = View.GONE
+                                    }
+                                    val adapter = SpreadSheetAdapter(this@ShowSpreadSheetActivity,data.CONTENT,"SPREADSHEET")
+                                    binding.recyclerView.adapter = adapter
                                 }
-                                val adapter = SpreadSheetAdapter(this@ShowSpreadSheetActivity,data.CONTENT)
-                                binding.recyclerView.adapter = adapter
+                                else
+                                {
+                                    Constant.toast(this@ShowSpreadSheetActivity,data.MSG)
+                                }
                             }
-                            else
-                            {
-                                Constant.toast(this@ShowSpreadSheetActivity,data.MSG)
+                            else{
+                                Constant.toast(this@ShowSpreadSheetActivity,p1.message().toString())
+                                progressDialog.dismiss()
                             }
                         }
                         else{
@@ -89,17 +100,20 @@ class ShowSpreadSheetActivity : AppCompatActivity() {
                             progressDialog.dismiss()
                         }
                     }
-                    else{
-                        Constant.toast(this@ShowSpreadSheetActivity,p1.message().toString())
+
+                    override fun onFailure(p0: Call<SpreadSheetResponseModel>, p1: Throwable) {
+                        Constant.toast(this@ShowSpreadSheetActivity,p1.message.toString())
                         progressDialog.dismiss()
                     }
-                }
 
-                override fun onFailure(p0: Call<SpreadSheetResponseModel>, p1: Throwable) {
-                    Constant.toast(this@ShowSpreadSheetActivity,p1.message.toString())
-                    progressDialog.dismiss()
-                }
+                })
+        }catch (e : Exception)
+        {
+            Constant.toast(this,"Something went wrong")
+            e.printStackTrace()
+            progressDialog.dismiss()
+        }
 
-            })
+
     }
 }

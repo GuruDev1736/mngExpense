@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.firebase.storage)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -73,5 +74,4 @@ dependencies {
     implementation (platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation ("com.google.firebase:firebase-messaging-ktx")
     implementation ("com.guolindev.permissionx:permissionx:1.8.1")
-
 }

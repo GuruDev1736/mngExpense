@@ -20,6 +20,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Faculty.Assignment.AddAssignmentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Faculty.Assignment.ShowAssignmentActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Faculty.SpreadSheet.ShowSpreadSheetActivity"
             android:exported="false" />
         <activity

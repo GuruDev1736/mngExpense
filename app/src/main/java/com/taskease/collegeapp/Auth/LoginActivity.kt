@@ -48,49 +48,56 @@ class LoginActivity : AppCompatActivity() {
         val progressDialog = CustomProgressDialog(this)
         progressDialog.show()
 
-        val model = LoginRequestModel(email,password)
-        RetrofitInstance.getInstance().login(model).enqueue(object : Callback<LoginResponseModel>{
-            override fun onResponse(
-                p0: Call<LoginResponseModel>,
-                p1: Response<LoginResponseModel>
-            ) {
-                if (p1.isSuccessful)
-                {
-                    progressDialog.dismiss()
-                    val data = p1.body()
-                    if (data!=null)
+        try {
+            val model = LoginRequestModel(email,password)
+            RetrofitInstance.getInstance().login(model).enqueue(object : Callback<LoginResponseModel>{
+                override fun onResponse(
+                    p0: Call<LoginResponseModel>,
+                    p1: Response<LoginResponseModel>
+                ) {
+                    if (p1.isSuccessful)
                     {
-                        if (data.STS == "200")
+                        progressDialog.dismiss()
+                        val data = p1.body()
+                        if (data!=null)
                         {
-                            SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.EMAIL,email)
-                            SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.PASSWORD,password)
-                            SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.TOKEN,"Bearer "+data.CONTENT.token)
-                            SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.USERNAME,data.CONTENT.userName)
-                            SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.ROLE,data.CONTENT.userRole)
-                            SharedPreferencesManager.saveInt(this@LoginActivity,SharedPreferencesManager.USERID,data.CONTENT.userId)
-                            SharedPreferencesManager.saveInt(this@LoginActivity,SharedPreferencesManager.DEPARTMENTID,data.CONTENT.departmentId)
+                            if (data.STS == "200")
+                            {
+                                SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.EMAIL,email)
+                                SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.PASSWORD,password)
+                                SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.TOKEN,"Bearer "+data.CONTENT.token)
+                                SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.USERNAME,data.CONTENT.userName)
+                                SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.ROLE,data.CONTENT.userRole)
+                                SharedPreferencesManager.saveInt(this@LoginActivity,SharedPreferencesManager.USERID,data.CONTENT.userId)
+                                SharedPreferencesManager.saveInt(this@LoginActivity,SharedPreferencesManager.DEPARTMENTID,data.CONTENT.departmentId)
 
-                            Constant.toast(this@LoginActivity,data.MSG)
-                            startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
-                            finish()
-                        }
-                        else
-                        {
-                            Constant.toast(this@LoginActivity,data.MSG)
+                                Constant.toast(this@LoginActivity,data.MSG)
+                                startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                                finish()
+                            }
+                            else
+                            {
+                                Constant.toast(this@LoginActivity,data.MSG)
+                            }
                         }
                     }
+                    else{
+                        Constant.toast(this@LoginActivity,p1.message().toString())
+                        progressDialog.dismiss()
+                    }
                 }
-                else{
-                    Constant.toast(this@LoginActivity,p1.message().toString())
+
+                override fun onFailure(p0: Call<LoginResponseModel>, p1: Throwable) {
+                    Constant.toast(this@LoginActivity,p1.message.toString())
                     progressDialog.dismiss()
                 }
-            }
-
-            override fun onFailure(p0: Call<LoginResponseModel>, p1: Throwable) {
-                Constant.toast(this@LoginActivity,p1.message.toString())
-                progressDialog.dismiss()
-            }
-        })
+            })
+        }catch (e : Exception)
+        {
+            Constant.toast(this,"Something went wrong")
+            e.printStackTrace()
+            progressDialog.dismiss()
+        }
     }
 
     private fun valid(email: String, password: String): Boolean {

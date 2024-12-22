@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.taskease.collegeapp" />
-                  <option name="mobileSdkAppId" value="1:787970377688:android:40dbeb021a7a5292e154ad" />
-                  <option name="projectId" value="hostel-visiting-app" />
-                  <option name="projectNumber" value="787970377688" />
+                  <option name="mobileSdkAppId" value="1:778505169540:android:488ba6324790037675f0d1" />
+                  <option name="projectId" value="autocare-c1756" />
+                  <option name="projectNumber" value="778505169540" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

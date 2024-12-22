@@ -12,9 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.taskease.collegeapp.Activities.Faculty.Assignment.ShowAssignmentActivity
-import com.taskease.collegeapp.Activities.Faculty.NoticeActivity
+import com.taskease.collegeapp.Activities.Faculty.Attendance.ShowAttendanceActivity
+import com.taskease.collegeapp.Activities.Faculty.Notes.ShowNotesActivity
+import com.taskease.collegeapp.Activities.Faculty.Notice.AddNoticeActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.ShowSpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.SpreadSheetActivity
+import com.taskease.collegeapp.Activities.Faculty.Workload.ShowWorkLoadActivity
 import com.taskease.collegeapp.Adapter.BannerAdapter
 import com.taskease.collegeapp.Adapter.DashboardAdapter
 import com.taskease.collegeapp.Constants.Constant
@@ -57,9 +60,10 @@ class HomeFragment : Fragment() {
             val list = ArrayList<DashboardItem>()
             list.add(DashboardItem(R.drawable.excel,"Add Spread Sheet", ShowSpreadSheetActivity::class.java))
             list.add(DashboardItem(R.drawable.assignment,"Add Assignment", ShowAssignmentActivity::class.java))
-            list.add(DashboardItem(R.drawable.notice,"Notice", NoticeActivity::class.java))
-            list.add(DashboardItem(R.drawable.workload,"Add WorkLoad Report", SpreadSheetActivity::class.java))
-            list.add(DashboardItem(R.drawable.attendance,"Add Attendance", SpreadSheetActivity::class.java))
+            list.add(DashboardItem(R.drawable.notice,"Notice", AddNoticeActivity::class.java))
+            list.add(DashboardItem(R.drawable.workload,"Add WorkLoad Report", ShowWorkLoadActivity::class.java))
+            list.add(DashboardItem(R.drawable.attendance,"Add Attendance", ShowAttendanceActivity::class.java))
+            list.add(DashboardItem(R.drawable.note,"Add Notes", ShowNotesActivity::class.java))
 
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)

@@ -20,6 +20,24 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Faculty.Attendance.AddAttendanceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Faculty.Attendance.ShowAttendanceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Faculty.Notes.AddNotesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Faculty.Notes.ShowNotesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Faculty.Workload.ShowWorkLoadActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Faculty.Notice.AddNoticeActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Faculty.Assignment.AddAssignmentActivity"
             android:exported="false" />
         <activity
@@ -29,7 +47,7 @@
             android:name=".Activities.Faculty.SpreadSheet.ShowSpreadSheetActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.Faculty.NoticeActivity"
+            android:name=".Activities.Faculty.Workload.AddWorkLoadReport"
             android:exported="false" />
         <activity
             android:name=".Activities.Faculty.SpreadSheet.SpreadSheetActivity"

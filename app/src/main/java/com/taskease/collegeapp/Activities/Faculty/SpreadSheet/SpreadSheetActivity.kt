@@ -1,10 +1,14 @@
 package com.taskease.collegeapp.Activities.Faculty.SpreadSheet
 
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.storage.FirebaseStorage
 import com.taskease.collegeapp.Adapter.SpreadSheetAdapter
 import com.taskease.collegeapp.Constants.Constant
 import com.taskease.collegeapp.Constants.CustomProgressDialog
@@ -21,11 +25,45 @@ import retrofit2.Response
 class SpreadSheetActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivitySpreadSheetBinding
+    private lateinit var storage : FirebaseStorage
+    private var fileUrl : String? = null
+
+    private val filePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            uploadImage(uri)
+        }
+    }
+
+    private fun uploadImage(uri: Uri) {
+        val progressDialog = CustomProgressDialog(this)
+        progressDialog.show()
+
+        storage.getReference("SpreadSheet").child(System.currentTimeMillis().toString())
+            .putFile(uri).addOnSuccessListener { it->
+                it.storage.downloadUrl.addOnSuccessListener {
+                    progressDialog.dismiss()
+                    fileUrl = it.toString()
+                    binding.imageLinkInput.setText(fileUrl)
+                    Log.d("FILE_URL",fileUrl.toString())
+                }.addOnFailureListener{
+                    Constant.toast(this@SpreadSheetActivity,it.message.toString())
+                    progressDialog.dismiss()
+                }
+            }.addOnFailureListener{
+                Constant.toast(this@SpreadSheetActivity,it.message.toString())
+                progressDialog.dismiss()
+            }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySpreadSheetBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        storage = FirebaseStorage.getInstance()
 
         binding.actionBar.back.setOnClickListener{
             finish()
@@ -44,6 +82,10 @@ class SpreadSheetActivity : AppCompatActivity() {
             {
                 CallCreateSpreadSheetApi(title,description,link,imageLink)
             }
+        }
+
+        binding.upload.setOnClickListener{
+            filePickerLauncher.launch("image/*")
         }
 
 

@@ -1,5 +1,6 @@
 package com.taskease.collegeapp.Retrofit
 
+import android.credentials.CredentialDescription
 import com.taskease.collegeapp.Model.Request.CreateSpreadSheetRequestModel
 import com.taskease.collegeapp.Model.Request.LoginRequestModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
@@ -36,5 +37,8 @@ interface ApiInterface {
 
     @DELETE("spreadsheet/delete/{sheetId}")
     fun deleteSheet(@Header("Authorization") token : String , @Path("sheetId") sheetId : Int) : Call<UniversalResponseModel>
+
+    @POST("api/notifications/send")
+    fun sendNotification(@Header("Authorization") token : String , @Query("title") title : String , @Query("description") description: String) : Call<UniversalResponseModel>
 
 }

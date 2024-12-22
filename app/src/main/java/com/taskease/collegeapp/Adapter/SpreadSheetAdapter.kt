@@ -14,7 +14,10 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.taskease.collegeapp.Activities.Faculty.Assignment.AddAssignmentActivity
+import com.taskease.collegeapp.Activities.Faculty.Attendance.AddAttendanceActivity
+import com.taskease.collegeapp.Activities.Faculty.Notes.AddNotesActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.SpreadSheetActivity
+import com.taskease.collegeapp.Activities.Faculty.Workload.AddWorkLoadReport
 import com.taskease.collegeapp.Constants.Constant
 import com.taskease.collegeapp.Constants.CustomProgressDialog
 import com.taskease.collegeapp.Constants.SharedPreferencesManager
@@ -68,6 +71,22 @@ class SpreadSheetAdapter(private val context : Context , private val list : List
             {
                 Glide.with(context).load(data.imageLink).placeholder(R.drawable.assignment).into(imgExcelFileIcon)
             }
+            if (code.equals("WORKLOAD"))
+            {
+                Glide.with(context).load(data.imageLink).placeholder(R.drawable.workload).into(imgExcelFileIcon)
+            }
+            if (code.equals("NOTES"))
+            {
+                Glide.with(context).load(data.imageLink).placeholder(R.drawable.note).into(imgExcelFileIcon)
+            }
+            if (code.equals("TEACHER"))
+            {
+                Glide.with(context).load(data.imageLink).placeholder(R.drawable.teacher).into(imgExcelFileIcon)
+            }
+            if (code.equals("STUDENT"))
+            {
+                Glide.with(context).load(data.imageLink).placeholder(R.drawable.student).into(imgExcelFileIcon)
+            }
 
             imgMoreOptions.setOnClickListener{view->
                 val popupMenu = PopupMenu(context, view)
@@ -100,6 +119,52 @@ class SpreadSheetAdapter(private val context : Context , private val list : List
                                     .putExtra("description",data.description)
                                     .putExtra("link",data.link)
                                     .putExtra("imageLink",data.imageLink)
+                                )
+                            }
+                            if (code.equals("WORKLOAD"))
+                            {
+                                context.startActivity(Intent(context, AddWorkLoadReport::class.java)
+                                    .putExtra("code","update")
+                                    .putExtra("id",data.id)
+                                    .putExtra("title",data.title)
+                                    .putExtra("description",data.description)
+                                    .putExtra("link",data.link)
+                                    .putExtra("imageLink",data.imageLink)
+                                )
+                            }
+                            if (code.equals("NOTES"))
+                            {
+                                context.startActivity(Intent(context, AddNotesActivity::class.java)
+                                    .putExtra("code","update")
+                                    .putExtra("id",data.id)
+                                    .putExtra("title",data.title)
+                                    .putExtra("description",data.description)
+                                    .putExtra("link",data.link)
+                                    .putExtra("imageLink",data.imageLink)
+                                )
+                            }
+                            if (code.equals("TEACHER"))
+                            {
+                                context.startActivity(Intent(context, AddAttendanceActivity::class.java)
+                                    .putExtra("code","update")
+                                    .putExtra("id",data.id)
+                                    .putExtra("title",data.title)
+                                    .putExtra("description",data.description)
+                                    .putExtra("link",data.link)
+                                    .putExtra("imageLink",data.imageLink)
+                                    .putExtra("category",data.category)
+                                )
+                            }
+                            if (code.equals("STUDENT"))
+                            {
+                                context.startActivity(Intent(context, AddAttendanceActivity::class.java)
+                                    .putExtra("code","update")
+                                    .putExtra("id",data.id)
+                                    .putExtra("title",data.title)
+                                    .putExtra("description",data.description)
+                                    .putExtra("link",data.link)
+                                    .putExtra("imageLink",data.imageLink)
+                                    .putExtra("category",data.category)
                                 )
                             }
                             true

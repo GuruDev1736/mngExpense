@@ -75,6 +75,17 @@ class HomeFragment : Fragment() {
             val list = ArrayList<DashboardItem>()
             list.add(DashboardItem(R.drawable.workload,"WorkLoad Reports", ShowWorkLoadReportActivity::class.java))
             list.add(DashboardItem(R.drawable.attendance,"Attendance", ShowAttendanceReportActivity::class.java))
+            list.add(DashboardItem(R.drawable.notice,"Notice", AddNoticeActivity::class.java))
+            list.add(DashboardItem(R.drawable.deadline,"Deadlines", AddNoticeActivity::class.java))
+
+            binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
+            binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
+        }
+        if (role == "ROLE_OFFICE")
+        {
+            val list = ArrayList<DashboardItem>()
+            list.add(DashboardItem(R.drawable.budget,"Budgets", ShowWorkLoadReportActivity::class.java))
+            list.add(DashboardItem(R.drawable.deadline,"DeadLines", ShowAttendanceReportActivity::class.java))
 
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)

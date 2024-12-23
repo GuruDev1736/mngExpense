@@ -20,6 +20,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Principle.Deadlines.ShowDeadlineActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Principle.Attendance.ShowAttendanceReportActivity"
             android:exported="false" />
         <activity

@@ -4,6 +4,7 @@ import android.credentials.CredentialDescription
 import com.taskease.collegeapp.Model.Request.CreateSpreadSheetRequestModel
 import com.taskease.collegeapp.Model.Request.LoginRequestModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
+import com.taskease.collegeapp.Model.Response.GetAllDepartmentResponseModel
 import com.taskease.collegeapp.Model.Response.LoginResponseModel
 import com.taskease.collegeapp.Model.Response.SingleSpreadSheetResponseModel
 import com.taskease.collegeapp.Model.Response.SpreadSheetResponseModel
@@ -40,5 +41,11 @@ interface ApiInterface {
 
     @POST("api/notifications/send")
     fun sendNotification(@Header("Authorization") token : String , @Query("title") title : String , @Query("description") description: String) : Call<UniversalResponseModel>
+
+    @GET("department/")
+    fun getAllDepartments(@Header("Authorization") token : String) : Call<GetAllDepartmentResponseModel>
+
+    @GET("spreadsheet/")
+    fun getAllSpreadsheetByCategory(@Header("Authorization") token : String , @Query("category") category : String , @Query("department") departmentId : Int) : Call<SpreadSheetResponseModel>
 
 }

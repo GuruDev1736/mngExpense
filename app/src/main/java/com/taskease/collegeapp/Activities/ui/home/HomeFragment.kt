@@ -18,6 +18,8 @@ import com.taskease.collegeapp.Activities.Faculty.Notice.AddNoticeActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.ShowSpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.SpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.Workload.ShowWorkLoadActivity
+import com.taskease.collegeapp.Activities.Principle.Attendance.ShowAttendanceReportActivity
+import com.taskease.collegeapp.Activities.Principle.WorkLoad.ShowWorkLoadReportActivity
 import com.taskease.collegeapp.Adapter.BannerAdapter
 import com.taskease.collegeapp.Adapter.DashboardAdapter
 import com.taskease.collegeapp.Constants.Constant
@@ -68,17 +70,15 @@ class HomeFragment : Fragment() {
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
         }
-//        if (role == "ROLE_SUPER_ADMIN")
-//        {
-//            val list = ArrayList<DashboardItem>()
-//            list.add(DashboardItem(R.drawable.flatowner,"Add FlatOwners", ShowFlatOwnerActivity::class.java))
-//            list.add(DashboardItem(R.drawable.complaint,"Raise Complaint", ShowRaiseComplaintActivity::class.java))
-//            list.add(DashboardItem(R.drawable.notice,"Notice", ShowNoticeActivity::class.java))
-//            list.add(DashboardItem(R.drawable.apartment,"See Complaints", ShowAllComplaintsActivity::class.java))
-//
-//            binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
-//            binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
-//        }
+        if (role == "ROLE_PRINCIPLE")
+        {
+            val list = ArrayList<DashboardItem>()
+            list.add(DashboardItem(R.drawable.workload,"WorkLoad Reports", ShowWorkLoadReportActivity::class.java))
+            list.add(DashboardItem(R.drawable.attendance,"Attendance", ShowAttendanceReportActivity::class.java))
+
+            binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
+            binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
+        }
 
 
         fetchBannerImages()

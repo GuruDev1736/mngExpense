@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -86,6 +87,16 @@ class SpreadSheetAdapter(private val context : Context , private val list : List
             if (code.equals("STUDENT"))
             {
                 Glide.with(context).load(data.imageLink).placeholder(R.drawable.student).into(imgExcelFileIcon)
+            }
+            if (code.equals("WORKLOAD_P"))
+            {
+                Glide.with(context).load(data.imageLink).placeholder(R.drawable.workload).into(imgExcelFileIcon)
+                imgMoreOptions.visibility = View.GONE
+            }
+            if (code.equals("ATTENDANCE_P"))
+            {
+                Glide.with(context).load(data.imageLink).placeholder(R.drawable.attendance).into(imgExcelFileIcon)
+                imgMoreOptions.visibility = View.GONE
             }
 
             imgMoreOptions.setOnClickListener{view->

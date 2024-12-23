@@ -20,6 +20,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Principle.Attendance.ShowAttendanceReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Principle.WorkLoad.ShowWorkLoadReportActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Faculty.Attendance.AddAttendanceActivity"
             android:exported="false" />
         <activity

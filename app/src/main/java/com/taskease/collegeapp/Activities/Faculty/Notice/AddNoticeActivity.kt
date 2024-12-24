@@ -1,6 +1,7 @@
 package com.taskease.collegeapp.Activities.Faculty.Notice
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -40,7 +41,6 @@ class AddNoticeActivity : AppCompatActivity() {
                 CallNoticeApi(title,description)
             }
         }
-
     }
 
     private fun CallNoticeApi(title: String, description: String) {

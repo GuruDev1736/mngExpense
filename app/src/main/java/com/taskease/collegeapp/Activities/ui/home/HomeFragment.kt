@@ -18,7 +18,10 @@ import com.taskease.collegeapp.Activities.Faculty.Notice.AddNoticeActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.ShowSpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.SpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.Workload.ShowWorkLoadActivity
+import com.taskease.collegeapp.Activities.Office.ShowBudgetActivity
 import com.taskease.collegeapp.Activities.Principle.Attendance.ShowAttendanceReportActivity
+import com.taskease.collegeapp.Activities.Principle.Deadlines.ShowDeadlineActivity
+import com.taskease.collegeapp.Activities.Principle.Notice.AddPrincipleNotice
 import com.taskease.collegeapp.Activities.Principle.WorkLoad.ShowWorkLoadReportActivity
 import com.taskease.collegeapp.Adapter.BannerAdapter
 import com.taskease.collegeapp.Adapter.DashboardAdapter
@@ -75,8 +78,8 @@ class HomeFragment : Fragment() {
             val list = ArrayList<DashboardItem>()
             list.add(DashboardItem(R.drawable.workload,"WorkLoad Reports", ShowWorkLoadReportActivity::class.java))
             list.add(DashboardItem(R.drawable.attendance,"Attendance", ShowAttendanceReportActivity::class.java))
-            list.add(DashboardItem(R.drawable.notice,"Notice", AddNoticeActivity::class.java))
-            list.add(DashboardItem(R.drawable.deadline,"Deadlines", AddNoticeActivity::class.java))
+            list.add(DashboardItem(R.drawable.notice,"Notice", AddPrincipleNotice::class.java))
+            list.add(DashboardItem(R.drawable.deadline,"Deadlines", ShowDeadlineActivity::class.java))
 
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
@@ -84,7 +87,7 @@ class HomeFragment : Fragment() {
         if (role == "ROLE_OFFICE")
         {
             val list = ArrayList<DashboardItem>()
-            list.add(DashboardItem(R.drawable.budget,"Budgets", ShowWorkLoadReportActivity::class.java))
+            list.add(DashboardItem(R.drawable.budget,"Budgets", ShowBudgetActivity::class.java))
             list.add(DashboardItem(R.drawable.deadline,"DeadLines", ShowAttendanceReportActivity::class.java))
 
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)

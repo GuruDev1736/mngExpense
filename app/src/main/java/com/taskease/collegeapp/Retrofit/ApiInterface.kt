@@ -48,4 +48,11 @@ interface ApiInterface {
     @GET("spreadsheet/")
     fun getAllSpreadsheetByCategory(@Header("Authorization") token : String , @Query("category") category : String , @Query("department") departmentId : Int) : Call<SpreadSheetResponseModel>
 
+    @GET("spreadsheet/category")
+    fun getAllSpreadSheetByCategoryName(@Header("Authorization") token : String , @Query("category") category : String) : Call<SpreadSheetResponseModel>
+
+    @POST("spreadsheet/create/budget/{userId}")
+    fun createBudget(@Header("Authorization") token : String , @Path("userId") userId : Int , @Body model : CreateSpreadSheetRequestModel) : Call<SingleSpreadSheetResponseModel>
+
+
 }

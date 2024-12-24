@@ -23,4 +23,11 @@
         <item>TEACHER</item>
         <item>STUDENT</item>
     </string-array>
+
+    <string-array name="NoticeCategory">
+        <item>FACULTY</item>
+        <item>STUDENT</item>
+        <item>EVENT</item>
+    </string-array>
+
 </resources>

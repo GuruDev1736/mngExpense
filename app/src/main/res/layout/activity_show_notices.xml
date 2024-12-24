@@ -61,6 +61,17 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 
+        <Spinner
+            android:id="@+id/category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/action_bar"
+            android:background="@drawable/spinner_bg"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            android:padding="10dp"/>
+
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/imageLink_input_layout"
             android:layout_width="match_parent"

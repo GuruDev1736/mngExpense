@@ -20,6 +20,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Office.AddBudgetActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Office.ShowBudgetActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Principle.Deadlines.ShowDeadlineActivity"
             android:exported="false" />
         <activity
@@ -46,6 +52,11 @@
         <activity
             android:name=".Activities.Faculty.Notice.AddNoticeActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".Activities.Principle.Notice.AddPrincipleNotice"
+            android:exported="false" />
+
         <activity
             android:name=".Activities.Faculty.Assignment.AddAssignmentActivity"
             android:exported="false" />

@@ -19,6 +19,7 @@ import com.taskease.collegeapp.Activities.Faculty.Attendance.AddAttendanceActivi
 import com.taskease.collegeapp.Activities.Faculty.Notes.AddNotesActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.SpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.Workload.AddWorkLoadReport
+import com.taskease.collegeapp.Activities.Office.AddBudgetActivity
 import com.taskease.collegeapp.Constants.Constant
 import com.taskease.collegeapp.Constants.CustomProgressDialog
 import com.taskease.collegeapp.Constants.SharedPreferencesManager
@@ -80,6 +81,10 @@ class SpreadSheetAdapter(private val context : Context , private val list : List
             {
                 Glide.with(context).load(data.imageLink).placeholder(R.drawable.note).into(imgExcelFileIcon)
             }
+            if (code.equals("BUDGET"))
+            {
+                Glide.with(context).load(data.imageLink).placeholder(R.drawable.budget).into(imgExcelFileIcon)
+            }
             if (code.equals("TEACHER"))
             {
                 Glide.with(context).load(data.imageLink).placeholder(R.drawable.teacher).into(imgExcelFileIcon)
@@ -88,6 +93,7 @@ class SpreadSheetAdapter(private val context : Context , private val list : List
             {
                 Glide.with(context).load(data.imageLink).placeholder(R.drawable.student).into(imgExcelFileIcon)
             }
+
             if (code.equals("WORKLOAD_P"))
             {
                 Glide.with(context).load(data.imageLink).placeholder(R.drawable.workload).into(imgExcelFileIcon)
@@ -98,6 +104,7 @@ class SpreadSheetAdapter(private val context : Context , private val list : List
                 Glide.with(context).load(data.imageLink).placeholder(R.drawable.attendance).into(imgExcelFileIcon)
                 imgMoreOptions.visibility = View.GONE
             }
+
 
             imgMoreOptions.setOnClickListener{view->
                 val popupMenu = PopupMenu(context, view)
@@ -135,6 +142,17 @@ class SpreadSheetAdapter(private val context : Context , private val list : List
                             if (code.equals("WORKLOAD"))
                             {
                                 context.startActivity(Intent(context, AddWorkLoadReport::class.java)
+                                    .putExtra("code","update")
+                                    .putExtra("id",data.id)
+                                    .putExtra("title",data.title)
+                                    .putExtra("description",data.description)
+                                    .putExtra("link",data.link)
+                                    .putExtra("imageLink",data.imageLink)
+                                )
+                            }
+                            if (code.equals("BUDGET"))
+                            {
+                                context.startActivity(Intent(context, AddBudgetActivity::class.java)
                                     .putExtra("code","update")
                                     .putExtra("id",data.id)
                                     .putExtra("title",data.title)

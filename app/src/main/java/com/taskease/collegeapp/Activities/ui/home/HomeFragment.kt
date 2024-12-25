@@ -88,7 +88,7 @@ class HomeFragment : Fragment() {
         {
             val list = ArrayList<DashboardItem>()
             list.add(DashboardItem(R.drawable.budget,"Budgets", ShowBudgetActivity::class.java))
-            list.add(DashboardItem(R.drawable.deadline,"DeadLines", ShowAttendanceReportActivity::class.java))
+            list.add(DashboardItem(R.drawable.deadline,"DeadLines", ShowDeadlineActivity::class.java))
 
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)

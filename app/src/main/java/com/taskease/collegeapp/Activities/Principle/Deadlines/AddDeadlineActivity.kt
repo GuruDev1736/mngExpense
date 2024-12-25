@@ -1,6 +1,7 @@
 package com.taskease.collegeapp.Activities.Principle.Deadlines
 
 import android.os.Bundle
+import android.view.View
 import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -80,6 +81,24 @@ class AddDeadlineActivity : AppCompatActivity() {
                     CallUpdateDeadlineApi(title,description,startDate,endDate,id)
                 }
             }
+
+        }
+
+        if (code.equals("show"))
+        {
+            binding.actionBar.title.text = "Show Deadline"
+            binding.submit.visibility = View.GONE
+            binding.titleInput.setText(intent.getStringExtra("title"))
+            binding.descriptionInput.setText(intent.getStringExtra("description"))
+            binding.startDate.setText(intent.getStringExtra("startDate"))
+            binding.endDate.setText(intent.getStringExtra("endDate"))
+
+            binding.titleInput.isEnabled = false
+            binding.descriptionInput.isEnabled = false
+            binding.startDate.isEnabled = false
+            binding.endDate.isEnabled = false
+            binding.startDatebtn.isEnabled = false
+            binding.endDatebtn.isEnabled = false
 
         }
 

@@ -58,7 +58,18 @@ class DeadLineAdapter(private val context : Context, private val list : List<dea
             endDate.text = data.endDate
             layout.setOnClickListener{
                 context.startActivity(Intent(context,AddDeadlineActivity::class.java)
+                    .putExtra("id",data.id)
+                    .putExtra("title",data.title)
+                    .putExtra("description",data.description)
+                    .putExtra("startDate",data.startDate)
+                    .putExtra("endDate",data.endDate)
                     .putExtra("code","show"))
+            }
+//
+            val role = SharedPreferencesManager.getString(context, SharedPreferencesManager.ROLE)
+            if (role.equals("ROLE_OFFICE"))
+            {
+                imgMoreOptions.visibility = View.GONE
             }
 
             imgMoreOptions.setOnClickListener{view->

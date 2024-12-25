@@ -20,6 +20,7 @@ import com.taskease.collegeapp.Activities.Faculty.Notes.AddNotesActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.SpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.Workload.AddWorkLoadReport
 import com.taskease.collegeapp.Activities.Office.AddBudgetActivity
+import com.taskease.collegeapp.Activities.OpenSpreadSheetActivity
 import com.taskease.collegeapp.Constants.Constant
 import com.taskease.collegeapp.Constants.CustomProgressDialog
 import com.taskease.collegeapp.Constants.SharedPreferencesManager
@@ -52,17 +53,10 @@ class SpreadSheetAdapter(private val context : Context , private val list : List
             title.text =truncateText(data.title,30)
             description.text = truncateText(data.description , 30)
             layout.setOnClickListener{
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(data.link))
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    } else {
-                        Toast.makeText(context, "No app found to open the link", Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: ActivityNotFoundException) {
-                    Toast.makeText(context, "Error opening the link", Toast.LENGTH_SHORT).show()
-                    e.printStackTrace()
-                }
+               context.startActivity(Intent(context,OpenSpreadSheetActivity::class.java)
+                   .putExtra("title",data.title)
+                   .putExtra("description",data.description)
+                   .putExtra("link",data.link))
             }
 
             if (code.equals("SPREADSHEET"))

@@ -19,7 +19,6 @@ data class deadlines(
 data class User(
     val address: String,
     val completeProfile: Boolean,
-    val department: Department,
     val designation: String,
     val email: String,
     val enabled: Boolean,
@@ -28,10 +27,4 @@ data class User(
     val joinDate: Long,
     val phoneNo: String,
     val profile_pic: String
-)
-
-data class Department(
-    val description: String,
-    val id: Int,
-    val name: String
 )

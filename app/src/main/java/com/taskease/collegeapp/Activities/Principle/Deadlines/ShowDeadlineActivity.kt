@@ -42,6 +42,13 @@ class ShowDeadlineActivity : AppCompatActivity() {
         }
         binding.actionBar.title.text = "Deadline Reports"
 
+
+        val role = SharedPreferencesManager.getString(this, SharedPreferencesManager.ROLE)
+        if (role.equals("ROLE_OFFICE"))
+        {
+            binding.addSpreadSheet.visibility = View.GONE
+        }
+
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
         binding.addSpreadSheet.setOnClickListener{

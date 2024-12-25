@@ -1,9 +1,12 @@
 package com.taskease.collegeapp.Retrofit
 
 import android.credentials.CredentialDescription
+import com.taskease.collegeapp.Model.Request.CreateDeadlineRequestModel
 import com.taskease.collegeapp.Model.Request.CreateSpreadSheetRequestModel
 import com.taskease.collegeapp.Model.Request.LoginRequestModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
+import com.taskease.collegeapp.Model.Response.CreateDeadlineResponseModel
+import com.taskease.collegeapp.Model.Response.GetAllDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDepartmentResponseModel
 import com.taskease.collegeapp.Model.Response.LoginResponseModel
 import com.taskease.collegeapp.Model.Response.SingleSpreadSheetResponseModel
@@ -54,5 +57,16 @@ interface ApiInterface {
     @POST("spreadsheet/create/budget/{userId}")
     fun createBudget(@Header("Authorization") token : String , @Path("userId") userId : Int , @Body model : CreateSpreadSheetRequestModel) : Call<SingleSpreadSheetResponseModel>
 
+    @GET("deadline/")
+    fun getAllDeadlines(@Header("Authorization") token : String) : Call<GetAllDeadlineResponseModel>
+
+    @DELETE("deadline/{deadlineId}")
+    fun deleteDeadline(@Header("Authorization") token : String , @Path("deadlineId") deadlineId : Int) : Call<UniversalResponseModel>
+
+    @POST("deadline/create/{userId}")
+    fun createDeadline(@Header("Authorization") token : String , @Path("userId") userId : Int , @Body model : CreateDeadlineRequestModel) : Call<CreateDeadlineResponseModel>
+
+    @PUT("deadline/update/{deadlineId}")
+    fun updateDeadline(@Header("Authorization") token : String , @Path("deadlineId") deadlineId : Int , @Body model : CreateDeadlineRequestModel) : Call<CreateDeadlineResponseModel>
 
 }

@@ -1,9 +1,11 @@
 package com.taskease.collegeapp.Retrofit
 
 import android.credentials.CredentialDescription
+import com.taskease.collegeapp.Model.Request.AddBookRequestModel
 import com.taskease.collegeapp.Model.Request.CreateDeadlineRequestModel
 import com.taskease.collegeapp.Model.Request.CreateSpreadSheetRequestModel
 import com.taskease.collegeapp.Model.Request.LoginRequestModel
+import com.taskease.collegeapp.Model.Response.AddBookResponseModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
 import com.taskease.collegeapp.Model.Response.CreateDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDeadlineResponseModel
@@ -68,5 +70,14 @@ interface ApiInterface {
 
     @PUT("deadline/update/{deadlineId}")
     fun updateDeadline(@Header("Authorization") token : String , @Path("deadlineId") deadlineId : Int , @Body model : CreateDeadlineRequestModel) : Call<CreateDeadlineResponseModel>
+
+    @POST("books/create/{userId}")
+    fun createBook(@Header("Authorization") token : String , @Path("userId") userId : Int , @Body model : AddBookRequestModel) : Call<AddBookResponseModel>
+
+    @PUT("store/toggle-status")
+    fun toggleStatus(@Header("Authorization") token : String , @Query("category") category : String) : Call<UniversalResponseModel>
+
+    @GET("store/status")
+    fun getStatus(@Header("Authorization") token : String , @Query("category") category : String) : Call<UniversalResponseModel>
 
 }

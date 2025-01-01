@@ -18,6 +18,7 @@ import com.taskease.collegeapp.Activities.Faculty.Notice.AddNoticeActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.ShowSpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.SpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.Workload.ShowWorkLoadActivity
+import com.taskease.collegeapp.Activities.Lib.AddBooksActivity
 import com.taskease.collegeapp.Activities.Office.ShowBudgetActivity
 import com.taskease.collegeapp.Activities.Principle.Attendance.ShowAttendanceReportActivity
 import com.taskease.collegeapp.Activities.Principle.Deadlines.ShowDeadlineActivity
@@ -30,6 +31,7 @@ import com.taskease.collegeapp.Constants.CustomProgressDialog
 import com.taskease.collegeapp.Constants.SharedPreferencesManager
 import com.taskease.collegeapp.Model.DashboardItem
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
+import com.taskease.collegeapp.Model.Response.UniversalResponseModel
 import com.taskease.collegeapp.R
 import com.taskease.collegeapp.Retrofit.RetrofitInstance
 import com.taskease.collegeapp.databinding.FragmentHomeBinding
@@ -93,11 +95,114 @@ class HomeFragment : Fragment() {
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
         }
+        if (role == "ROLE_LIB")
+        {
+            getStatusApi("LIB")
+            binding.toggle.visibility = View.VISIBLE
+
+            binding.toggle.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    calToggleApi("LIB")
+                } else {
+                    calToggleApi("LIB")
+                }
+            }
+            val list = ArrayList<DashboardItem>()
+            list.add(DashboardItem(R.drawable.book,"Add Books", AddBooksActivity::class.java))
+
+            binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
+            binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
+        }
 
 
         fetchBannerImages()
 
         return root
+    }
+
+    private fun calToggleApi(category: String) {
+        val progressDialog = CustomProgressDialog(requireContext())
+        progressDialog.show()
+
+        try {
+            val token = SharedPreferencesManager.getString(requireContext(), SharedPreferencesManager.TOKEN)
+
+            RetrofitInstance.getInstance().toggleStatus(token,category).enqueue(object : Callback<UniversalResponseModel> {
+                override fun onResponse(
+                    p0: Call<UniversalResponseModel>,
+                    p1: Response<UniversalResponseModel>
+                ) {
+                    if (p1.isSuccessful) {
+                        progressDialog.dismiss()
+                        val data = p1.body()
+                        if (data != null && data.STS == "200") {
+                           Constant.toast(requireContext(),data.CONTENT)
+                        } else {
+                            Constant.toast(requireContext(), data?.MSG ?: "Error")
+                        }
+                    } else {
+                        Constant.toast(requireContext(), p1.message().toString())
+                        progressDialog.dismiss()
+                    }
+                }
+
+                override fun onFailure(p0: Call<UniversalResponseModel>, p1: Throwable) {
+                    Constant.toast(requireContext(), p1.message.toString())
+                    progressDialog.dismiss()
+                }
+            })
+        }catch (e : Exception)
+        {
+            Constant.toast(requireContext(),"Something went wrong")
+            e.printStackTrace()
+            progressDialog.dismiss()
+        }
+    }
+
+    private fun getStatusApi(category: String) {
+        val progressDialog = CustomProgressDialog(requireContext())
+        progressDialog.show()
+
+        try {
+            val token = SharedPreferencesManager.getString(requireContext(), SharedPreferencesManager.TOKEN)
+
+            RetrofitInstance.getInstance().getStatus(token,category).enqueue(object : Callback<UniversalResponseModel> {
+                override fun onResponse(
+                    p0: Call<UniversalResponseModel>,
+                    p1: Response<UniversalResponseModel>
+                ) {
+                    if (p1.isSuccessful) {
+                        progressDialog.dismiss()
+                        val data = p1.body()
+                        if (data != null && data.STS == "200") {
+                            if (data.CONTENT.toBoolean())
+                            {
+                                binding.toggle.isChecked = true
+                            }
+                            else
+                            {
+                                binding.toggle.isChecked = false
+                            }
+                        } else {
+                            Constant.toast(requireContext(), data?.MSG ?: "Error")
+                        }
+                    } else {
+                        Constant.toast(requireContext(), p1.message().toString())
+                        progressDialog.dismiss()
+                    }
+                }
+
+                override fun onFailure(p0: Call<UniversalResponseModel>, p1: Throwable) {
+                    Constant.toast(requireContext(), p1.message.toString())
+                    progressDialog.dismiss()
+                }
+            })
+        }catch (e : Exception)
+        {
+            Constant.toast(requireContext(),"Something went wrong")
+            e.printStackTrace()
+            progressDialog.dismiss()
+        }
     }
 
     private fun fetchBannerImages() {

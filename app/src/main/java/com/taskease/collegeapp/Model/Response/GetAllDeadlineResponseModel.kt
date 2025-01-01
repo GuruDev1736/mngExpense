@@ -13,10 +13,10 @@ data class deadlines(
     val id: Int,
     val startDate: String,
     val title: String,
-    val user: User
+    val user: UserDetails
 )
 
-data class User(
+data class UserDetails(
     val address: String,
     val completeProfile: Boolean,
     val designation: String,

@@ -19,6 +19,7 @@ import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.ShowSpreadSheetAct
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.SpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.Workload.ShowWorkLoadActivity
 import com.taskease.collegeapp.Activities.Lib.AddBooksActivity
+import com.taskease.collegeapp.Activities.Lib.ShowBookActivity
 import com.taskease.collegeapp.Activities.Office.ShowBudgetActivity
 import com.taskease.collegeapp.Activities.Principle.Attendance.ShowAttendanceReportActivity
 import com.taskease.collegeapp.Activities.Principle.Deadlines.ShowDeadlineActivity
@@ -108,7 +109,25 @@ class HomeFragment : Fragment() {
                 }
             }
             val list = ArrayList<DashboardItem>()
-            list.add(DashboardItem(R.drawable.book,"Add Books", AddBooksActivity::class.java))
+            list.add(DashboardItem(R.drawable.book,"Add Books", ShowBookActivity::class.java))
+
+            binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
+            binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
+        }
+        if (role == "ROLE_COOPERATIVE")
+        {
+            getStatusApi("GODOWN")
+            binding.toggle.visibility = View.VISIBLE
+
+            binding.toggle.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    calToggleApi("GODOWN")
+                } else {
+                    calToggleApi("GODOWN")
+                }
+            }
+            val list = ArrayList<DashboardItem>()
+            list.add(DashboardItem(R.drawable.book,"Add Stock", AddBooksActivity::class.java))
 
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)

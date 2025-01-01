@@ -8,6 +8,7 @@ import com.taskease.collegeapp.Model.Request.LoginRequestModel
 import com.taskease.collegeapp.Model.Response.AddBookResponseModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
 import com.taskease.collegeapp.Model.Response.CreateDeadlineResponseModel
+import com.taskease.collegeapp.Model.Response.GetAllBooksResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDepartmentResponseModel
 import com.taskease.collegeapp.Model.Response.LoginResponseModel
@@ -73,6 +74,15 @@ interface ApiInterface {
 
     @POST("books/create/{userId}")
     fun createBook(@Header("Authorization") token : String , @Path("userId") userId : Int , @Body model : AddBookRequestModel) : Call<AddBookResponseModel>
+
+    @GET("books/")
+    fun getAllBooks(@Header("Authorization") token : String) : Call<GetAllBooksResponseModel>
+
+    @PUT("books/update/{bookId}")
+    fun updateBook(@Header("Authorization") token : String , @Path("bookId") bookId : Int , @Body model : AddBookRequestModel) : Call<AddBookResponseModel>
+
+    @DELETE("books/{bookId}")
+    fun deleteBook(@Header("Authorization") token : String , @Path("bookId") bookId : Int) : Call<UniversalResponseModel>
 
     @PUT("store/toggle-status")
     fun toggleStatus(@Header("Authorization") token : String , @Query("category") category : String) : Call<UniversalResponseModel>

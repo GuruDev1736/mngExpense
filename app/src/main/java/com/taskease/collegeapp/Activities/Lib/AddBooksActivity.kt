@@ -89,35 +89,39 @@ class AddBooksActivity : AppCompatActivity() {
             filePickerLauncher.launch("*/*")
         }
 
-//        val code = intent.getStringExtra("code").toString()
-//        val title = intent.getStringExtra("title").toString()
-//        val description = intent.getStringExtra("description").toString()
-//        val link = intent.getStringExtra("link").toString()
-//        val imageLink = intent.getStringExtra("imageLink").toString()
-//
-//        if (code.equals("update"))
-//        {
-//            binding.actionBar.title.text = "Update Spread Sheet"
-//            binding.submit.text = "Update"
-//            binding.titleInput.setText(title)
-//            binding.descriptionInput.setText(description)
-//            binding.linkInput.setText(link)
-//            binding.submit.setOnClickListener{
-//                val title = binding.titleInput.text.toString()
-//                val description = binding.descriptionInput.text.toString()
-//                val link = binding.linkInput.text.toString()
-//                val imageLink = binding.imageLinkInput.text.toString()
-//
-//                if (Valid(title,description,link,imageLink))
-//                {
-//                    CallUpdateAPI(title,description,link,imageLink)
-//                }
-//            }
-//        }
+        val code = intent.getStringExtra("code").toString()
+        val title = intent.getStringExtra("title").toString()
+        val description = intent.getStringExtra("description").toString()
+        val author = intent.getStringExtra("author").toString()
+        val publisher = intent.getStringExtra("publisher").toString()
+        val link = intent.getStringExtra("link").toString()
+
+        if (code.equals("update"))
+        {
+            binding.actionBar.title.text = "Update Book"
+            binding.submit.text = "Update"
+            binding.titleInput.setText(title)
+            binding.descriptionInput.setText(description)
+            binding.author.setText(author)
+            binding.publisherName.setText(publisher)
+            binding.bookLinkInput.setText(link)
+            binding.submit.setOnClickListener{
+                val title = binding.titleInput.text.toString()
+                val description = binding.descriptionInput.text.toString()
+                val author = binding.author.text.toString()
+                val publisher = binding.publisherName.text.toString()
+                val link = binding.bookLinkInput.text.toString()
+
+                if (Valid(title,description,author,publisher,link))
+                {
+                    CallUpdateAPI(title,description,author,publisher,link)
+                }
+            }
+        }
 
     }
 
-    private fun CallUpdateAPI(title: String, description: String, link: String, imageLink: String) {
+    private fun CallUpdateAPI(title: String, description: String, author: String , publisher : String, link: String) {
 
         val progressDialog = CustomProgressDialog(this)
         progressDialog.show()
@@ -126,12 +130,12 @@ class AddBooksActivity : AppCompatActivity() {
             val token = SharedPreferencesManager.getString(this, SharedPreferencesManager.TOKEN)
             val id = intent.getIntExtra("id",0)
 
-            val model = CreateSpreadSheetRequestModel("SPREADSHEET",description,imageLink,link,title)
-            RetrofitInstance.getInstance().updateSheet(token,id,model)
-                .enqueue(object : Callback<SingleSpreadSheetResponseModel> {
+            val model = AddBookRequestModel(author,link,description,publisher,title)
+            RetrofitInstance.getInstance().updateBook(token,id,model)
+                .enqueue(object : Callback<AddBookResponseModel> {
                     override fun onResponse(
-                        p0: Call<SingleSpreadSheetResponseModel>,
-                        p1: Response<SingleSpreadSheetResponseModel>
+                        p0: Call<AddBookResponseModel>,
+                        p1: Response<AddBookResponseModel>
                     ) {
                         if (p1.isSuccessful)
                         {
@@ -160,7 +164,7 @@ class AddBooksActivity : AppCompatActivity() {
                         }
                     }
 
-                    override fun onFailure(p0: Call<SingleSpreadSheetResponseModel>, p1: Throwable) {
+                    override fun onFailure(p0: Call<AddBookResponseModel>, p1: Throwable) {
                         Constant.toast(this@AddBooksActivity,p1.message.toString())
                         progressDialog.dismiss()
                     }

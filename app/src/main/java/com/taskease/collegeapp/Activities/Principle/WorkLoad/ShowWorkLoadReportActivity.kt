@@ -169,7 +169,7 @@ class ShowWorkLoadReportActivity : AppCompatActivity() {
                                     {
                                         binding.noData.visibility = View.GONE
                                     }
-                                    val adapter = SpreadSheetAdapter(this@ShowWorkLoadReportActivity,data.CONTENT,"WORKLOAD_P")
+                                    val adapter = SpreadSheetAdapter(this@ShowWorkLoadReportActivity,data.CONTENT.toMutableList(),"WORKLOAD_P")
                                     binding.recyclerView.adapter = adapter
                                 }
                                 else

@@ -36,7 +36,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class BooksAdapter(private val context : Context, private val list : List<Books>) :
+class BooksAdapter(private val context : Context, private val list : MutableList<Books>) :
     RecyclerView.Adapter<BooksAdapter.onViewHolder>() {
 
     class onViewHolder(val binding: SpreadSheetLayoutBinding) : RecyclerView.ViewHolder(binding.root)
@@ -135,8 +135,13 @@ class BooksAdapter(private val context : Context, private val list : List<Books>
                             {
                                 if (data.STS == "200")
                                 {
+                                    val position = list.indexOfFirst { it.id == id }
+                                    if (position != -1) {
+                                        list.removeAt(position)
+                                        notifyItemRemoved(position)
+                                        notifyItemRangeChanged(position, list.size)
+                                    }
                                     Constant.toast(context,data.MSG)
-                                    notifyDataSetChanged()
                                 }
                                 else
                                 {

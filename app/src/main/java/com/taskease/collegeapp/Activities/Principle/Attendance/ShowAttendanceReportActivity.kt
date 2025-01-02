@@ -167,7 +167,7 @@ class ShowAttendanceReportActivity : AppCompatActivity() {
                                     {
                                         binding.noData.visibility = View.GONE
                                     }
-                                    val adapter = SpreadSheetAdapter(this@ShowAttendanceReportActivity,data.CONTENT,"ATTENDANCE_P")
+                                    val adapter = SpreadSheetAdapter(this@ShowAttendanceReportActivity,data.CONTENT.toMutableList(),"ATTENDANCE_P")
                                     binding.recyclerView.adapter = adapter
                                 }
                                 else

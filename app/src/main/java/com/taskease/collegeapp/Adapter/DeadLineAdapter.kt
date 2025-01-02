@@ -35,7 +35,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DeadLineAdapter(private val context : Context, private val list : List<deadlines>) :
+class DeadLineAdapter(private val context : Context, private val list : MutableList<deadlines>) :
     RecyclerView.Adapter<DeadLineAdapter.onViewHolder>() {
 
     class onViewHolder(val binding: DeadlineLayoutBinding) : RecyclerView.ViewHolder(binding.root)
@@ -122,8 +122,13 @@ class DeadLineAdapter(private val context : Context, private val list : List<dea
                             {
                                 if (data.STS == "200")
                                 {
+                                    val position = list.indexOfFirst { it.id == id }
+                                    if (position != -1) {
+                                        list.removeAt(position)
+                                        notifyItemRemoved(position)
+                                        notifyItemRangeChanged(position, list.size)
+                                    }
                                     Constant.toast(context,data.MSG)
-                                    notifyDataSetChanged()
                                 }
                                 else
                                 {

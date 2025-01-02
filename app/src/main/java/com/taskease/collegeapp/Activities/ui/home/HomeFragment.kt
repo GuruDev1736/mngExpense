@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
+import com.taskease.collegeapp.Activities.Co_operative.AddStockActivity
+import com.taskease.collegeapp.Activities.Co_operative.ShowStocksActivity
 import com.taskease.collegeapp.Activities.Faculty.Assignment.ShowAssignmentActivity
 import com.taskease.collegeapp.Activities.Faculty.Attendance.ShowAttendanceActivity
 import com.taskease.collegeapp.Activities.Faculty.Notes.ShowNotesActivity
@@ -127,7 +129,7 @@ class HomeFragment : Fragment() {
                 }
             }
             val list = ArrayList<DashboardItem>()
-            list.add(DashboardItem(R.drawable.book,"Add Stock", AddBooksActivity::class.java))
+            list.add(DashboardItem(R.drawable.book,"Add Stock", ShowStocksActivity::class.java))
 
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)

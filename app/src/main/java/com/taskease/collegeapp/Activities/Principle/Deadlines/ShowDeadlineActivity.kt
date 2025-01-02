@@ -92,7 +92,7 @@ class ShowDeadlineActivity : AppCompatActivity() {
                                     {
                                         binding.noData.visibility = View.GONE
                                     }
-                                    val adapter = DeadLineAdapter(this@ShowDeadlineActivity,data.CONTENT)
+                                    val adapter = DeadLineAdapter(this@ShowDeadlineActivity,data.CONTENT.toMutableList())
                                     binding.recyclerView.adapter = adapter
                                 }
                                 else

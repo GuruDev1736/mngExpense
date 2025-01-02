@@ -86,7 +86,7 @@ class ShowNotesActivity : AppCompatActivity() {
                                     {
                                         binding.noData.visibility = View.GONE
                                     }
-                                    val adapter = SpreadSheetAdapter(this@ShowNotesActivity,data.CONTENT,"NOTES")
+                                    val adapter = SpreadSheetAdapter(this@ShowNotesActivity,data.CONTENT.toMutableList(),"NOTES")
                                     binding.recyclerView.adapter = adapter
                                 }
                                 else

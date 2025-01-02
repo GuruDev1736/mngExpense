@@ -72,7 +72,7 @@ class StudentFragment : Fragment() {
                                     {
                                         binding.noData.visibility = View.GONE
                                     }
-                                    val adapter = SpreadSheetAdapter(requireContext(),data.CONTENT,"STUDENT")
+                                    val adapter = SpreadSheetAdapter(requireContext(),data.CONTENT.toMutableList(),"STUDENT")
                                     binding.recyclerView.adapter = adapter
                                 }
                                 else

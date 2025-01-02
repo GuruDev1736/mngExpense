@@ -85,7 +85,7 @@ class ShowAssignmentActivity : AppCompatActivity() {
                                     {
                                         binding.noData.visibility = View.GONE
                                     }
-                                    val adapter = SpreadSheetAdapter(this@ShowAssignmentActivity,data.CONTENT,"ASSIGNMENT")
+                                    val adapter = SpreadSheetAdapter(this@ShowAssignmentActivity,data.CONTENT.toMutableList(),"ASSIGNMENT")
                                     binding.recyclerView.adapter = adapter
                                 }
                                 else

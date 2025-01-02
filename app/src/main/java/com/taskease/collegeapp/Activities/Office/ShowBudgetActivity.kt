@@ -58,8 +58,6 @@ class ShowBudgetActivity : AppCompatActivity() {
 
         try {
             val token = SharedPreferencesManager.getString(this, SharedPreferencesManager.TOKEN)
-            val departmentId = SharedPreferencesManager.getInt(this, SharedPreferencesManager.DEPARTMENTID)
-            val userId = SharedPreferencesManager.getInt(this, SharedPreferencesManager.USERID)
 
             RetrofitInstance.getInstance().getAllSpreadSheetByCategoryName(token,"BUDGET")
                 .enqueue(object : Callback<SpreadSheetResponseModel> {
@@ -84,7 +82,7 @@ class ShowBudgetActivity : AppCompatActivity() {
                                     {
                                         binding.noData.visibility = View.GONE
                                     }
-                                    val adapter = SpreadSheetAdapter(this@ShowBudgetActivity,data.CONTENT,"BUDGET")
+                                    val adapter = SpreadSheetAdapter(this@ShowBudgetActivity,data.CONTENT.toMutableList(),"BUDGET")
                                     binding.recyclerView.adapter = adapter
                                 }
                                 else

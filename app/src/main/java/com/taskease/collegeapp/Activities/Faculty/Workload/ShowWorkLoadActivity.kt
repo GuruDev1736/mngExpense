@@ -84,7 +84,7 @@ class ShowWorkLoadActivity : AppCompatActivity() {
                                     {
                                         binding.noData.visibility = View.GONE
                                     }
-                                    val adapter = SpreadSheetAdapter(this@ShowWorkLoadActivity,data.CONTENT,"WORKLOAD")
+                                    val adapter = SpreadSheetAdapter(this@ShowWorkLoadActivity,data.CONTENT.toMutableList(),"WORKLOAD")
                                     binding.recyclerView.adapter = adapter
                                 }
                                 else

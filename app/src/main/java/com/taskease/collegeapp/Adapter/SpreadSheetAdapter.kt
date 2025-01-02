@@ -33,7 +33,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SpreadSheetAdapter(private val context : Context , private val list : List<spreadSheet> , private val code : String) :
+class SpreadSheetAdapter(private val context : Context , private val list : MutableList<spreadSheet> , private val code : String) :
     RecyclerView.Adapter<SpreadSheetAdapter.onViewHolder>() {
 
     class onViewHolder(val binding: SpreadSheetLayoutBinding) : RecyclerView.ViewHolder(binding.root)
@@ -241,8 +241,13 @@ class SpreadSheetAdapter(private val context : Context , private val list : List
                             {
                                 if (data.STS == "200")
                                 {
+                                    val position = list.indexOfFirst { it.id == id }
+                                    if (position != -1) {
+                                        list.removeAt(position)
+                                        notifyItemRemoved(position)
+                                        notifyItemRangeChanged(position, list.size)
+                                    }
                                     Constant.toast(context,data.MSG)
-                                    notifyDataSetChanged()
                                 }
                                 else
                                 {

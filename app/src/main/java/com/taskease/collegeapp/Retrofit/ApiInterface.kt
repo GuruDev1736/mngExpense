@@ -11,6 +11,7 @@ import com.taskease.collegeapp.Model.Response.CreateDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBooksResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDepartmentResponseModel
+import com.taskease.collegeapp.Model.Response.GetAllStocksResponseModel
 import com.taskease.collegeapp.Model.Response.LoginResponseModel
 import com.taskease.collegeapp.Model.Response.SingleSpreadSheetResponseModel
 import com.taskease.collegeapp.Model.Response.SpreadSheetResponseModel
@@ -89,5 +90,14 @@ interface ApiInterface {
 
     @GET("store/status")
     fun getStatus(@Header("Authorization") token : String , @Query("category") category : String) : Call<UniversalResponseModel>
+
+    @GET("stock/")
+    fun getAllStocks(@Header("Authorization") token : String) : Call<GetAllStocksResponseModel>
+
+    @DELETE("stock/{stockId}")
+    fun deleteStock(@Header("Authorization") token : String , @Path("stockId") stockId : Int) : Call<UniversalResponseModel>
+
+    @PUT("stock/status/{stockId}")
+    fun updateStockStatus(@Header("Authorization") token : String , @Path("stockId") stockId : Int) : Call<UniversalResponseModel>
 
 }

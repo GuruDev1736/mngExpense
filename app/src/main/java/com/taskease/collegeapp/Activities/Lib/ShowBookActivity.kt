@@ -86,7 +86,7 @@ class ShowBookActivity : AppCompatActivity() {
                                     {
                                         binding.noData.visibility = View.GONE
                                     }
-                                    val adapter = BooksAdapter(this@ShowBookActivity,data.CONTENT)
+                                    val adapter = BooksAdapter(this@ShowBookActivity,data.CONTENT.toMutableList())
                                     binding.recyclerView.adapter = adapter
                                 }
                                 else

@@ -20,6 +20,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Co_operative.ShowStocksActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Co_operative.AddStockActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Lib.ShowBookActivity"
             android:exported="false" />
         <activity

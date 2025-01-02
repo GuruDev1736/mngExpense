@@ -82,7 +82,7 @@ class ShowSpreadSheetActivity : AppCompatActivity() {
                                     {
                                         binding.noData.visibility = View.GONE
                                     }
-                                    val adapter = SpreadSheetAdapter(this@ShowSpreadSheetActivity,data.CONTENT,"SPREADSHEET")
+                                    val adapter = SpreadSheetAdapter(this@ShowSpreadSheetActivity,data.CONTENT.toMutableList(),"SPREADSHEET")
                                     binding.recyclerView.adapter = adapter
                                 }
                                 else

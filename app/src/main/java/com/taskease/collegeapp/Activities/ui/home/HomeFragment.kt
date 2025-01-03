@@ -129,7 +129,7 @@ class HomeFragment : Fragment() {
                 }
             }
             val list = ArrayList<DashboardItem>()
-            list.add(DashboardItem(R.drawable.book,"Add Stock", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.stock,"Add Stock", ShowStocksActivity::class.java))
 
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)

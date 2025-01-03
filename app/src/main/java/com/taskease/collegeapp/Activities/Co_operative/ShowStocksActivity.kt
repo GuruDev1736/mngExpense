@@ -40,7 +40,7 @@ class ShowStocksActivity : AppCompatActivity() {
         binding.actionBar.back.setOnClickListener{
             finish()
         }
-        binding.actionBar.title.text = "Books"
+        binding.actionBar.title.text = "Stocks"
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 

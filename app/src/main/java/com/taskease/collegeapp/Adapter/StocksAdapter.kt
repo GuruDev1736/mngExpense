@@ -59,16 +59,6 @@ class StocksAdapter(private val context : Context, private val list : MutableLis
             title.text = truncateText(data.title, 30)
             description.text = truncateText(data.description, 30)
             price.text = data.price
-            update.setOnClickListener {
-                context.startActivity(
-                    Intent(context, AddStockActivity::class.java)
-                        .putExtra("code", "update")
-                        .putExtra("id", data.id)
-                        .putExtra("title", data.title)
-                        .putExtra("description", data.description)
-                        .putExtra("price", data.price)
-                )
-            }
 
             delete.setOnClickListener {
                 CallDeleteApi(data.id)

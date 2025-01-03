@@ -70,40 +70,15 @@
             android:textStyle="italic"
             android:text="status"/>
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/update"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/primary"
-                android:text="Update"/>
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/delete"
                 android:text="Delete"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/red"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"/>
-
-        </LinearLayout>
-
 
     </LinearLayout>
 

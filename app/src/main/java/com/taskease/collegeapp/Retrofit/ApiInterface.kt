@@ -2,10 +2,12 @@ package com.taskease.collegeapp.Retrofit
 
 import android.credentials.CredentialDescription
 import com.taskease.collegeapp.Model.Request.AddBookRequestModel
+import com.taskease.collegeapp.Model.Request.AddStockRequestModel
 import com.taskease.collegeapp.Model.Request.CreateDeadlineRequestModel
 import com.taskease.collegeapp.Model.Request.CreateSpreadSheetRequestModel
 import com.taskease.collegeapp.Model.Request.LoginRequestModel
 import com.taskease.collegeapp.Model.Response.AddBookResponseModel
+import com.taskease.collegeapp.Model.Response.AddStockResponseModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
 import com.taskease.collegeapp.Model.Response.CreateDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBooksResponseModel
@@ -99,5 +101,8 @@ interface ApiInterface {
 
     @PUT("stock/status/{stockId}")
     fun updateStockStatus(@Header("Authorization") token : String , @Path("stockId") stockId : Int) : Call<UniversalResponseModel>
+
+    @POST("stock/add")
+    fun addStock(@Header("Authorization") token : String , @Body model : AddStockRequestModel) : Call<AddStockResponseModel>
 
 }

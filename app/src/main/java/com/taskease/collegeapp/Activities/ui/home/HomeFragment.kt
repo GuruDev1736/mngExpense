@@ -20,6 +20,10 @@ import com.taskease.collegeapp.Activities.Faculty.Notice.AddNoticeActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.ShowSpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.SpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.Workload.ShowWorkLoadActivity
+import com.taskease.collegeapp.Activities.Hostel.UploadHostelAttendanceActivity
+import com.taskease.collegeapp.Activities.Hostel.UploadMaintainanceActivity
+import com.taskease.collegeapp.Activities.Hostel.UploadMessBillActivity
+import com.taskease.collegeapp.Activities.Hostel.UploadPenaltyActivity
 import com.taskease.collegeapp.Activities.Lib.AddBooksActivity
 import com.taskease.collegeapp.Activities.Lib.ShowBookActivity
 import com.taskease.collegeapp.Activities.Office.ShowBudgetActivity
@@ -134,6 +138,30 @@ class HomeFragment : Fragment() {
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
         }
+        if (role == "ROLE_WARDEN")
+        {
+            getStatusApi("HOSTEL")
+            binding.toggle.visibility = View.VISIBLE
+            binding.toggle.text = "Hostel Admission"
+
+            binding.toggle.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    calToggleApi("HOSTEL")
+                } else {
+                    calToggleApi("HOSTEL")
+                }
+            }
+            val list = ArrayList<DashboardItem>()
+            list.add(DashboardItem(R.drawable.penalty,"Penalty", UploadPenaltyActivity::class.java))
+            list.add(DashboardItem(R.drawable.hostel,"Admissions", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.bill,"Mess Bills", UploadMessBillActivity::class.java))
+            list.add(DashboardItem(R.drawable.maintenance,"Maintenance", UploadMaintainanceActivity::class.java))
+            list.add(DashboardItem(R.drawable.attendance,"Attendance", UploadHostelAttendanceActivity::class.java))
+
+            binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
+            binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
+        }
+
 
 
         fetchBannerImages()

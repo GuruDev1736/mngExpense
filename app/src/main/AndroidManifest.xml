@@ -20,6 +20,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Hostel.UploadHostelAttendanceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Hostel.UploadMaintainanceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Hostel.UploadMessBillActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Hostel.UploadPenaltyActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Co_operative.ShowStocksActivity"
             android:exported="false" />
         <activity

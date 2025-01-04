@@ -105,4 +105,8 @@ interface ApiInterface {
     @POST("stock/add")
     fun addStock(@Header("Authorization") token : String , @Body model : AddStockRequestModel) : Call<AddStockResponseModel>
 
+    @POST("spreadsheet/create/penalty/{userId}")
+    fun createPenalty(@Header("Authorization") token : String , @Path("userId") userId : Int , @Body model : CreateSpreadSheetRequestModel) : Call<SingleSpreadSheetResponseModel>
+
+
 }

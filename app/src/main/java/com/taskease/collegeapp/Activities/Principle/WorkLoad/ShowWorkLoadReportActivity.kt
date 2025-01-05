@@ -58,9 +58,7 @@ class ShowWorkLoadReportActivity : AppCompatActivity() {
         progressDialog.show()
 
         try {
-            val token = SharedPreferencesManager.getString(this, SharedPreferencesManager.TOKEN)
-
-            RetrofitInstance.getInstance().getAllDepartments(token)
+            RetrofitInstance.getInstance().getAllDepartments()
                 .enqueue(object : Callback<GetAllDepartmentResponseModel> {
                     override fun onResponse(
                         p0: Call<GetAllDepartmentResponseModel>,

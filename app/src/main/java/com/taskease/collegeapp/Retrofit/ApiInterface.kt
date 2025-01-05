@@ -5,15 +5,19 @@ import com.taskease.collegeapp.Model.Request.AddBookRequestModel
 import com.taskease.collegeapp.Model.Request.AddStockRequestModel
 import com.taskease.collegeapp.Model.Request.CreateDeadlineRequestModel
 import com.taskease.collegeapp.Model.Request.CreateSpreadSheetRequestModel
+import com.taskease.collegeapp.Model.Request.CreateStudentRequestModel
 import com.taskease.collegeapp.Model.Request.LoginRequestModel
 import com.taskease.collegeapp.Model.Response.AddBookResponseModel
 import com.taskease.collegeapp.Model.Response.AddStockResponseModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
 import com.taskease.collegeapp.Model.Response.CreateDeadlineResponseModel
+import com.taskease.collegeapp.Model.Response.CreateStudentResponseModel
+import com.taskease.collegeapp.Model.Response.GetAllBatchResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBooksResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDepartmentResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllStocksResponseModel
+import com.taskease.collegeapp.Model.Response.GetAllYearResponseModel
 import com.taskease.collegeapp.Model.Response.LoginResponseModel
 import com.taskease.collegeapp.Model.Response.SingleSpreadSheetResponseModel
 import com.taskease.collegeapp.Model.Response.SpreadSheetResponseModel
@@ -52,7 +56,7 @@ interface ApiInterface {
     fun sendNotification(@Header("Authorization") token : String , @Query("title") title : String , @Query("description") description: String) : Call<UniversalResponseModel>
 
     @GET("department/")
-    fun getAllDepartments(@Header("Authorization") token : String) : Call<GetAllDepartmentResponseModel>
+    fun getAllDepartments() : Call<GetAllDepartmentResponseModel>
 
     @GET("spreadsheet/")
     fun getAllSpreadsheetByCategory(@Header("Authorization") token : String , @Query("category") category : String , @Query("department") departmentId : Int) : Call<SpreadSheetResponseModel>
@@ -108,5 +112,12 @@ interface ApiInterface {
     @POST("spreadsheet/create/penalty/{userId}")
     fun createPenalty(@Header("Authorization") token : String , @Path("userId") userId : Int , @Body model : CreateSpreadSheetRequestModel) : Call<SingleSpreadSheetResponseModel>
 
+    @GET("year/")
+    fun getAllYears() : Call<GetAllYearResponseModel>
 
+    @GET("batch/department/{departmentId}")
+    fun getAllBatches(@Path("departmentId") departmentId : Int) : Call<GetAllBatchResponseModel>
+
+    @POST("student/create/{yearId}/{departmentId}/{batchId}")
+    fun addStudent(@Path("yearId") yearId : Int , @Path("departmentId") departmentId : Int , @Path("batchId") batchId : Int , @Body model : CreateStudentRequestModel ) : Call<CreateStudentResponseModel>
 }

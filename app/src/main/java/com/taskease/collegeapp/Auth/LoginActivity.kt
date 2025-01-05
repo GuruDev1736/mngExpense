@@ -42,6 +42,10 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+        binding.btnSignup.setOnClickListener{
+            startActivity(Intent(this,RegisterActivity::class.java))
+        }
+
     }
 
     private fun callLoginApi(email: String, password: String) {

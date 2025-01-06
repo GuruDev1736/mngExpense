@@ -20,6 +20,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.SuperAdmin.ShowUsersActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.SuperAdmin.CreateUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Student.GetAllAttendanceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Student.GetAllAssignmentActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Hostel.UploadHostelAttendanceActivity"
             android:exported="false" />
         <activity

@@ -15,8 +15,13 @@ object SharedPreferencesManager {
     const val DEPARTMENTID = "departmentId"
     const val PROFILEPIC = "profilepic"
     const val USERID = "userid"
-    const val WINGID = "wingid"
-    const val OWNERID = "ownerId"
+    const val YEAR_NAME = "yearName"
+    const val YEAR_ID = "yearId"
+    const val DEPARTMENT_NAME = "departmentName"
+    const val DEPARTMENT_ID = "departmentId"
+    const val BATCH_ID = "batchId"
+    const val BATCH_NAME = "batchName"
+    const val HOSTEL_ALLOWANCE = "hostelAllowance"
     const val ROLE = "role"
 
     private fun getSharedPreferences(context: Context): SharedPreferences {

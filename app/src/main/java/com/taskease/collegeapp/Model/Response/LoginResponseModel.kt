@@ -7,11 +7,17 @@ data class LoginResponseModel(
 )
 
 data class CONTENT(
+    val batchId: Int,
+    val batchName: String,
+    val departmentId: Int,
+    val departmentName: String,
     val fullName: String,
+    val hostelAllowance: Boolean,
     val token: String,
     val userId: Int,
-    val departmentId : Int,
     val userName: String,
     val userProfilePic: String,
-    val userRole: String
+    val userRole: String,
+    val yearId: Int,
+    val yearName: String
 )

@@ -16,7 +16,9 @@ import com.taskease.collegeapp.Model.Response.GetAllBatchResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBooksResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDepartmentResponseModel
+import com.taskease.collegeapp.Model.Response.GetAllRoleResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllStocksResponseModel
+import com.taskease.collegeapp.Model.Response.GetAllUsersResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllYearResponseModel
 import com.taskease.collegeapp.Model.Response.LoginResponseModel
 import com.taskease.collegeapp.Model.Response.SingleSpreadSheetResponseModel
@@ -42,6 +44,9 @@ interface ApiInterface {
 
     @GET("spreadsheet/user")
     fun getAllSpreadSheetByUser(@Header("Authorization") token : String , @Query("category") category : String , @Query("department") departmentId : Int , @Query("userId") userId : Int) : Call<SpreadSheetResponseModel>
+
+    @GET("spreadsheet/")
+    fun getAllSpreadSheetByCategoryAndDepartment(@Header("Authorization") token : String , @Query("category") category : String , @Query("department") departmentId : Int) : Call<SpreadSheetResponseModel>
 
     @POST("spreadsheet/create/{departmentId}/{userId}")
     fun createSpreadSheet(@Header("Authorization") token : String , @Path("departmentId") departmentId : Int , @Path("userId") userId : Int , @Body model : CreateSpreadSheetRequestModel) : Call<SingleSpreadSheetResponseModel>
@@ -120,4 +125,10 @@ interface ApiInterface {
 
     @POST("student/create/{yearId}/{departmentId}/{batchId}")
     fun addStudent(@Path("yearId") yearId : Int , @Path("departmentId") departmentId : Int , @Path("batchId") batchId : Int , @Body model : CreateStudentRequestModel ) : Call<CreateStudentResponseModel>
+
+    @GET("user/role")
+    fun getAllRoles(@Header("Authorization") token : String) : Call<GetAllRoleResponseModel>
+
+    @GET("user/role/{roleName}")
+    fun getAllUsersByRole(@Header("Authorization") token : String , @Path("roleName") roleName : String) : Call<GetAllUsersResponseModel>
 }

@@ -99,6 +99,13 @@ class SpreadSheetAdapter(private val context : Context , private val list : Muta
                 imgMoreOptions.visibility = View.GONE
             }
 
+            val role = SharedPreferencesManager.getString(context,SharedPreferencesManager.ROLE)
+
+            if(role == "ROLE_STUDENT")
+            {
+                imgMoreOptions.visibility = View.GONE
+            }
+
 
             imgMoreOptions.setOnClickListener{view->
                 val popupMenu = PopupMenu(context, view)

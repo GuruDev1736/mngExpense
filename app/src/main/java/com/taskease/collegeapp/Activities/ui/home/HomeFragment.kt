@@ -31,6 +31,9 @@ import com.taskease.collegeapp.Activities.Principle.Attendance.ShowAttendanceRep
 import com.taskease.collegeapp.Activities.Principle.Deadlines.ShowDeadlineActivity
 import com.taskease.collegeapp.Activities.Principle.Notice.AddPrincipleNotice
 import com.taskease.collegeapp.Activities.Principle.WorkLoad.ShowWorkLoadReportActivity
+import com.taskease.collegeapp.Activities.Student.GetAllAssignmentActivity
+import com.taskease.collegeapp.Activities.Student.GetAllAttendanceActivity
+import com.taskease.collegeapp.Activities.SuperAdmin.ShowUsersActivity
 import com.taskease.collegeapp.Adapter.BannerAdapter
 import com.taskease.collegeapp.Adapter.DashboardAdapter
 import com.taskease.collegeapp.Constants.Constant
@@ -161,7 +164,33 @@ class HomeFragment : Fragment() {
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
         }
+        if (role == "ROLE_STUDENT")
+        {
+            val list = ArrayList<DashboardItem>()
+            list.add(DashboardItem(R.drawable.assignment,"Assignment", GetAllAssignmentActivity::class.java))
+            list.add(DashboardItem(R.drawable.attendance,"Attendance", GetAllAttendanceActivity::class.java))
+            list.add(DashboardItem(R.drawable.exam,"Exam Schedule", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.lost,"Lost Report", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.hostel,"Hostel", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.library,"Library", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.cooperative,"Co-Operative", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.bonafide,"Bonafide", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.result,"Result", ShowStocksActivity::class.java))
 
+            binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
+            binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
+        }
+
+        if (role == "ROLE_SUPER_ADMIN")
+        {
+            val list = ArrayList<DashboardItem>()
+            list.add(DashboardItem(R.drawable.teacher,"Create users", ShowUsersActivity::class.java))
+            list.add(DashboardItem(R.drawable.cooperative,"Store", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.exam,"Exam Schedule", ShowStocksActivity::class.java))
+
+            binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
+            binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
+        }
 
 
         fetchBannerImages()

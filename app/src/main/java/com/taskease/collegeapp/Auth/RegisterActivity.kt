@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 import com.taskease.collegeapp.Constants.Constant
 import com.taskease.collegeapp.Constants.CustomProgressDialog
@@ -45,6 +46,7 @@ class RegisterActivity : AppCompatActivity() {
     ) { uri: Uri? ->
         if (uri != null) {
             uploadImage(uri)
+            Glide.with(this@RegisterActivity).load(uri).into(binding.profilePic)
         }
     }
 

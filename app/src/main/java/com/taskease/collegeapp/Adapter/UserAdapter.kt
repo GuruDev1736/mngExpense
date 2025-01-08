@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.taskease.collegeapp.Model.Response.Users
+import com.taskease.collegeapp.R
 import com.taskease.collegeapp.databinding.UserLayoutBinding
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -31,7 +32,7 @@ class UserAdapter(val context : Context , val list : List<Users>) : RecyclerView
             email.text = list[position].email
             phoneNo.text = list[position].phoneNo
             joinDate.text = convertTimestampToDate(list[position].joinDate)
-            Glide.with(context).load(list[position].profile_pic).into(profilePic)
+            Glide.with(context).load(list[position].profile_pic).placeholder(R.drawable.user).into(profilePic)
         }
     }
 

@@ -82,7 +82,7 @@ class ShowUsersActivity : AppCompatActivity() {
                             {
                                 if (data.STS == "200")
                                 {
-                                    val departmentList = data.CONTENT
+                                    val departmentList = data.CONTENT.filter { it.roleName != "ROLE_STUDENT" }
                                     val departmentNames = departmentList.map { it.roleName } // Extract names
 
                                     // Create an ArrayAdapter for the Spinner

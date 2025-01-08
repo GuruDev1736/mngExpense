@@ -6,6 +6,7 @@ import com.taskease.collegeapp.Model.Request.AddStockRequestModel
 import com.taskease.collegeapp.Model.Request.CreateDeadlineRequestModel
 import com.taskease.collegeapp.Model.Request.CreateSpreadSheetRequestModel
 import com.taskease.collegeapp.Model.Request.CreateStudentRequestModel
+import com.taskease.collegeapp.Model.Request.CreateUserRequestModel
 import com.taskease.collegeapp.Model.Request.LoginRequestModel
 import com.taskease.collegeapp.Model.Response.AddBookResponseModel
 import com.taskease.collegeapp.Model.Response.AddStockResponseModel
@@ -24,6 +25,8 @@ import com.taskease.collegeapp.Model.Response.LoginResponseModel
 import com.taskease.collegeapp.Model.Response.SingleSpreadSheetResponseModel
 import com.taskease.collegeapp.Model.Response.SpreadSheetResponseModel
 import com.taskease.collegeapp.Model.Response.UniversalResponseModel
+import com.taskease.collegeapp.Model.Response.UserUniversalResponseModel
+import com.taskease.collegeapp.Model.Response.Users
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -131,4 +134,25 @@ interface ApiInterface {
 
     @GET("user/role/{roleName}")
     fun getAllUsersByRole(@Header("Authorization") token : String , @Path("roleName") roleName : String) : Call<GetAllUsersResponseModel>
+
+    @POST("auth/super/register")
+    fun createSuperAdmin(@Body model : CreateUserRequestModel) : Call<UserUniversalResponseModel>
+
+    @POST("auth/principle/register")
+    fun createPrinciple(@Header("Authorization") token : String , @Body model : CreateUserRequestModel) : Call<UserUniversalResponseModel>
+
+    @POST("auth/faculty/register/{departmentId}")
+    fun createFaculty(@Header("Authorization") token : String , @Body model : CreateUserRequestModel , @Path("departmentId") departmentId : Int) : Call<UserUniversalResponseModel>
+
+    @POST("auth/lib/register")
+    fun createLib(@Header("Authorization") token : String , @Body model : CreateUserRequestModel) : Call<UserUniversalResponseModel>
+    
+    @POST("auth/cooperative/register")
+    fun createCooperative(@Header("Authorization") token : String , @Body model : CreateUserRequestModel) : Call<UserUniversalResponseModel>
+
+    @POST("auth/hostel/register")
+    fun createWarden(@Header("Authorization") token : String , @Body model : CreateUserRequestModel) : Call<UserUniversalResponseModel>
+
+    @POST("auth/office/register")
+    fun createOffice(@Header("Authorization") token : String , @Body model : CreateUserRequestModel) : Call<UserUniversalResponseModel>
 }

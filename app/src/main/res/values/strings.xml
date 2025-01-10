@@ -30,4 +30,10 @@
         <item>EVENT</item>
     </string-array>
 
+    <string-array name="build_category">
+        <item>LIB</item>
+        <item>GODOWN</item>
+        <item>HOSTEL</item>
+    </string-array>
+
 </resources>

@@ -5,6 +5,7 @@ import com.taskease.collegeapp.Model.Request.AddBookRequestModel
 import com.taskease.collegeapp.Model.Request.AddStockRequestModel
 import com.taskease.collegeapp.Model.Request.CreateDeadlineRequestModel
 import com.taskease.collegeapp.Model.Request.CreateSpreadSheetRequestModel
+import com.taskease.collegeapp.Model.Request.CreateStoreRequestModel
 import com.taskease.collegeapp.Model.Request.CreateStudentRequestModel
 import com.taskease.collegeapp.Model.Request.CreateUserRequestModel
 import com.taskease.collegeapp.Model.Request.LoginRequestModel
@@ -12,6 +13,7 @@ import com.taskease.collegeapp.Model.Response.AddBookResponseModel
 import com.taskease.collegeapp.Model.Response.AddStockResponseModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
 import com.taskease.collegeapp.Model.Response.CreateDeadlineResponseModel
+import com.taskease.collegeapp.Model.Response.CreateStoreResponseModel
 import com.taskease.collegeapp.Model.Response.CreateStudentResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBatchResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBooksResponseModel
@@ -19,6 +21,7 @@ import com.taskease.collegeapp.Model.Response.GetAllDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDepartmentResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllRoleResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllStocksResponseModel
+import com.taskease.collegeapp.Model.Response.GetAllStoreResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllUsersResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllYearResponseModel
 import com.taskease.collegeapp.Model.Response.LoginResponseModel
@@ -155,4 +158,16 @@ interface ApiInterface {
 
     @POST("auth/office/register")
     fun createOffice(@Header("Authorization") token : String , @Body model : CreateUserRequestModel) : Call<UserUniversalResponseModel>
+
+    @GET("store/")
+    fun getAllStore(@Header("Authorization") token : String) : Call<GetAllStoreResponseModel>
+
+    @PUT("store/toggle-status")
+    fun updateStoreStatus(@Header("Authorization") token : String , @Query("category") category : String) : Call<UniversalResponseModel>
+
+    @DELETE("store/")
+    fun deleteStore(@Header("Authorization") token : String , @Query("category") category : String) : Call<UniversalResponseModel>
+
+    @POST("store/add")
+    fun createStore(@Header("Authorization") token : String , @Body model : CreateStoreRequestModel) : Call<CreateStoreResponseModel>
 }

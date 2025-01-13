@@ -53,6 +53,7 @@ class BooksAdapter(private val context : Context, private val list : MutableList
     override fun onBindViewHolder(holder: onViewHolder, position: Int) {
         val data = list[position]
         holder.binding.apply {
+            imgExcelFileIcon.setImageResource(R.drawable.book)
             title.text =truncateText(data.title,30)
             description.text = truncateText(data.description , 30)
             layout.setOnClickListener{

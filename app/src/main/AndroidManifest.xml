@@ -20,6 +20,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.SuperAdmin.AddbannerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.SuperAdmin.CreateTimeTableActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.SuperAdmin.ShowTimeTablesActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.SuperAdmin.CreateStoreActivity"
             android:exported="false" />
         <activity

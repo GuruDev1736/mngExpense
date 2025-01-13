@@ -36,4 +36,10 @@
         <item>HOSTEL</item>
     </string-array>
 
+    <string-array name="timeTable_Category">
+        <item>EXAM</item>
+        <item>REGULAR</item>
+    </string-array>
+
+
 </resources>

@@ -1,20 +1,24 @@
 package com.taskease.collegeapp.Retrofit
 
 import android.credentials.CredentialDescription
+import com.taskease.collegeapp.Model.Request.AddBannerRequestModel
 import com.taskease.collegeapp.Model.Request.AddBookRequestModel
 import com.taskease.collegeapp.Model.Request.AddStockRequestModel
 import com.taskease.collegeapp.Model.Request.CreateDeadlineRequestModel
 import com.taskease.collegeapp.Model.Request.CreateSpreadSheetRequestModel
 import com.taskease.collegeapp.Model.Request.CreateStoreRequestModel
 import com.taskease.collegeapp.Model.Request.CreateStudentRequestModel
+import com.taskease.collegeapp.Model.Request.CreateTimeTableRequestModel
 import com.taskease.collegeapp.Model.Request.CreateUserRequestModel
 import com.taskease.collegeapp.Model.Request.LoginRequestModel
+import com.taskease.collegeapp.Model.Response.AddBannerResponseModel
 import com.taskease.collegeapp.Model.Response.AddBookResponseModel
 import com.taskease.collegeapp.Model.Response.AddStockResponseModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
 import com.taskease.collegeapp.Model.Response.CreateDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.CreateStoreResponseModel
 import com.taskease.collegeapp.Model.Response.CreateStudentResponseModel
+import com.taskease.collegeapp.Model.Response.CreateTimeTableResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBatchResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBooksResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDeadlineResponseModel
@@ -27,6 +31,7 @@ import com.taskease.collegeapp.Model.Response.GetAllYearResponseModel
 import com.taskease.collegeapp.Model.Response.LoginResponseModel
 import com.taskease.collegeapp.Model.Response.SingleSpreadSheetResponseModel
 import com.taskease.collegeapp.Model.Response.SpreadSheetResponseModel
+import com.taskease.collegeapp.Model.Response.TimeTableResponseModel
 import com.taskease.collegeapp.Model.Response.UniversalResponseModel
 import com.taskease.collegeapp.Model.Response.UserUniversalResponseModel
 import com.taskease.collegeapp.Model.Response.Users
@@ -170,4 +175,26 @@ interface ApiInterface {
 
     @POST("store/add")
     fun createStore(@Header("Authorization") token : String , @Body model : CreateStoreRequestModel) : Call<CreateStoreResponseModel>
+
+    @GET("timetable/category")
+    fun getAllTimeTableByCategory(@Header("Authorization") token : String , @Query("category") category: String) : Call<TimeTableResponseModel>
+
+    @DELETE("timetable/{id}")
+    fun deleteTimeTable(@Header("Authorization") token : String , @Path("id") id: Int) : Call<UniversalResponseModel>
+
+    @POST("timetable/create")
+    fun createTimeTable(@Header("Authorization") token : String , @Body model : CreateTimeTableRequestModel , @Query("year") yearId: Int , @Query("department") departmentId: Int , @Query("batch") batchId: Int) : Call<CreateTimeTableResponseModel>
+
+    @PUT("timetable/update/{id}")
+    fun updateTimeTable(@Header("Authorization") token : String , @Path("id") id: Int , @Body model : CreateTimeTableRequestModel) : Call<CreateTimeTableResponseModel>
+
+    @POST("banner/create")
+    fun createBanner(@Header("Authorization") token : String , @Body model : AddBannerRequestModel) : Call<AddBannerResponseModel>
+
+    @DELETE("banner/{id}")
+    fun deleteBanner(@Header("Authorization") token : String , @Path("id") bannerId : Int) : Call<UniversalResponseModel>
+
+
+
+
 }

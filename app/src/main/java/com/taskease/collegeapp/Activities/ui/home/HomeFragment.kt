@@ -33,6 +33,8 @@ import com.taskease.collegeapp.Activities.Principle.Notice.AddPrincipleNotice
 import com.taskease.collegeapp.Activities.Principle.WorkLoad.ShowWorkLoadReportActivity
 import com.taskease.collegeapp.Activities.Student.GetAllAssignmentActivity
 import com.taskease.collegeapp.Activities.Student.GetAllAttendanceActivity
+import com.taskease.collegeapp.Activities.SuperAdmin.AddDepartmentActivity
+import com.taskease.collegeapp.Activities.SuperAdmin.AddYearActvitiy
 import com.taskease.collegeapp.Activities.SuperAdmin.AddbannerActivity
 import com.taskease.collegeapp.Activities.SuperAdmin.ShowAllStoreActivity
 import com.taskease.collegeapp.Activities.SuperAdmin.ShowTimeTablesActivity
@@ -191,7 +193,8 @@ class HomeFragment : Fragment() {
             list.add(DashboardItem(R.drawable.cooperative,"Store", ShowAllStoreActivity::class.java))
             list.add(DashboardItem(R.drawable.exam,"Time Tables", ShowTimeTablesActivity::class.java))
             list.add(DashboardItem(R.drawable.banner,"Add banner", AddbannerActivity::class.java))
-            list.add(DashboardItem(R.drawable.year,"Academic Year", AddNoticeActivity::class.java))
+            list.add(DashboardItem(R.drawable.year,"Academic Year", AddYearActvitiy::class.java))
+            list.add(DashboardItem(R.drawable.department,"Departments", AddDepartmentActivity::class.java))
 
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)

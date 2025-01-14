@@ -5,20 +5,24 @@ import com.taskease.collegeapp.Model.Request.AddBannerRequestModel
 import com.taskease.collegeapp.Model.Request.AddBookRequestModel
 import com.taskease.collegeapp.Model.Request.AddStockRequestModel
 import com.taskease.collegeapp.Model.Request.CreateDeadlineRequestModel
+import com.taskease.collegeapp.Model.Request.CreateDepartmentRequestModel
 import com.taskease.collegeapp.Model.Request.CreateSpreadSheetRequestModel
 import com.taskease.collegeapp.Model.Request.CreateStoreRequestModel
 import com.taskease.collegeapp.Model.Request.CreateStudentRequestModel
 import com.taskease.collegeapp.Model.Request.CreateTimeTableRequestModel
 import com.taskease.collegeapp.Model.Request.CreateUserRequestModel
+import com.taskease.collegeapp.Model.Request.CreateYearRequestModel
 import com.taskease.collegeapp.Model.Request.LoginRequestModel
 import com.taskease.collegeapp.Model.Response.AddBannerResponseModel
 import com.taskease.collegeapp.Model.Response.AddBookResponseModel
 import com.taskease.collegeapp.Model.Response.AddStockResponseModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
 import com.taskease.collegeapp.Model.Response.CreateDeadlineResponseModel
+import com.taskease.collegeapp.Model.Response.CreateDepartmentResponseModel
 import com.taskease.collegeapp.Model.Response.CreateStoreResponseModel
 import com.taskease.collegeapp.Model.Response.CreateStudentResponseModel
 import com.taskease.collegeapp.Model.Response.CreateTimeTableResponseModel
+import com.taskease.collegeapp.Model.Response.CreateYearResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBatchResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBooksResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDeadlineResponseModel
@@ -194,7 +198,9 @@ interface ApiInterface {
     @DELETE("banner/{id}")
     fun deleteBanner(@Header("Authorization") token : String , @Path("id") bannerId : Int) : Call<UniversalResponseModel>
 
+    @POST("year/create")
+    fun createYear(@Header("Authorization") token : String , @Body model : CreateYearRequestModel) : Call<CreateYearResponseModel>
 
-
-
+    @POST("department/create")
+    fun createDepartment(@Header("Authorization") token : String , @Body model : CreateDepartmentRequestModel) : Call<CreateDepartmentResponseModel>
 }

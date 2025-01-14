@@ -20,6 +20,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.SuperAdmin.AddDepartmentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.SuperAdmin.AddYearActvitiy"
+            android:exported="false" />
+        <activity
             android:name=".Activities.SuperAdmin.AddbannerActivity"
             android:exported="false" />
         <activity

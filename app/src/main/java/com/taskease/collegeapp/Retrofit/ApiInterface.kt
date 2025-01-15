@@ -218,4 +218,7 @@ interface ApiInterface {
     @DELETE("batch/{batchId}")
     fun deleteBatch(@Header("Authorization") token : String , @Path("batchId") batchId : Int) : Call<UniversalResponseModel>
 
+    @GET("timetable/details")
+    fun getTimeTableByAllDetails(@Header("Authorization") token : String , @Query("year") yearId: Int , @Query("department") departmentId: Int , @Query("batch") batchId: Int , @Query("category") category: String) : Call<TimeTableResponseModel>
+
 }

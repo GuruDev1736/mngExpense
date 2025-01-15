@@ -65,6 +65,15 @@ class TimeTableAdapter(private val context : Context, private val list : Mutable
                     .putExtra("link",data.downloadUrl))
             }
 
+            val role = SharedPreferencesManager.getString(context,SharedPreferencesManager.ROLE)
+            if (role == "ROLE_STUDENT")
+            {
+                imgMoreOptions.visibility = View.GONE
+            }
+            else
+            {
+                imgMoreOptions.visibility = View.VISIBLE
+            }
 
             imgMoreOptions.setOnClickListener{view->
                 val popupMenu = PopupMenu(context, view)

@@ -33,6 +33,7 @@ import com.taskease.collegeapp.Activities.Principle.Notice.AddPrincipleNotice
 import com.taskease.collegeapp.Activities.Principle.WorkLoad.ShowWorkLoadReportActivity
 import com.taskease.collegeapp.Activities.Student.GetAllAssignmentActivity
 import com.taskease.collegeapp.Activities.Student.GetAllAttendanceActivity
+import com.taskease.collegeapp.Activities.Student.GetAllExamScheduleActivity
 import com.taskease.collegeapp.Activities.SuperAdmin.AddDepartmentActivity
 import com.taskease.collegeapp.Activities.SuperAdmin.AddYearActvitiy
 import com.taskease.collegeapp.Activities.SuperAdmin.AddbannerActivity
@@ -174,7 +175,7 @@ class HomeFragment : Fragment() {
             val list = ArrayList<DashboardItem>()
             list.add(DashboardItem(R.drawable.assignment,"Assignment", GetAllAssignmentActivity::class.java))
             list.add(DashboardItem(R.drawable.attendance,"Attendance", GetAllAttendanceActivity::class.java))
-            list.add(DashboardItem(R.drawable.exam,"Exam Schedule", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.exam,"Exam Schedule", GetAllExamScheduleActivity::class.java))
             list.add(DashboardItem(R.drawable.lost,"Lost Report", ShowStocksActivity::class.java))
             list.add(DashboardItem(R.drawable.hostel,"Hostel", ShowStocksActivity::class.java))
             list.add(DashboardItem(R.drawable.library,"Library", ShowStocksActivity::class.java))

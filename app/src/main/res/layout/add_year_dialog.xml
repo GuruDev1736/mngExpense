@@ -32,6 +32,37 @@
             />
     </com.google.android.material.textfield.TextInputLayout>
 
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/descriptionLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:hint="Description"
+        app:boxStrokeColor="@color/primary"
+        app:hintTextColor="@color/primary"
+        app:boxStrokeErrorColor="@color/red"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:endIconMode="clear_text"
+        android:visibility="gone"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="20dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:lines="5"
+            android:inputType="textMultiLine"
+            android:textColorHighlight="@color/primary"
+            android:padding="20dp"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"

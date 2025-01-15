@@ -169,7 +169,7 @@ class AddYearActvitiy : AppCompatActivity() {
                             {
                                 if (data.STS == "200")
                                 {
-                                   binding.recyclerView.adapter = YearAdapter(this@AddYearActvitiy,data.CONTENT)
+                                   binding.recyclerView.adapter = YearAdapter(this@AddYearActvitiy,data.CONTENT.toMutableList())
                                 }
                                 else
                                 {

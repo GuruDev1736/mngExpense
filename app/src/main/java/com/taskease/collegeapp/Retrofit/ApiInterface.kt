@@ -2,6 +2,7 @@ package com.taskease.collegeapp.Retrofit
 
 import android.credentials.CredentialDescription
 import com.taskease.collegeapp.Model.Request.AddBannerRequestModel
+import com.taskease.collegeapp.Model.Request.AddBatchRequestModel
 import com.taskease.collegeapp.Model.Request.AddBookRequestModel
 import com.taskease.collegeapp.Model.Request.AddStockRequestModel
 import com.taskease.collegeapp.Model.Request.CreateDeadlineRequestModel
@@ -14,6 +15,7 @@ import com.taskease.collegeapp.Model.Request.CreateUserRequestModel
 import com.taskease.collegeapp.Model.Request.CreateYearRequestModel
 import com.taskease.collegeapp.Model.Request.LoginRequestModel
 import com.taskease.collegeapp.Model.Response.AddBannerResponseModel
+import com.taskease.collegeapp.Model.Response.AddBatchResponseModel
 import com.taskease.collegeapp.Model.Response.AddBookResponseModel
 import com.taskease.collegeapp.Model.Response.AddStockResponseModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
@@ -203,4 +205,17 @@ interface ApiInterface {
 
     @POST("department/create")
     fun createDepartment(@Header("Authorization") token : String , @Body model : CreateDepartmentRequestModel) : Call<CreateDepartmentResponseModel>
+
+    @DELETE("year/{id}")
+    fun deleteYear(@Header("Authorization") token : String , @Path("id") yearId : Int) : Call<UniversalResponseModel>
+
+    @DELETE("department/{id}")
+    fun deleteDepartment(@Header("Authorization") token : String , @Path("id") departmentId : Int) : Call<UniversalResponseModel>
+
+    @POST("batch/create/{departmentId}")
+    fun createBatch(@Header("Authorization") token : String , @Path("departmentId") departmentId : Int , @Body model : AddBatchRequestModel) : Call<AddBatchResponseModel>
+
+    @DELETE("batch/{batchId}")
+    fun deleteBatch(@Header("Authorization") token : String , @Path("batchId") batchId : Int) : Call<UniversalResponseModel>
+
 }

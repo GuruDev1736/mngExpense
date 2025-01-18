@@ -42,4 +42,9 @@
     </string-array>
 
 
+    <string-array name="status">
+        <item>LOST</item>
+        <item>FOUND</item>
+    </string-array>
+
 </resources>

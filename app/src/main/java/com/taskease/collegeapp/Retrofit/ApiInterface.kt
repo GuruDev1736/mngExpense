@@ -7,6 +7,7 @@ import com.taskease.collegeapp.Model.Request.AddBookRequestModel
 import com.taskease.collegeapp.Model.Request.AddStockRequestModel
 import com.taskease.collegeapp.Model.Request.CreateDeadlineRequestModel
 import com.taskease.collegeapp.Model.Request.CreateDepartmentRequestModel
+import com.taskease.collegeapp.Model.Request.CreateLostReportRequestModel
 import com.taskease.collegeapp.Model.Request.CreateSpreadSheetRequestModel
 import com.taskease.collegeapp.Model.Request.CreateStoreRequestModel
 import com.taskease.collegeapp.Model.Request.CreateStudentRequestModel
@@ -21,6 +22,7 @@ import com.taskease.collegeapp.Model.Response.AddStockResponseModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
 import com.taskease.collegeapp.Model.Response.CreateDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.CreateDepartmentResponseModel
+import com.taskease.collegeapp.Model.Response.CreateLostReportResponseModel
 import com.taskease.collegeapp.Model.Response.CreateStoreResponseModel
 import com.taskease.collegeapp.Model.Response.CreateStudentResponseModel
 import com.taskease.collegeapp.Model.Response.CreateTimeTableResponseModel
@@ -29,6 +31,7 @@ import com.taskease.collegeapp.Model.Response.GetAllBatchResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBooksResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDepartmentResponseModel
+import com.taskease.collegeapp.Model.Response.GetAllReportResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllRoleResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllStocksResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllStoreResponseModel
@@ -221,4 +224,18 @@ interface ApiInterface {
     @GET("timetable/details")
     fun getTimeTableByAllDetails(@Header("Authorization") token : String , @Query("year") yearId: Int , @Query("department") departmentId: Int , @Query("batch") batchId: Int , @Query("category") category: String) : Call<TimeTableResponseModel>
 
+    @GET("report/")
+    fun getAllReport(@Header("Authorization") token : String) : Call<GetAllReportResponseModel>
+
+    @POST("report/create/{studentId}")
+    fun createLostReport(@Header("Authorization") token : String , @Body model : CreateLostReportRequestModel , @Path("studentId") studentId : Int ) : Call<CreateLostReportResponseModel>
+
+    @GET("report/student/{studentId}")
+    fun getAllReportByStudent(@Header("Authorization") token : String , @Path("studentId") studentId : Int) : Call<GetAllReportResponseModel>
+
+    @DELETE("report/{reportId}")
+    fun deleteReport(@Header("Authorization") token : String , @Path("reportId") reportId : Int) : Call<UniversalResponseModel>
+
+    @PUT("report/update/{reportId}")
+    fun updateReport(@Header("Authorization") token : String , @Path("reportId") reportId : Int , @Body model : CreateLostReportRequestModel) : Call<CreateLostReportResponseModel>
 }

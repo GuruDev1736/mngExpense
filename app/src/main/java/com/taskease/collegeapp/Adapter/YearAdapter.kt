@@ -33,6 +33,7 @@ class YearAdapter(val context : Context , val list : MutableList<years>) : Recyc
     }
 
     override fun onBindViewHolder(holder: onViewHolder, position: Int) {
+        Constant.applySlideInAnimation(holder.itemView,position)
         holder.binding.apply {
             title.text = list[position].year
             imgMoreOptions.visibility = View.GONE

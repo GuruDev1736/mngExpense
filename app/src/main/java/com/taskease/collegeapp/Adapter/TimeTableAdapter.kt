@@ -53,6 +53,7 @@ class TimeTableAdapter(private val context : Context, private val list : Mutable
     }
 
     override fun onBindViewHolder(holder: onViewHolder, position: Int) {
+        Constant.applySlideInAnimation(holder.itemView,position)
         val data = list[position]
         holder.binding.apply {
             imgExcelFileIcon.setImageResource(R.drawable.timetable)

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.taskease.collegeapp.Constants.Constant
 import com.taskease.collegeapp.Model.Response.Users
 import com.taskease.collegeapp.R
 import com.taskease.collegeapp.databinding.UserLayoutBinding
@@ -30,6 +31,7 @@ class UserAdapter(val context : Context , val list : List<Users>) : RecyclerView
     }
 
     override fun onBindViewHolder(holder: onViewHolder, position: Int) {
+        Constant.applySlideInAnimation(holder.itemView,position)
         holder.binding.apply {
             name.text = list[position].fullName
             email.text = list[position].email

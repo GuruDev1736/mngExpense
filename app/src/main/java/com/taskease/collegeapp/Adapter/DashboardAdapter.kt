@@ -1,15 +1,21 @@
 package com.taskease.collegeapp.Adapter
 
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.animation.BounceInterpolator
+import android.view.animation.OvershootInterpolator
 import androidx.annotation.OptIn
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
+import com.taskease.collegeapp.Constants.Constant
 import com.taskease.collegeapp.Model.DashboardItem
 import com.taskease.collegeapp.databinding.DashboardItemBinding
 
@@ -35,6 +41,7 @@ class DashboardAdapter(val context: Context,val list: List<DashboardItem>) : Rec
             image.setImageResource(data.image)
             title.text = data.title
             layout.setOnClickListener{
+                Constant.buttonAnimation(layout)
                 context.startActivity(Intent(context, data.activityClass))
             }
         }

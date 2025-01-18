@@ -36,6 +36,7 @@ class BatchAdapter(val context : Context, val list : MutableList<batches>) : Rec
     }
 
     override fun onBindViewHolder(holder: onViewHolder, position: Int) {
+        Constant.applySlideInAnimation(holder.itemView,position)
         holder.binding.apply {
             title.text = list[position].batchName
             imgMoreOptions.visibility = View.GONE

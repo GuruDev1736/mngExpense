@@ -50,6 +50,7 @@ class DeadLineAdapter(private val context : Context, private val list : MutableL
     }
 
     override fun onBindViewHolder(holder: onViewHolder, position: Int) {
+        Constant.applySlideInAnimation(holder.itemView,position)
         val data = list[position]
         holder.binding.apply {
             title.text =truncateText(data.title,30)

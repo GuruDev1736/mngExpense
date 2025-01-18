@@ -33,6 +33,7 @@ class LoginActivity : AppCompatActivity() {
         binding.etPassword.setText(SharedPreferencesManager.getString(this,SharedPreferencesManager.PASSWORD))
 
         binding.btnLogin.setOnClickListener{
+            Constant.buttonAnimation(binding.btnLogin)
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
 
@@ -43,6 +44,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.btnSignup.setOnClickListener{
+            Constant.buttonAnimation(binding.btnSignup)
             startActivity(Intent(this,RegisterActivity::class.java))
         }
 

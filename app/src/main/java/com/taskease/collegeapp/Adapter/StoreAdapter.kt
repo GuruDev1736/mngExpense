@@ -56,6 +56,7 @@ class StoreAdapter(private val context : Context, private val list : MutableList
     }
 
     override fun onBindViewHolder(holder: onViewHolder, position: Int) {
+        Constant.applySlideInAnimation(holder.itemView,position)
         val data = list[position]
         holder.binding.apply {
             title.text = truncateText(data.category, 30)

@@ -1,6 +1,7 @@
 package com.taskease.collegeapp.Retrofit
 
 import android.credentials.CredentialDescription
+import com.taskease.collegeapp.Model.Request.AddAdmissionRequestModel
 import com.taskease.collegeapp.Model.Request.AddBannerRequestModel
 import com.taskease.collegeapp.Model.Request.AddBatchRequestModel
 import com.taskease.collegeapp.Model.Request.AddBookRequestModel
@@ -15,6 +16,7 @@ import com.taskease.collegeapp.Model.Request.CreateTimeTableRequestModel
 import com.taskease.collegeapp.Model.Request.CreateUserRequestModel
 import com.taskease.collegeapp.Model.Request.CreateYearRequestModel
 import com.taskease.collegeapp.Model.Request.LoginRequestModel
+import com.taskease.collegeapp.Model.Response.AddAdmissionResponseModel
 import com.taskease.collegeapp.Model.Response.AddBannerResponseModel
 import com.taskease.collegeapp.Model.Response.AddBatchResponseModel
 import com.taskease.collegeapp.Model.Response.AddBookResponseModel
@@ -238,4 +240,7 @@ interface ApiInterface {
 
     @PUT("report/update/{reportId}")
     fun updateReport(@Header("Authorization") token : String , @Path("reportId") reportId : Int , @Body model : CreateLostReportRequestModel) : Call<CreateLostReportResponseModel>
+
+    @POST("admission/{studentId}")
+    fun addAdmission(@Header("Authorization") token : String , @Path("studentId") studentId : Int , @Body model : AddAdmissionRequestModel) : Call<AddAdmissionResponseModel>
 }

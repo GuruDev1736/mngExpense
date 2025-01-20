@@ -34,6 +34,7 @@ import com.taskease.collegeapp.Activities.Principle.WorkLoad.ShowWorkLoadReportA
 import com.taskease.collegeapp.Activities.Student.GetAllAssignmentActivity
 import com.taskease.collegeapp.Activities.Student.GetAllAttendanceActivity
 import com.taskease.collegeapp.Activities.Student.GetAllExamScheduleActivity
+import com.taskease.collegeapp.Activities.Student.Hostel.ShowHostelMenusActivity
 import com.taskease.collegeapp.Activities.Student.Report.ShowReportActivity
 import com.taskease.collegeapp.Activities.SuperAdmin.AddDepartmentActivity
 import com.taskease.collegeapp.Activities.SuperAdmin.AddYearActvitiy
@@ -178,7 +179,7 @@ class HomeFragment : Fragment() {
             list.add(DashboardItem(R.drawable.attendance,"Attendance", GetAllAttendanceActivity::class.java))
             list.add(DashboardItem(R.drawable.exam,"Exam Schedule", GetAllExamScheduleActivity::class.java))
             list.add(DashboardItem(R.drawable.lost,"Lost Report", ShowReportActivity::class.java))
-            list.add(DashboardItem(R.drawable.hostel,"Hostel", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.hostel,"Hostel", ShowHostelMenusActivity::class.java))
             list.add(DashboardItem(R.drawable.library,"Library", ShowStocksActivity::class.java))
             list.add(DashboardItem(R.drawable.cooperative,"Co-Operative", ShowStocksActivity::class.java))
             list.add(DashboardItem(R.drawable.bonafide,"Bonafide", ShowStocksActivity::class.java))

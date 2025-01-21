@@ -14,6 +14,7 @@ import com.taskease.collegeapp.Activities.Faculty.Notes.ShowNotesActivity
 import com.taskease.collegeapp.Activities.Faculty.Notice.AddNoticeActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.ShowSpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.Workload.ShowWorkLoadActivity
+import com.taskease.collegeapp.Activities.Principle.Attendance.ShowAttendanceReportActivity
 import com.taskease.collegeapp.Adapter.DashboardAdapter
 import com.taskease.collegeapp.Constants.SharedPreferencesManager
 import com.taskease.collegeapp.Model.DashboardItem
@@ -44,9 +45,8 @@ class ShowHostelMenusActivity : AppCompatActivity() {
         val list = ArrayList<DashboardItem>()
         if (hostelAllowance)
         {
-            list.add(DashboardItem(R.drawable.penalty,"Penalty", ShowSpreadSheetActivity::class.java))
-            list.add(DashboardItem(R.drawable.attendance,"Attendance", ShowAssignmentActivity::class.java))
-            list.add(DashboardItem(R.drawable.admission,"Admission", AddNoticeActivity::class.java))
+            list.add(DashboardItem(R.drawable.penalty,"Penalty", ShowPenaltyActivity::class.java))
+            list.add(DashboardItem(R.drawable.attendance,"Attendance", ShowHostelAttendanceActivity::class.java))
         }
         else
         {

@@ -88,7 +88,16 @@ class SpreadSheetAdapter(private val context : Context , private val list : Muta
             {
                 Glide.with(context).load(data.imageLink).placeholder(R.drawable.student).into(imgExcelFileIcon)
             }
-
+            if (code.equals("PENALTY"))
+            {
+                Glide.with(context).load(data.imageLink).placeholder(R.drawable.penalty).into(imgExcelFileIcon)
+                imgMoreOptions.visibility = View.GONE
+            }
+            if (code.equals("HOSTEL_ATTENDANCE"))
+            {
+                Glide.with(context).load(data.imageLink).placeholder(R.drawable.attendance).into(imgExcelFileIcon)
+                imgMoreOptions.visibility = View.GONE
+            }
             if (code.equals("WORKLOAD_P"))
             {
                 Glide.with(context).load(data.imageLink).placeholder(R.drawable.workload).into(imgExcelFileIcon)

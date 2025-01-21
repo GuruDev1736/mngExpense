@@ -20,6 +20,7 @@ import com.taskease.collegeapp.Activities.Faculty.Notice.AddNoticeActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.ShowSpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.SpreadSheet.SpreadSheetActivity
 import com.taskease.collegeapp.Activities.Faculty.Workload.ShowWorkLoadActivity
+import com.taskease.collegeapp.Activities.Hostel.ShowAdmissionActivity
 import com.taskease.collegeapp.Activities.Hostel.UploadHostelAttendanceActivity
 import com.taskease.collegeapp.Activities.Hostel.UploadMaintainanceActivity
 import com.taskease.collegeapp.Activities.Hostel.UploadMessBillActivity
@@ -164,7 +165,7 @@ class HomeFragment : Fragment() {
             }
             val list = ArrayList<DashboardItem>()
             list.add(DashboardItem(R.drawable.penalty,"Penalty", UploadPenaltyActivity::class.java))
-            list.add(DashboardItem(R.drawable.hostel,"Admissions", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.hostel,"Admissions", ShowAdmissionActivity::class.java))
             list.add(DashboardItem(R.drawable.bill,"Mess Bills", UploadMessBillActivity::class.java))
             list.add(DashboardItem(R.drawable.maintenance,"Maintenance", UploadMaintainanceActivity::class.java))
             list.add(DashboardItem(R.drawable.attendance,"Attendance", UploadHostelAttendanceActivity::class.java))

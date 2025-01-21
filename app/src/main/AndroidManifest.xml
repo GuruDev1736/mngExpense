@@ -20,6 +20,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Student.Hostel.ShowHostelAttendanceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Student.Hostel.ShowPenaltyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Hostel.ShowAdmissionActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Student.Hostel.AddAdmissionActivity"
             android:exported="false" />
         <activity

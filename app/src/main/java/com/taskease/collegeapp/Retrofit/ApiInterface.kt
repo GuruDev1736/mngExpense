@@ -40,6 +40,7 @@ import com.taskease.collegeapp.Model.Response.GetAllStoreResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllUsersResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllYearResponseModel
 import com.taskease.collegeapp.Model.Response.LoginResponseModel
+import com.taskease.collegeapp.Model.Response.ShowAllAdmissionResponseModel
 import com.taskease.collegeapp.Model.Response.SingleSpreadSheetResponseModel
 import com.taskease.collegeapp.Model.Response.SpreadSheetResponseModel
 import com.taskease.collegeapp.Model.Response.TimeTableResponseModel
@@ -243,4 +244,14 @@ interface ApiInterface {
 
     @POST("admission/{studentId}")
     fun addAdmission(@Header("Authorization") token : String , @Path("studentId") studentId : Int , @Body model : AddAdmissionRequestModel) : Call<AddAdmissionResponseModel>
+
+    @GET("admission/")
+    fun getAllAdmission(@Header("Authorization") token : String) : Call<ShowAllAdmissionResponseModel>
+
+    @PUT("admission/approve/{id}")
+    fun approveAdmission(@Header("Authorization") token : String , @Path("id") id : Int) : Call<UniversalResponseModel>
+
+    @PUT("admission/reject/{id}")
+    fun rejectAdmission(@Header("Authorization") token : String , @Path("id") id : Int) : Call<UniversalResponseModel>
+
 }

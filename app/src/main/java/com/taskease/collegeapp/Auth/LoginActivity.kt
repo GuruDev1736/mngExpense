@@ -81,6 +81,7 @@ class LoginActivity : AppCompatActivity() {
                                 SharedPreferencesManager.saveBoolean(this@LoginActivity,SharedPreferencesManager.HOSTEL_ALLOWANCE,data.CONTENT.hostelAllowance)
                                 SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.USERNAME,data.CONTENT.userName)
                                 SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.ROLE,data.CONTENT.userRole)
+                                SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.FULLNAME,data.CONTENT.fullName)
                                 SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.PROFILEPIC,data.CONTENT.userProfilePic)
                                 SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.PASSWORD,password)
 

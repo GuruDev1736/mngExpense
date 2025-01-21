@@ -23,6 +23,7 @@ object SharedPreferencesManager {
     const val BATCH_NAME = "batchName"
     const val HOSTEL_ALLOWANCE = "hostelAllowance"
     const val ROLE = "role"
+    const val FULLNAME = "fullname"
 
     private fun getSharedPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)

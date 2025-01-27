@@ -30,6 +30,7 @@ import com.taskease.collegeapp.Model.Response.CreateStudentResponseModel
 import com.taskease.collegeapp.Model.Response.CreateTimeTableResponseModel
 import com.taskease.collegeapp.Model.Response.CreateYearResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBatchResponseModel
+import com.taskease.collegeapp.Model.Response.GetAllBonafideResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllBooksResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.GetAllDepartmentResponseModel
@@ -253,5 +254,8 @@ interface ApiInterface {
 
     @PUT("admission/reject/{id}")
     fun rejectAdmission(@Header("Authorization") token : String , @Path("id") id : Int) : Call<UniversalResponseModel>
+
+    @GET("bonafide/")
+    fun getAllBonafide(@Header("Authorization") token : String) : Call<GetAllBonafideResponseModel>
 
 }

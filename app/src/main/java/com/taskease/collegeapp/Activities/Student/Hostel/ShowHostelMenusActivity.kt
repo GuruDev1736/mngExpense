@@ -41,7 +41,6 @@ class ShowHostelMenusActivity : AppCompatActivity() {
         }
 
         val hostelAllowance = SharedPreferencesManager.getBoolean(this@ShowHostelMenusActivity,SharedPreferencesManager.HOSTEL_ALLOWANCE)
-        binding.recyclerView.layoutManager = LinearLayoutManager(this@ShowHostelMenusActivity)
         val list = ArrayList<DashboardItem>()
         if (hostelAllowance)
         {

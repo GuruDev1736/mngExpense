@@ -59,7 +59,20 @@ class StocksAdapter(private val context : Context, private val list : MutableLis
         holder.binding.apply {
             title.text = truncateText(data.title, 30)
             description.text = truncateText(data.description, 30)
-            price.text = data.price
+            price.text = "₹${data.price}"
+
+            val role = SharedPreferencesManager.getString(context, SharedPreferencesManager.ROLE)
+
+            if (role == "ROLE_STUDENT")
+            {
+                delete.visibility = View.GONE
+                toggle.visibility = View.GONE
+            }
+            else
+            {
+                delete.visibility = View.VISIBLE
+                toggle.visibility = View.VISIBLE
+            }
 
             delete.setOnClickListener {
                 CallDeleteApi(data.id)

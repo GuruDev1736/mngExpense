@@ -45,6 +45,12 @@ class ShowBookActivity : AppCompatActivity() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
+        val role = SharedPreferencesManager.getString(this, SharedPreferencesManager.ROLE)
+        if(role.equals("ROLE_STUDENT"))
+        {
+            binding.addSpreadSheet.visibility = View.GONE
+        }
+
         binding.addSpreadSheet.setOnClickListener{
             startActivity(Intent(this, AddBooksActivity::class.java))
         }

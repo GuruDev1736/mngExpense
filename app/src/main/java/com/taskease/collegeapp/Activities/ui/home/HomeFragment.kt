@@ -1,5 +1,6 @@
 package com.taskease.collegeapp.Activities.ui.home
 
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -27,15 +28,18 @@ import com.taskease.collegeapp.Activities.Hostel.UploadMessBillActivity
 import com.taskease.collegeapp.Activities.Hostel.UploadPenaltyActivity
 import com.taskease.collegeapp.Activities.Lib.AddBooksActivity
 import com.taskease.collegeapp.Activities.Lib.ShowBookActivity
+import com.taskease.collegeapp.Activities.Office.ShowBonafideActivity
 import com.taskease.collegeapp.Activities.Office.ShowBudgetActivity
 import com.taskease.collegeapp.Activities.Principle.Attendance.ShowAttendanceReportActivity
 import com.taskease.collegeapp.Activities.Principle.Deadlines.ShowDeadlineActivity
 import com.taskease.collegeapp.Activities.Principle.Notice.AddPrincipleNotice
 import com.taskease.collegeapp.Activities.Principle.WorkLoad.ShowWorkLoadReportActivity
+import com.taskease.collegeapp.Activities.Student.Coopertative.StockActivity
 import com.taskease.collegeapp.Activities.Student.GetAllAssignmentActivity
 import com.taskease.collegeapp.Activities.Student.GetAllAttendanceActivity
 import com.taskease.collegeapp.Activities.Student.GetAllExamScheduleActivity
 import com.taskease.collegeapp.Activities.Student.Hostel.ShowHostelMenusActivity
+import com.taskease.collegeapp.Activities.Student.Lib.LibraryActivity
 import com.taskease.collegeapp.Activities.Student.Report.ShowReportActivity
 import com.taskease.collegeapp.Activities.SuperAdmin.AddDepartmentActivity
 import com.taskease.collegeapp.Activities.SuperAdmin.AddYearActvitiy
@@ -110,6 +114,7 @@ class HomeFragment : Fragment() {
             val list = ArrayList<DashboardItem>()
             list.add(DashboardItem(R.drawable.budget,"Budgets", ShowBudgetActivity::class.java))
             list.add(DashboardItem(R.drawable.deadline,"DeadLines", ShowDeadlineActivity::class.java))
+            list.add(DashboardItem(R.drawable.bonafide,"Bonafide", ShowBonafideActivity::class.java))
 
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)
@@ -117,14 +122,10 @@ class HomeFragment : Fragment() {
         if (role == "ROLE_LIB")
         {
             getStatusApi("LIB")
-            binding.toggle.visibility = View.VISIBLE
+            binding.layout.visibility = View.VISIBLE
 
-            binding.toggle.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    calToggleApi("LIB")
-                } else {
-                    calToggleApi("LIB")
-                }
+            binding.toggle.setOnClickListener{
+                calToggleApi("LIB")
             }
             val list = ArrayList<DashboardItem>()
             list.add(DashboardItem(R.drawable.book,"Add Books", ShowBookActivity::class.java))
@@ -135,14 +136,10 @@ class HomeFragment : Fragment() {
         if (role == "ROLE_COOPERATIVE")
         {
             getStatusApi("GODOWN")
-            binding.toggle.visibility = View.VISIBLE
+            binding.layout.visibility = View.VISIBLE
 
-            binding.toggle.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    calToggleApi("GODOWN")
-                } else {
-                    calToggleApi("GODOWN")
-                }
+            binding.toggle.setOnClickListener{
+                calToggleApi("GODOWN")
             }
             val list = ArrayList<DashboardItem>()
             list.add(DashboardItem(R.drawable.stock,"Add Stock", ShowStocksActivity::class.java))
@@ -153,15 +150,11 @@ class HomeFragment : Fragment() {
         if (role == "ROLE_WARDEN")
         {
             getStatusApi("HOSTEL")
-            binding.toggle.visibility = View.VISIBLE
+            binding.layout.visibility = View.VISIBLE
             binding.toggle.text = "Hostel Admission"
 
-            binding.toggle.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    calToggleApi("HOSTEL")
-                } else {
-                    calToggleApi("HOSTEL")
-                }
+            binding.toggle.setOnClickListener{
+                calToggleApi("HOSTEL")
             }
             val list = ArrayList<DashboardItem>()
             list.add(DashboardItem(R.drawable.penalty,"Penalty", UploadPenaltyActivity::class.java))
@@ -181,8 +174,8 @@ class HomeFragment : Fragment() {
             list.add(DashboardItem(R.drawable.exam,"Exam Schedule", GetAllExamScheduleActivity::class.java))
             list.add(DashboardItem(R.drawable.lost,"Lost Report", ShowReportActivity::class.java))
             list.add(DashboardItem(R.drawable.hostel,"Hostel", ShowHostelMenusActivity::class.java))
-            list.add(DashboardItem(R.drawable.library,"Library", ShowStocksActivity::class.java))
-            list.add(DashboardItem(R.drawable.cooperative,"Co-Operative", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.library,"Library", LibraryActivity::class.java))
+            list.add(DashboardItem(R.drawable.cooperative,"Co-Operative", StockActivity::class.java))
             list.add(DashboardItem(R.drawable.bonafide,"Bonafide", ShowStocksActivity::class.java))
             list.add(DashboardItem(R.drawable.result,"Result", ShowStocksActivity::class.java))
 
@@ -225,6 +218,7 @@ class HomeFragment : Fragment() {
                         val data = p1.body()
                         if (data != null && data.STS == "200") {
                            Constant.toast(requireContext(),data.CONTENT)
+                            getStatusApi(category)
                         } else {
                             Constant.toast(requireContext(), data?.MSG ?: "Error")
                         }
@@ -263,14 +257,7 @@ class HomeFragment : Fragment() {
                         progressDialog.dismiss()
                         val data = p1.body()
                         if (data != null && data.STS == "200") {
-                            if (data.CONTENT.toBoolean())
-                            {
-                                binding.toggle.isChecked = true
-                            }
-                            else
-                            {
-                                binding.toggle.isChecked = false
-                            }
+                            statusCheck(category,data)
                         } else {
                             Constant.toast(requireContext(), data?.MSG ?: "Error")
                         }
@@ -290,6 +277,51 @@ class HomeFragment : Fragment() {
             Constant.toast(requireContext(),"Something went wrong")
             e.printStackTrace()
             progressDialog.dismiss()
+        }
+    }
+
+    private fun statusCheck(category: String, data: UniversalResponseModel) {
+
+        if (category.equals("LIB"))
+        {
+            if (data.CONTENT.toBoolean())
+            {
+                binding.status.text = "Library is Open"
+                binding.status.setTextColor(Color.GREEN)
+            }
+            else
+            {
+                binding.status.text = "Library is Close"
+                binding.status.setTextColor(Color.RED)
+            }
+        }
+
+        if (category.equals("GODOWN"))
+        {
+            if (data.CONTENT.toBoolean())
+            {
+                binding.status.text = "Godown is Open"
+                binding.status.setTextColor(Color.GREEN)
+            }
+            else
+            {
+                binding.status.text = "Godown is Close"
+                binding.status.setTextColor(Color.RED)
+            }
+        }
+
+        if (category.equals("HOSTEL"))
+        {
+            if (data.CONTENT.toBoolean())
+            {
+                binding.status.text = "Hostel is Open"
+                binding.status.setTextColor(Color.GREEN)
+            }
+            else
+            {
+                binding.status.text = "Hostel is Close"
+                binding.status.setTextColor(Color.RED)
+            }
         }
     }
 

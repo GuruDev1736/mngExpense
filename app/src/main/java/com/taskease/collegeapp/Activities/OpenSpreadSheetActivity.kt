@@ -1,17 +1,19 @@
 package com.taskease.collegeapp.Activities
 
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.content.FileProvider
+import androidx.core.view.WindowCompat
 import com.taskease.collegeapp.R
 import com.taskease.collegeapp.databinding.ActivityOpenSpreadSheetBinding
-import com.taskease.collegeapp.databinding.ActivityShowBudgetBinding
+import java.io.File
+import java.net.URLConnection
 
 class OpenSpreadSheetActivity : AppCompatActivity() {
 
@@ -19,37 +21,41 @@ class OpenSpreadSheetActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         binding = ActivityOpenSpreadSheetBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
+        // Set up action bar
         binding.actionBar.title.text = "Details"
         binding.actionBar.back.setOnClickListener {
             finish()
         }
 
-        val title = intent.getStringExtra("title")
-        val description = intent.getStringExtra("description")
+        // Extract intent data
+        val title = intent.getStringExtra("title") ?: "Spreadsheet"
+        val description = intent.getStringExtra("description") ?: "No description"
         val link = intent.getStringExtra("link")
 
+        // Set UI elements
         binding.titleName.text = title
         binding.description.text = description
-        binding.openFile.setOnClickListener{
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-                if (intent.resolveActivity(packageManager) != null) {
-                    startActivity(intent)
-                } else {
-                    Toast.makeText(this@OpenSpreadSheetActivity, "No app found to open the link", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: ActivityNotFoundException) {
-                Toast.makeText(this@OpenSpreadSheetActivity, "Error opening the link", Toast.LENGTH_SHORT).show()
-                e.printStackTrace()
-            }
+
+        // Open file handling
+        binding.openFile.setOnClickListener {
+            link?.let { openLinkInChrome(this@OpenSpreadSheetActivity,it) }
+        }
+    }
+
+    fun openLinkInChrome(context: Context, url: String) {
+        val webpage: Uri = Uri.parse(url)
+        val intent = Intent(Intent.ACTION_VIEW, webpage)
+        intent.setPackage("com.android.chrome")
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+        } else {
+            val fallbackIntent = Intent(Intent.ACTION_VIEW, webpage)
+            context.startActivity(fallbackIntent)
         }
     }
 }

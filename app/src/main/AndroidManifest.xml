@@ -20,6 +20,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Office.ShowBonafideActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Student.Coopertative.StockActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Student.Lib.ShowBooksActivtiy"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Student.Lib.LibraryActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Student.Hostel.ShowHostelAttendanceActivity"
             android:exported="false" />
         <activity

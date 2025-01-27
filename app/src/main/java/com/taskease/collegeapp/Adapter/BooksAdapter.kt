@@ -58,12 +58,17 @@ class BooksAdapter(private val context : Context, private val list : MutableList
             title.text =truncateText(data.title,30)
             description.text = truncateText(data.description , 30)
             layout.setOnClickListener{
-//               context.startActivity(Intent(context,OpenSpreadSheetActivity::class.java)
-//                   .putExtra("title",data.title)
-//                   .putExtra("description",data.description)
-//                   .putExtra("link",data.bookLink))
+               context.startActivity(Intent(context,OpenSpreadSheetActivity::class.java)
+                   .putExtra("title",data.title)
+                   .putExtra("description",data.description)
+                   .putExtra("link",data.bookLink))
             }
 
+            val role = SharedPreferencesManager.getString(context, SharedPreferencesManager.ROLE)
+            if(role == "ROLE_STUDENT")
+            {
+                imgMoreOptions.visibility = View.GONE
+            }
 
             imgMoreOptions.setOnClickListener{view->
                 val popupMenu = PopupMenu(context, view)

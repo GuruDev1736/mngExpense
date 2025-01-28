@@ -6,6 +6,7 @@ import com.taskease.collegeapp.Model.Request.AddBannerRequestModel
 import com.taskease.collegeapp.Model.Request.AddBatchRequestModel
 import com.taskease.collegeapp.Model.Request.AddBookRequestModel
 import com.taskease.collegeapp.Model.Request.AddStockRequestModel
+import com.taskease.collegeapp.Model.Request.CreateBonafideRequestModel
 import com.taskease.collegeapp.Model.Request.CreateDeadlineRequestModel
 import com.taskease.collegeapp.Model.Request.CreateDepartmentRequestModel
 import com.taskease.collegeapp.Model.Request.CreateLostReportRequestModel
@@ -22,6 +23,7 @@ import com.taskease.collegeapp.Model.Response.AddBatchResponseModel
 import com.taskease.collegeapp.Model.Response.AddBookResponseModel
 import com.taskease.collegeapp.Model.Response.AddStockResponseModel
 import com.taskease.collegeapp.Model.Response.BannerResponseModel
+import com.taskease.collegeapp.Model.Response.CreateBonafideResponseModel
 import com.taskease.collegeapp.Model.Response.CreateDeadlineResponseModel
 import com.taskease.collegeapp.Model.Response.CreateDepartmentResponseModel
 import com.taskease.collegeapp.Model.Response.CreateLostReportResponseModel
@@ -257,5 +259,14 @@ interface ApiInterface {
 
     @GET("bonafide/")
     fun getAllBonafide(@Header("Authorization") token : String) : Call<GetAllBonafideResponseModel>
+
+    @DELETE("bonafide/{id}")
+    fun deleteBonafide(@Header("Authorization") token : String , @Path("id") id : Int) : Call<UniversalResponseModel>
+
+    @GET("bonafide/student/{studentId}")
+    fun getBonafideByStudent(@Header("Authorization") token : String , @Path("studentId") studentId : Int) : Call<GetAllBonafideResponseModel>
+
+    @POST("bonafide/create/{studentId}")
+    fun createBonafide(@Header("Authorization") token : String , @Path("studentId") studentId : Int , @Body model : CreateBonafideRequestModel) : Call<CreateBonafideResponseModel>
 
 }

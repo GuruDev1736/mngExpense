@@ -176,7 +176,7 @@ class HomeFragment : Fragment() {
             list.add(DashboardItem(R.drawable.hostel,"Hostel", ShowHostelMenusActivity::class.java))
             list.add(DashboardItem(R.drawable.library,"Library", LibraryActivity::class.java))
             list.add(DashboardItem(R.drawable.cooperative,"Co-Operative", StockActivity::class.java))
-            list.add(DashboardItem(R.drawable.bonafide,"Bonafide", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.bonafide,"Bonafide", ShowBonafideActivity::class.java))
             list.add(DashboardItem(R.drawable.result,"Result", ShowStocksActivity::class.java))
 
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)

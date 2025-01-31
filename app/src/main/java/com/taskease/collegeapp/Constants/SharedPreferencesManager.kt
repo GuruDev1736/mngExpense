@@ -24,6 +24,7 @@ object SharedPreferencesManager {
     const val HOSTEL_ALLOWANCE = "hostelAllowance"
     const val ROLE = "role"
     const val FULLNAME = "fullname"
+    const val ENROLLMENT = "enrollment"
 
     private fun getSharedPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)

@@ -19,5 +19,6 @@ data class CONTENT(
     val userProfilePic: String,
     val userRole: String,
     val yearId: Int,
-    val yearName: String
+    val yearName: String,
+    val enrollement : String
 )

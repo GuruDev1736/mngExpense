@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -19,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.Glide
+import com.taskease.collegeapp.Activities.SuperAdmin.ShowTimeTablesActivity
 import com.taskease.collegeapp.Auth.LoginActivity
 import com.taskease.collegeapp.Constants.SharedPreferencesManager
 import com.taskease.collegeapp.R
@@ -53,10 +56,30 @@ class HomeActivity : AppCompatActivity() {
         val navUserImage = headerView.findViewById<CircleImageView>(R.id.profilePic)
         val navUsername = headerView.findViewById<TextView>(R.id.name)
         val navUserEmail = headerView.findViewById<TextView>(R.id.email)
+        val navEnrollment = headerView.findViewById<TextView>(R.id.enrollment)
+        val navBranch = headerView.findViewById<TextView>(R.id.branch)
+        val navBatch = headerView.findViewById<TextView>(R.id.batch)
+        val navTimeTable = headerView.findViewById<TextView>(R.id.timeTable)
+        val navEdit = headerView.findViewById<TextView>(R.id.edit)
+        val studentInfo = headerView.findViewById<LinearLayout>(R.id.student_info)
+        val role = SharedPreferencesManager.getString(this@HomeActivity,SharedPreferencesManager.ROLE)
+
 
         Glide.with(this@HomeActivity).load(SharedPreferencesManager.getString(this@HomeActivity,SharedPreferencesManager.PROFILEPIC)).placeholder(R.drawable.user).into(navUserImage)
         navUsername.text = SharedPreferencesManager.getString(this@HomeActivity,SharedPreferencesManager.FULLNAME)
         navUserEmail.text = SharedPreferencesManager.getString(this@HomeActivity,SharedPreferencesManager.USERNAME)
+
+        if (role == "ROLE_STUDENT")
+        {
+            studentInfo.visibility = View.VISIBLE
+            navEnrollment.text = SharedPreferencesManager.getString(this@HomeActivity,SharedPreferencesManager.ENROLLMENT)
+            navBranch.text = SharedPreferencesManager.getString(this@HomeActivity,SharedPreferencesManager.DEPARTMENT_NAME)
+            navBatch.text = SharedPreferencesManager.getString(this@HomeActivity,SharedPreferencesManager.BATCH_NAME)
+            navTimeTable.setOnClickListener{
+                    startActivity(Intent(this@HomeActivity,ShowTimeTablesActivity::class.java))
+            }
+        }
+
 
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {

@@ -22,6 +22,7 @@
     <string name="features">Features</string>
     <string name="log_out">Log Out</string>
     <string name="privacypolicy">Privacy Policy</string>
+    <string name="timetable"><u>TimeTable</u></string>
 
 
     <string-array name="category">

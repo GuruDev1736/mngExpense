@@ -50,6 +50,15 @@ class BonafideAdapter(val context : Context, val list : MutableList<Bonafide>) :
             imgExcelFileIcon.setImageResource(R.drawable.bonafide)
             title.text = data.title
             description.text = data.description
+
+            val role = SharedPreferencesManager.getString(context,SharedPreferencesManager.ROLE)
+
+            if (role == "ROLE_STUDENT")
+            {
+                user.visibility =  View.GONE
+                delete.visibility = View.GONE
+            }
+
             user.setOnClickListener{
                 showCustomDialog(data)
             }

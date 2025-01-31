@@ -48,6 +48,10 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this,RegisterActivity::class.java))
         }
 
+        binding.tvForgotPassword.setOnClickListener{
+            startActivity(Intent(this@LoginActivity,SendOTPActivity::class.java))
+        }
+
     }
 
     private fun callLoginApi(email: String, password: String) {
@@ -83,6 +87,7 @@ class LoginActivity : AppCompatActivity() {
                                 SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.ROLE,data.CONTENT.userRole)
                                 SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.FULLNAME,data.CONTENT.fullName)
                                 SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.PROFILEPIC,data.CONTENT.userProfilePic)
+                                SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.ENROLLMENT,data.CONTENT.enrollement)
                                 SharedPreferencesManager.saveString(this@LoginActivity,SharedPreferencesManager.PASSWORD,password)
 
                                 Constant.toast(this@LoginActivity,data.MSG)

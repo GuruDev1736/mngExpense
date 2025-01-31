@@ -269,4 +269,13 @@ interface ApiInterface {
     @POST("bonafide/create/{studentId}")
     fun createBonafide(@Header("Authorization") token : String , @Path("studentId") studentId : Int , @Body model : CreateBonafideRequestModel) : Call<CreateBonafideResponseModel>
 
+    @POST("auth/send-otp")
+    fun sendOTP(@Query("email") email : String) : Call<UniversalResponseModel>
+
+    @POST("auth/validate-otp")
+    fun validateOTP(@Query("email") email : String , @Query("otp") otp : String) : Call<UniversalResponseModel>
+
+    @PUT("auth/changePassword")
+    fun changePassword(@Query("email") email : String , @Query("password") password : String) : Call<UniversalResponseModel>
+
 }

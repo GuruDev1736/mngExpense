@@ -41,6 +41,7 @@ import com.taskease.collegeapp.Activities.Student.GetAllExamScheduleActivity
 import com.taskease.collegeapp.Activities.Student.Hostel.ShowHostelMenusActivity
 import com.taskease.collegeapp.Activities.Student.Lib.LibraryActivity
 import com.taskease.collegeapp.Activities.Student.Report.ShowReportActivity
+import com.taskease.collegeapp.Activities.Student.Result.ResultActivity
 import com.taskease.collegeapp.Activities.SuperAdmin.AddDepartmentActivity
 import com.taskease.collegeapp.Activities.SuperAdmin.AddYearActvitiy
 import com.taskease.collegeapp.Activities.SuperAdmin.AddbannerActivity
@@ -177,7 +178,7 @@ class HomeFragment : Fragment() {
             list.add(DashboardItem(R.drawable.library,"Library", LibraryActivity::class.java))
             list.add(DashboardItem(R.drawable.cooperative,"Co-Operative", StockActivity::class.java))
             list.add(DashboardItem(R.drawable.bonafide,"Bonafide", ShowBonafideActivity::class.java))
-            list.add(DashboardItem(R.drawable.result,"Result", ShowStocksActivity::class.java))
+            list.add(DashboardItem(R.drawable.result,"Result", ResultActivity::class.java))
 
             binding.recyclerView.layoutManager = GridLayoutManager(context,2, VERTICAL,false)
             binding.recyclerView.adapter = DashboardAdapter(requireContext(),list)

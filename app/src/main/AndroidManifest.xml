@@ -20,6 +20,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Auth.changePasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Auth.ValidateOTPActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Auth.SendOTPActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Student.Result.ResultActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Office.ShowBonafideActivity"
             android:exported="false" />
         <activity

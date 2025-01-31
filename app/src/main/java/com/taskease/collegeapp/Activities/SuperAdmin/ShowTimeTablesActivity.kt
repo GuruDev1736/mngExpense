@@ -2,6 +2,7 @@ package com.taskease.collegeapp.Activities.SuperAdmin
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -9,6 +10,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.taskease.collegeapp.Activities.Faculty.Attendance.AddAttendanceActivity
 import com.taskease.collegeapp.Activities.SuperAdmin.TimeTables.TimeTableViewPagerAdapter
+import com.taskease.collegeapp.Constants.SharedPreferencesManager
 import com.taskease.collegeapp.R
 import com.taskease.collegeapp.databinding.ActivityShowTimeTablesBinding
 
@@ -29,6 +31,13 @@ class ShowTimeTablesActivity : AppCompatActivity() {
             finish()
         }
         binding.actionBar.title.text = "Time Tables"
+
+        val role = SharedPreferencesManager.getString(this@ShowTimeTablesActivity,SharedPreferencesManager.ROLE)
+        if (role =="ROLE_STUDENT")
+        {
+            binding.createTimeTable.visibility = View.GONE
+        }
+
         binding.createTimeTable.setOnClickListener{
             startActivity(Intent(this, CreateTimeTableActivity::class.java))
         }

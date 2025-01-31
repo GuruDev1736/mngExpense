@@ -77,4 +77,5 @@ dependencies {
     implementation ("com.google.firebase:firebase-messaging-ktx")
     implementation ("com.guolindev.permissionx:permissionx:1.8.1")
     implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation ("com.github.aabhasr1:OtpView:v1.1.2-ktx")
 }

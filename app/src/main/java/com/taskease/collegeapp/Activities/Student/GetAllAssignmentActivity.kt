@@ -40,10 +40,6 @@ class GetAllAssignmentActivity : AppCompatActivity() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
-
-
-
-
     }
 
     override fun onStart() {

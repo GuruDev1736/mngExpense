@@ -100,7 +100,10 @@ class RegisterActivity : AppCompatActivity() {
             {
                 callCreateStudentApi(fullName,email,password,phoneNo,enrollment,departmentId,yearId,batchId,ImageUrl)
             }
+        }
 
+        binding.btnLogin.setOnClickListener{
+            finish()
         }
 
 

@@ -40,7 +40,7 @@ class ShowAttendanceReportActivity : AppCompatActivity() {
         binding.actionBar.back.setOnClickListener{
             finish()
         }
-        binding.actionBar.title.text = "WorkLoad Reports"
+        binding.actionBar.title.text = "Attendance Report"
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 

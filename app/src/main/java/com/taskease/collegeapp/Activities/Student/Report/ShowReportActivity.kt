@@ -8,8 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Spinner
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -112,21 +114,29 @@ class ShowReportActivity : AppCompatActivity() {
         val close = dialogView.findViewById<Button>(R.id.close)
         val upload = dialogView.findViewById<Button>(R.id.upload)
         link = dialogView.findViewById(R.id.link_input)
+        val status = dialogView.findViewById<Spinner>(R.id.status)
 
 
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
+        status.visibility = View.VISIBLE
         upload.setOnClickListener{
             filePickerLauncher.launch("image/*")
         }
 
+        val adapter = ArrayAdapter.createFromResource(this@ShowReportActivity,R.array.status,android.R.layout.simple_spinner_item)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        status.adapter = adapter
+
         submit.setOnClickListener {
             val title = title.text.toString()
             val descrip = description.text.toString()
+            val status = status.selectedItem.toString()
+
             if (title.isEmpty() || descrip.isEmpty() || fileUrl == null) {
                 Constant.toast(this, "Please Enter All the details")
             } else {
-                CallAddReportApi(title , descrip , fileUrl , dialog)
+                CallAddReportApi(title , descrip , fileUrl , dialog , status)
             }
         }
 
@@ -137,7 +147,7 @@ class ShowReportActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun CallAddReportApi(title: String, descrip: String, fileUrl: String?, dialog: Dialog) {
+    private fun CallAddReportApi(title: String, descrip: String, fileUrl: String?, dialog: Dialog , status : String) {
 
         val progressDialog = CustomProgressDialog(this)
         progressDialog.show()
@@ -145,7 +155,7 @@ class ShowReportActivity : AppCompatActivity() {
         try {
             val token = SharedPreferencesManager.getString(this, SharedPreferencesManager.TOKEN)
             val userId = SharedPreferencesManager.getInt(this,SharedPreferencesManager.USERID)
-            val model = CreateLostReportRequestModel(descrip,fileUrl.toString(),"LOST",title)
+            val model = CreateLostReportRequestModel(descrip,fileUrl.toString(),status,title)
             RetrofitInstance.getInstance().createLostReport(token,model,userId)
                 .enqueue(object : Callback<CreateLostReportResponseModel> {
                     override fun onResponse(

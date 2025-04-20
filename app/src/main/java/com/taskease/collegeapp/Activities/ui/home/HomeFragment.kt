@@ -38,6 +38,7 @@ import com.taskease.collegeapp.Activities.Student.Coopertative.StockActivity
 import com.taskease.collegeapp.Activities.Student.GetAllAssignmentActivity
 import com.taskease.collegeapp.Activities.Student.GetAllAttendanceActivity
 import com.taskease.collegeapp.Activities.Student.GetAllExamScheduleActivity
+import com.taskease.collegeapp.Activities.Student.GetAllNotesActivity
 import com.taskease.collegeapp.Activities.Student.Hostel.ShowHostelMenusActivity
 import com.taskease.collegeapp.Activities.Student.Lib.LibraryActivity
 import com.taskease.collegeapp.Activities.Student.Report.ShowReportActivity
@@ -171,6 +172,8 @@ class HomeFragment : Fragment() {
         {
             val list = ArrayList<DashboardItem>()
             list.add(DashboardItem(R.drawable.assignment,"Assignment", GetAllAssignmentActivity::class.java))
+            list.add(DashboardItem(R.drawable.note,"Notes", GetAllNotesActivity::class.java))
+            list.add(DashboardItem(R.drawable.excel,"SpreedSheet", ShowSpreadSheetActivity::class.java))
             list.add(DashboardItem(R.drawable.attendance,"Attendance", GetAllAttendanceActivity::class.java))
             list.add(DashboardItem(R.drawable.exam,"Exam Schedule", GetAllExamScheduleActivity::class.java))
             list.add(DashboardItem(R.drawable.lost,"Lost Report", ShowReportActivity::class.java))

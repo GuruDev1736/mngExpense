@@ -1,4 +1,4 @@
-package com.convodoc.app.Activities.Intro
+package com.convodoc.app.presentation.Intro
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.convodoc.app.ui.theme.ConvodocTheme
+import com.convodoc.app.presentation.ui.theme.ConvodocTheme
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 

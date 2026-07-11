@@ -1,4 +1,4 @@
-package com.convodoc.app.ui.theme
+package com.convodoc.app.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

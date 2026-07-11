@@ -4,7 +4,7 @@ import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.convodoc.app.core.image.ImageCompressionManager
+import com.convodoc.app.core.imageCompression.ImageCompressionManager
 import com.convodoc.app.presentation.imagecompressor.model.CompressImageRequest
 import com.convodoc.app.presentation.imagecompressor.model.CompressionQuality
 import com.convodoc.app.presentation.imagecompressor.model.CompressionUiState
@@ -45,13 +45,19 @@ class ImageCompressorViewModel(
                 customQuality = _state.value.customQuality
             )
 
-
             _state.update {
 
                 it.copy(
                     imageUri = uri,
                     fileInfo = info,
-                    estimatedResult = estimated
+                    estimatedResult = estimated,
+
+                    // Clear previous compression
+                    compressionResult = null,
+
+                    error = null,
+
+                    isCompressing = false
                 )
 
             }
@@ -91,6 +97,7 @@ class ImageCompressorViewModel(
 
     fun compressImage() {
 
+        if (_state.value.isCompressing) return
         val uri = state.value.imageUri ?: return
         val quality = when (state.value.selectedQuality) {
 
@@ -135,7 +142,8 @@ class ImageCompressorViewModel(
 
                     it.copy(
                         isCompressing = false,
-                        compressionResult = result
+                        compressionResult = result,
+                        error = null
                     )
 
                 }
@@ -146,6 +154,7 @@ class ImageCompressorViewModel(
 
                     it.copy(
                         isCompressing = false,
+                        compressionResult = null,
                         error = e.message
                             ?: "Something went wrong while compressing the image."
                     )
@@ -161,9 +170,19 @@ class ImageCompressorViewModel(
 
     fun reset() {
 
+//        compressionManager.clearTempFiles()
+
+        _state.value = CompressionUiState()
+
+    }
+
+    fun clearCompressionResult() {
+
         _state.update {
 
-            CompressionUiState()
+            it.copy(
+                compressionResult = null
+            )
 
         }
 

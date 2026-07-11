@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.convodoc.app.navigation.AppNavHost
-import com.convodoc.app.ui.theme.ConvodocTheme
+import com.convodoc.app.presentation.ui.theme.ConvodocTheme
 
 class MainActivity : ComponentActivity() {
 

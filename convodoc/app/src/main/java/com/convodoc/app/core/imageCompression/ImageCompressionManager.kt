@@ -1,8 +1,7 @@
-package com.convodoc.app.core.image
+package com.convodoc.app.core.imageCompression
 
 import android.content.ContentValues
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build

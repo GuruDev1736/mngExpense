@@ -1,4 +1,4 @@
-package com.convodoc.app.Activities.Intro
+package com.convodoc.app.presentation.Intro
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,13 +45,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.convodoc.app.Model.ToolItem
-import com.convodoc.app.ui.theme.Base64Color
-import com.convodoc.app.ui.theme.CompressColor
-import com.convodoc.app.ui.theme.ConvertColor
-import com.convodoc.app.ui.theme.ConvodocTheme
-import com.convodoc.app.ui.theme.FileColor
-import com.convodoc.app.ui.theme.PdfColor
-import com.convodoc.app.ui.theme.QRColor
+import com.convodoc.app.presentation.ui.theme.Base64Color
+import com.convodoc.app.presentation.ui.theme.CompressColor
+import com.convodoc.app.presentation.ui.theme.ConvertColor
+import com.convodoc.app.presentation.ui.theme.ConvodocTheme
+import com.convodoc.app.presentation.ui.theme.FileColor
+import com.convodoc.app.presentation.ui.theme.PdfColor
+import com.convodoc.app.presentation.ui.theme.QRColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

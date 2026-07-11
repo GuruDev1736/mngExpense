@@ -1,4 +1,4 @@
-package com.geniuskods.cosapp.Activities.ViewModels
+package com.geniuskods.cosapp.ViewModels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.geniuskods.cosapp.Activities.ViewModels.LoginViewModel
+import com.geniuskods.cosapp.ViewModels.LoginViewModel
 import com.geniuskods.cosapp.Components.AppTopBar
 import com.geniuskods.cosapp.Components.CustomButton
 import com.geniuskods.cosapp.Components.CustomTextField

@@ -7,6 +7,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.convodoc.app.presentation.Intro.HomeScreen
 import com.convodoc.app.presentation.Intro.SplashScreen
+import com.convodoc.app.presentation.history.HistoryScreen
+import com.convodoc.app.presentation.history.HistoryViewModel
 import com.convodoc.app.presentation.imagecompressor.ImageCompressorRoute
 import com.convodoc.app.presentation.imagecompressor.ImageCompressorViewModel
 
@@ -16,6 +18,7 @@ fun AppNavHost() {
     val navController = rememberNavController()
 
     val imageCompressorViewModel: ImageCompressorViewModel = viewModel()
+    val historyViewModel: HistoryViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -59,7 +62,15 @@ fun AppNavHost() {
 
                     }
 
-                }
+                },
+                
+                onViewAllHistoryClick = {
+                    navController.navigate(AppDestination.History.route) {
+                        launchSingleTop = true
+                    }
+                },
+                
+                historyViewModel = historyViewModel
 
             )
 
@@ -82,6 +93,21 @@ fun AppNavHost() {
 
             )
 
+        }
+        
+        // History Screen
+        composable(AppDestination.History.route) {
+            
+            HistoryScreen(
+                
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                
+                viewModel = historyViewModel
+                
+            )
+            
         }
 
     }

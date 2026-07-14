@@ -14,15 +14,34 @@ object CompressionEstimator {
         customQuality: Float
     ): EstimatedResult {
 
-        val qualityPercent = when (quality) {
-            CompressionQuality.LOW -> 40
-            CompressionQuality.MEDIUM -> 65
-            CompressionQuality.HIGH -> 90
-            CompressionQuality.CUSTOM -> customQuality.toInt()
+        // Calculate based on both dimension scaling and JPEG quality
+        // Lower quality = more dimension scaling + lower JPEG quality
+        val actualQuality = when (quality) {
+            CompressionQuality.LOW -> 40f
+            CompressionQuality.MEDIUM -> 70f
+            CompressionQuality.HIGH -> 90f
+            CompressionQuality.CUSTOM -> customQuality
+        }
+
+        // Estimate based on quality level
+        // This accounts for both dimension scaling and JPEG compression
+        val compressionRatio = when {
+            actualQuality <= 40 -> {
+                // Low quality: 50% scaling = 25% pixel count, plus JPEG compression
+                0.15f  // ~15% of original size
+            }
+            actualQuality <= 70 -> {
+                // Medium quality: 70% scaling = 49% pixel count, plus JPEG compression
+                0.35f  // ~35% of original size
+            }
+            else -> {
+                // High quality: no scaling, just JPEG compression
+                0.75f  // ~75% of original size
+            }
         }
 
         val estimatedBytes =
-            (originalBytes * qualityPercent / 100f).toLong()
+            (originalBytes * compressionRatio).toLong()
 
         val savedPercentage =
             if (originalBytes > 0) {

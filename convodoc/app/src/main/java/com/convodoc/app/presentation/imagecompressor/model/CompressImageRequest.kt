@@ -9,6 +9,8 @@ data class CompressImageRequest(
     val imageUri: Uri,
 
     val quality: Int,
+    
+    val qualityLabel: String,
 
     val outputFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
 

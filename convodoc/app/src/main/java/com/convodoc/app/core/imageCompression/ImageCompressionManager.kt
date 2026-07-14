@@ -2,25 +2,36 @@ package com.convodoc.app.core.imageCompression
 
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import com.convodoc.app.data.database.AppDatabase
+import com.convodoc.app.data.database.CompressionHistoryEntity
+import com.convodoc.app.data.repository.CompressionHistoryRepository
 import com.convodoc.app.presentation.imagecompressor.model.CompressImageRequest
 import com.convodoc.app.presentation.imagecompressor.model.CompressImageResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 class ImageCompressionManager(
     private val context: Context
 ) {
+    
+    private val repository = CompressionHistoryRepository(
+        AppDatabase.getDatabase(context).compressionHistoryDao()
+    )
 
-    fun compress(
+    suspend fun compress(
         request: CompressImageRequest
-    ): CompressImageResult {
+    ): CompressImageResult = withContext(Dispatchers.IO) {
 
         val resolver = context.contentResolver
 
@@ -29,13 +40,44 @@ class ImageCompressionManager(
                 request.imageUri,
                 "r"
             )?.length ?: 0L
+        
+        // Copy original to private storage for history
+        val originalFileName = "original_${System.currentTimeMillis()}.jpg"
+        val originalFile = File(context.filesDir, "compression_history/$originalFileName")
+        originalFile.parentFile?.mkdirs()
+        
+        resolver.openInputStream(request.imageUri)?.use { input ->
+            FileOutputStream(originalFile).use { output ->
+                input.copyTo(output)
+            }
+        }
 
-        val bitmap =
+        val originalBitmap =
             resolver.openInputStream(request.imageUri).use {
 
                 BitmapFactory.decodeStream(it)
 
             } ?: throw IllegalStateException("Unable to decode image")
+
+        // Scale bitmap based on quality to actually reduce file size
+        // Lower quality = more aggressive scaling
+        val scaleFactor = when (request.quality) {
+            in 0..40 -> 0.5f   // Low quality: scale to 50% dimensions
+            in 41..70 -> 0.7f  // Medium quality: scale to 70% dimensions
+            else -> 1.0f       // High quality: keep original dimensions
+        }
+
+        val bitmap = if (scaleFactor < 1.0f) {
+            val newWidth = (originalBitmap.width * scaleFactor).toInt()
+            val newHeight = (originalBitmap.height * scaleFactor).toInt()
+            val scaled = Bitmap.createScaledBitmap(originalBitmap, newWidth, newHeight, true)
+            if (scaled != originalBitmap) {
+                originalBitmap.recycle()
+            }
+            scaled
+        } else {
+            originalBitmap
+        }
 
         val fileName =
             "IMG_${System.currentTimeMillis()}.jpg"
@@ -113,11 +155,24 @@ class ImageCompressionManager(
 
         }
 
+        // Clean up bitmap
+        bitmap.recycle()
+
         val compressedSize =
             resolver.openAssetFileDescriptor(
                 outputUri,
                 "r"
             )?.length ?: 0L
+        
+        // Copy compressed file to private storage
+        val compressedFileName = "compressed_${System.currentTimeMillis()}.jpg"
+        val compressedFile = File(context.filesDir, "compression_history/$compressedFileName")
+        
+        resolver.openInputStream(outputUri)?.use { input ->
+            FileOutputStream(compressedFile).use { output ->
+                input.copyTo(output)
+            }
+        }
 
         val savedBytes =
             originalSize - compressedSize
@@ -127,8 +182,23 @@ class ImageCompressionManager(
             else
                 ((savedBytes * 100f) / originalSize)
                     .roundToInt()
+        
+        // Save to history
+        val historyEntity = CompressionHistoryEntity(
+            timestamp = System.currentTimeMillis(),
+            originalFilePath = originalFile.absolutePath,
+            compressedFilePath = compressedFile.absolutePath,
+            originalSize = originalSize,
+            compressedSize = compressedSize,
+            savedBytes = savedBytes,
+            savedPercentage = percentage,
+            quality = request.quality,
+            qualityLabel = request.qualityLabel
+        )
+        
+        repository.insertHistory(historyEntity)
 
-        return CompressImageResult(
+        CompressImageResult(
 
             outputUri = outputUri,
 

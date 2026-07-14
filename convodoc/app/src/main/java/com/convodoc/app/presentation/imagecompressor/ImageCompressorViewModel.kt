@@ -101,15 +101,20 @@ class ImageCompressorViewModel(
         val uri = state.value.imageUri ?: return
         val quality = when (state.value.selectedQuality) {
 
-            CompressionQuality.LOW -> 40
+            CompressionQuality.LOW -> CompressionQuality.LOW.value.toInt()
 
-            CompressionQuality.MEDIUM -> 65
+            CompressionQuality.MEDIUM -> CompressionQuality.MEDIUM.value.toInt()
 
-            CompressionQuality.HIGH -> 90
+            CompressionQuality.HIGH -> CompressionQuality.HIGH.value.toInt()
 
             CompressionQuality.CUSTOM ->
                 state.value.customQuality.toInt()
 
+        }
+        
+        val qualityLabel = when (state.value.selectedQuality) {
+            CompressionQuality.CUSTOM -> "Custom ${quality}"
+            else -> state.value.selectedQuality.label
         }
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -132,7 +137,9 @@ class ImageCompressorViewModel(
 
                             imageUri = uri,
 
-                            quality = quality
+                            quality = quality,
+                            
+                            qualityLabel = qualityLabel
 
                         )
 

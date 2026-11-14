@@ -10,3 +10,18 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+# --- WorkManager (used by Glance to render the home-screen widget) ---
+# WorkManager instantiates InputMergers by class name via reflection. In R8 full mode a
+# plain `-keep class` no longer keeps the no-arg constructor, so without this the widget's
+# render job fails ("OverwritingInputMerger has no zero argument constructor") and the
+# widget stays on its loading spinner in release builds.
+-keep class * extends androidx.work.InputMerger {
+    public <init>();
+}
+
+# --- Glance widget actions ---
+# Glance creates ActionCallback classes (e.g. SelectTabAction for the Pie/Bar tabs) by
+# class name when a widget button is tapped, so their no-arg constructor must survive R8.
+-keep class * implements androidx.glance.appwidget.action.ActionCallback {
+    public <init>();
+}

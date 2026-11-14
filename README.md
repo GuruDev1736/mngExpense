@@ -65,6 +65,43 @@
 </p>
 </details>
 
+<h3 align="center">🧩 Home-screen widget</h3>
+<p align="center">
+  <img src="docs/screenshots/widget_pie_light.png" width="40%" alt="Widget: pie tab (light)"/>
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/widget_bar_light.png" width="40%" alt="Widget: bar tab (light)"/>
+  <br/><br/>
+  <img src="docs/screenshots/widget_pie_dark.png" width="40%" alt="Widget: pie tab (dark)"/>
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/widget_bar_dark.png" width="40%" alt="Widget: bar tab (dark)"/>
+</p>
+
+<details>
+<summary><b>🏠 Widget on the home screen & one-tap add</b></summary>
+<br/>
+<p align="center">
+  <img src="docs/screenshots/widget_home.png" width="23%" alt="Widget on the home screen"/>
+  &nbsp;
+  <img src="docs/screenshots/widget_add_dialog.png" width="23%" alt="Add widget dialog"/>
+  &nbsp;
+  <img src="docs/screenshots/settings.png" width="23%" alt="Settings: Add tile and Add widget"/>
+</p>
+</details>
+
+<details open>
+<summary><b>⚡ Quick add from anywhere: Quick Settings tile & app shortcut</b></summary>
+<br/>
+<p align="center">
+  <img src="docs/screenshots/quick_tile.png" width="23%" alt="Add expense tile in Quick Settings"/>
+  &nbsp;
+  <img src="docs/screenshots/add_tile_dialog.png" width="23%" alt="One-tap Add tile dialog"/>
+  &nbsp;
+  <img src="docs/screenshots/app_shortcut.png" width="23%" alt="Long-press the app icon for Add expense"/>
+  &nbsp;
+  <img src="docs/screenshots/pinned_shortcut.png" width="23%" alt="Add expense pinned to the home screen"/>
+</p>
+</details>
+
 <details>
 <summary><b>📄 Reports: PDF & Excel export</b></summary>
 <br/>
@@ -136,6 +173,9 @@
 - Full **dark mode**
 - Indian number formatting (`₹2,36,750`)
 - **100% offline**: your data never leaves the device
+- **Quick Settings tile**: tap *Add expense* in the notification shade, with today's total shown on the tile
+- **App shortcut**: long-press the app icon → *Add expense*, or pin it as its own home-screen icon
+- **Home-screen widget**: today's spending as a **pie or bar chart** (switch with tabs), plus an *Add expense* button
 - Optional **shake to open** the app, even from the lock screen
 
 </td>
@@ -155,6 +195,10 @@ flowchart LR
         E[ExpenseEditScreen]
         S[ShakeSettingsScreen]
     end
+    T[⚡ QuickAddTileService] -- opens --> E
+    SC[📲 App shortcut] -- opens --> E
+    W[🧩 TodayWidget · Glance] -- opens --> E
+    R -. "on change: updateAll()" .-> W
     subgraph VM["🧠 ViewModels"]
         DVM[DashboardViewModel]
         EVM[ExpenseEditViewModel]
@@ -193,6 +237,7 @@ flowchart LR
 | **UI** | Jetpack Compose · Material 3 · Material Icons |
 | **Architecture** | MVVM · Repository · `StateFlow` · unidirectional data flow |
 | **Navigation** | AndroidX Navigation 3 |
+| **Widget** | Jetpack Glance 1.2 (Material 3 dynamic colours) |
 | **Database** | Room 2.8 (KSP) |
 | **Async** | Kotlin Coroutines & Flow |
 | **Dates** | `java.time` + core library desugaring (works on API 24+) |
@@ -219,6 +264,8 @@ app/src/main/java/com/guruprasad/mngexpense/
 │   ├── local/                   # Room: entity, DAO, database
 │   ├── repository/              # ExpenseRepository
 │   ├── export/                  # PdfWriter, XlsxWriter, ReportExporter
+│   ├── widget/                  # Home-screen widget (Glance) + chart bitmaps
+│   ├── tile/                    # Quick Settings "Add expense" tile
 │   ├── service/                 # Shake detection (foreground service)
 │   └── receivers/               # Restart shake service after reboot
 │
@@ -258,6 +305,39 @@ Tests cover the period logic (week boundaries, month/year rollover, labels, char
 
 ---
 
+## 🧩 Home-screen widget
+
+**Add it:** open the app → ⚙️ **Settings** → **Add widget**, or long-press your home screen → **Widgets** → **MngExpense** → *Today's spending*.
+
+| | |
+|---|---|
+| **Pie / Bar tabs** | Switch how today's spending is shown. Each widget remembers its own choice. |
+| **+ Add expense** | Opens the add form directly |
+| **Header or chart** | Opens the full dashboard |
+| **Live** | Updates as soon as you add, edit or delete an expense |
+| **Resizable** | Charts are re-drawn for the exact size, so they stay sharp |
+| **Themed** | Material You colours, light & dark mode |
+
+> Widgets can't run Compose `Canvas`, so the bars and donut are drawn into bitmaps with `android.graphics`. All text (values, labels, legend) is real widget text, so it follows light/dark mode.
+
+---
+
+## ⚡ Quick add: tile & app shortcut
+
+### App shortcut
+Long-press the **MngExpense** icon → tap **Add expense**. Tap the **⊕** next to it to pin *Add expense* as its own home-screen icon.
+
+### Quick Settings tile
+
+1. Open the app → ⚙️ **Settings** → **Add tile** (Android 13+), and confirm the system dialog.<br/>
+   On older Android versions: swipe down twice, tap ✎ **Edit**, and drag **Add expense** into your tiles.
+2. From anywhere, swipe down and tap **Add expense**. The app opens straight on the add form.
+3. On the lock screen, the system asks for your PIN or fingerprint first, so your expenses stay private.
+
+The tile's subtitle shows **today's total** (Android 10+) and refreshes every time you open the panel.
+
+---
+
 ## 🔐 Permissions
 
 Every permission is optional except where noted, and all of them are for the **shake-to-open** feature only. Expense tracking and exports need **none**.
@@ -283,7 +363,9 @@ Every permission is optional except where noted, and all of them are for the **s
 - [x] Dark mode & dynamic colour
 - [ ] 🎯 Monthly budgets with alerts
 - [ ] 🔍 Search & filter transactions
-- [ ] ⚡ Quick Settings tile, app shortcut & home-screen widget for faster entry
+- [x] ⚡ Quick Settings tile for one-tap entry
+- [x] 📲 App shortcut (long-press the icon)
+- [x] 🧩 Home-screen widget with Pie / Bar tabs
 - [ ] 🔁 Recurring expenses
 - [ ] ☁️ Backup & restore
 - [ ] 💱 Multiple currencies

@@ -1,6 +1,9 @@
 package com.guruprasad.mngexpense.ui.screens.setting
 
 import android.Manifest
+import android.app.StatusBarManager
+import android.content.ComponentName
+import android.graphics.drawable.Icon as SystemIcon
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
@@ -27,7 +30,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,10 +54,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.guruprasad.mngexpense.R
 import com.guruprasad.mngexpense.data.service.ShakeService
+import com.guruprasad.mngexpense.data.tile.QuickAddTileService
+import com.guruprasad.mngexpense.data.widget.TodayWidgetReceiver
+import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import com.guruprasad.mngexpense.util.ShakePrefs
 
 /** Permission status, re-checked every time the user comes back from Settings. */
@@ -107,7 +120,7 @@ fun ShakeSettingsScreen(onBack: () -> Unit = {}) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Shake to open") },
+                title = { Text("Settings") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -124,6 +137,13 @@ fun ShakeSettingsScreen(onBack: () -> Unit = {}) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // ---- Quick add: tile + home-screen widget ----
+            QuickTileCard()
+            WidgetCard()
+
+            Spacer(Modifier.height(4.dp))
+            Text("Shake to open", style = MaterialTheme.typography.titleMedium)
+
             // ---- Status + main switch ----
             Card(
                 colors = CardDefaults.cardColors(
@@ -242,6 +262,108 @@ private fun PermissionRow(title: String, subtitle: String, granted: Boolean?, on
             Column(Modifier.weight(1f)) {
                 Text(title, style = MaterialTheme.typography.titleSmall)
                 Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+    }
+}
+
+/** Explains the "Add expense" Quick Settings tile and, on Android 13+, adds it in one tap. */
+@Composable
+private fun QuickTileCard() {
+    val context = LocalContext.current
+    val tileLabel = stringResource(R.string.tile_add_expense) // configuration-aware
+    var status by remember { mutableStateOf<String?>(null) }
+
+    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+        Column(Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painterResource(R.drawable.ic_tile_add_expense), contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.width(16.dp))
+                Column(Modifier.weight(1f)) {
+                    Text("Quick Settings tile", style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        "Add an expense straight from the notification shade. Shows today's total too.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Button(onClick = {
+                    val statusBar = context.getSystemService(StatusBarManager::class.java)
+                    statusBar.requestAddTileService(
+                        ComponentName(context, QuickAddTileService::class.java),
+                        tileLabel,
+                        SystemIcon.createWithResource(context, R.drawable.ic_tile_add_expense),
+                        context.mainExecutor
+                    ) { result ->
+                        status = when (result) {
+                            StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED -> "Tile added ✓"
+                            StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED -> "The tile is already in your Quick Settings"
+                            StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_NOT_ADDED -> null // user said no
+                            else -> "Couldn't add automatically. Swipe down twice, tap ✎ and drag \"Add expense\" in."
+                        }
+                    }
+                }) { Text("Add tile") }
+                status?.let {
+                    Spacer(Modifier.height(8.dp))
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                Text(
+                    "Swipe down twice from the top of the screen, tap ✎ (edit) and drag \"Add expense\" into your tiles.",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+    }
+}
+
+
+/** Explains the "Today's spending" widget and offers to pin it (launchers that support it). */
+@Composable
+private fun WidgetCard() {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val pinSupported = remember {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+            android.appwidget.AppWidgetManager.getInstance(context).isRequestPinAppWidgetSupported
+    }
+
+    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+        Column(Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Filled.PieChart, contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.width(16.dp))
+                Column(Modifier.weight(1f)) {
+                    Text("Home-screen widget", style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        "Today's spending as a pie or bar chart, with an Add expense button.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            if (pinSupported) {
+                Button(onClick = {
+                    scope.launch {
+                        GlanceAppWidgetManager(context)
+                            .requestPinGlanceAppWidget(TodayWidgetReceiver::class.java)
+                    }
+                }) { Text("Add widget") }
+            } else {
+                Text(
+                    "Long-press your home screen → Widgets → MngExpense, and drag \"Today's spending\" onto it.",
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
     }

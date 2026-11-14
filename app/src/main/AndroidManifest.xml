@@ -31,6 +31,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Long-press the app icon → "Add expense" -->
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <service
@@ -42,6 +46,34 @@
                 android:value="Detects a shake gesture so the user can open the app hands-free, including from the lock screen." />
         </service>
 
+
+        <!-- Home-screen widget: today's spending (Pie / Bar) + Add expense -->
+        <receiver
+            android:name=".data.widget.TodayWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/today_widget_info" />
+        </receiver>
+
+        <!-- Quick Settings tile: "Add expense" -->
+        <service
+            android:name=".data.tile.QuickAddTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile_add_expense"
+            android:label="@string/tile_add_expense"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="false" />
+        </service>
 
         <receiver
             android:name=".data.receivers.BootReceiver"

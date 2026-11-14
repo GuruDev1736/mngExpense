@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Static app shortcuts: long-press the launcher icon → "Add expense" -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="add_expense"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_add_expense"
+        android:shortcutShortLabel="@string/shortcut_add_expense_short"
+        android:shortcutLongLabel="@string/shortcut_add_expense_long"
+        android:shortcutDisabledMessage="@string/shortcut_add_expense_disabled">
+        <!-- Same entry point as the Quick Settings tile (MainActivity.ACTION_ADD_EXPENSE) -->
+        <intent
+            android:action="com.guruprasad.mngexpense.action.ADD_EXPENSE"
+            android:targetClass="com.guruprasad.mngexpense.MainActivity"
+            android:targetPackage="com.guruprasad.mngexpense" />
+    </shortcut>
+</shortcuts>

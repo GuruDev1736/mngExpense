@@ -25,7 +25,9 @@ android {
         release {
             optimization {
                 enable = true
-                packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
+                // No `packageScope` restriction: limiting R8 to androidx/kotlin packages made it
+                // move a Kotlin-stdlib subclass out of its package while its package-private
+                // superclass stayed behind → IllegalAccessError on every release launch.
             }
         }
     }
@@ -55,6 +57,8 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

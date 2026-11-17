@@ -21,4 +21,8 @@ interface ExpenseDao {
 
     @Delete
     suspend fun delete(expense: ExpenseEntity)
+
+    /** Keeps the expenses but forgets which recurring rule added them (used when the rule is deleted). */
+    @Query("UPDATE expenses SET recurring_id = NULL WHERE recurring_id = :recurringId")
+    suspend fun unlinkRecurring(recurringId: Long)
 }

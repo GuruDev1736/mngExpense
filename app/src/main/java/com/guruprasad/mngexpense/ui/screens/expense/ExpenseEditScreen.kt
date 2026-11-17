@@ -1,6 +1,17 @@
 package com.guruprasad.mngexpense.ui.screens.expense
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.EventRepeat
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Switch
+import com.guruprasad.mngexpense.domain.Frequency
+import com.guruprasad.mngexpense.domain.RecurringExpense
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,6 +73,7 @@ private const val DAY_MS = 86_400_000L
 fun ExpenseEditScreen(
     expenseId: Long?,
     onClose: () -> Unit,
+    onOpenRecurring: (Long) -> Unit = {},
     viewModel: ExpenseEditViewModel = viewModel(factory = ExpenseEditViewModel.factory(expenseId))
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -75,6 +87,9 @@ fun ExpenseEditScreen(
         onCategoryChange = viewModel::onCategoryChange,
         onDateChange = viewModel::onDateChange,
         onNoteChange = viewModel::onNoteChange,
+        onRepeatChange = viewModel::onRepeatChange,
+        onRepeatFrequencyChange = viewModel::onRepeatFrequencyChange,
+        onOpenRecurring = onOpenRecurring,
         onSave = viewModel::save,
         onDelete = viewModel::delete
     )
@@ -90,6 +105,9 @@ fun ExpenseEditContent(
     onCategoryChange: (Category) -> Unit = {},
     onDateChange: (LocalDate) -> Unit = {},
     onNoteChange: (String) -> Unit = {},
+    onRepeatChange: (Boolean) -> Unit = {},
+    onRepeatFrequencyChange: (Frequency) -> Unit = {},
+    onOpenRecurring: (Long) -> Unit = {},
     onSave: () -> Unit = {},
     onDelete: () -> Unit = {}
 ) {
@@ -184,6 +202,13 @@ fun ExpenseEditContent(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // ---- Recurring ----
+            if (!state.isEditing) {
+                RepeatSection(state, onRepeatChange, onRepeatFrequencyChange)
+            } else if (state.recurringId != null) {
+                AutoAddedCard(onManage = { onOpenRecurring(state.recurringId) })
+            }
+
             OutlinedTextField(
                 value = state.note,
                 onValueChange = onNoteChange,
@@ -194,7 +219,13 @@ fun ExpenseEditContent(
             )
 
             Button(onClick = onSave, modifier = Modifier.fillMaxWidth()) {
-                Text(if (state.isEditing) "Save changes" else "Add expense")
+                Text(
+                    when {
+                        state.isEditing -> "Save changes"
+                        state.repeat -> "Add recurring expense"
+                        else -> "Add expense"
+                    }
+                )
             }
         }
     }
@@ -230,6 +261,73 @@ fun ExpenseEditContent(
             },
             dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text("Cancel") } }
         )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun RepeatSection(
+    state: ExpenseFormState,
+    onRepeatChange: (Boolean) -> Unit,
+    onFrequencyChange: (Frequency) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .toggleable(value = state.repeat, role = Role.Switch, onValueChange = onRepeatChange)
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(Icons.Filled.EventRepeat, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text("Repeat", style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    if (state.repeat) {
+                        val preview = RecurringExpense(
+                            title = "", amount = 0.0, category = state.category,
+                            frequency = state.repeatFrequency, startDate = state.date
+                        )
+                        "Added automatically ${preview.scheduleText().replaceFirstChar { it.lowercase() }}"
+                    } else "For rent, bills, subscriptions…",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(checked = state.repeat, onCheckedChange = null) // the whole row toggles
+        }
+        if (state.repeat) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Frequency.entries.forEach { f ->
+                    FilterChip(
+                        selected = f == state.repeatFrequency,
+                        onClick = { onFrequencyChange(f) },
+                        label = { Text(f.label) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** Shown when editing an expense that a recurring rule added. */
+@Composable
+private fun AutoAddedCard(onManage: () -> Unit) {
+    Card(
+        Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+    ) {
+        Row(Modifier.padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Filled.EventRepeat, contentDescription = null)
+            Spacer(Modifier.width(12.dp))
+            Text(
+                "Added automatically by a recurring expense. Edits here change only this one.",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.weight(1f)
+            )
+            TextButton(onClick = onManage) { Text("Manage") }
+        }
     }
 }
 

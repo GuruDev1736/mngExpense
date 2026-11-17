@@ -142,6 +142,7 @@
 - Date picker that blocks future dates
 - Optional notes on every expense
 - Input checks for title and amount
+- 🔁 **Recurring expenses**: rent, EMIs, subscriptions are added automatically
 
 </td>
 <td width="50%" valign="top">
@@ -238,7 +239,8 @@ flowchart LR
 | **Architecture** | MVVM · Repository · `StateFlow` · unidirectional data flow |
 | **Navigation** | AndroidX Navigation 3 |
 | **Widget** | Jetpack Glance 1.2 (Material 3 dynamic colours) |
-| **Database** | Room 2.8 (KSP) |
+| **Database** | Room 2.8 (KSP) with migrations |
+| **Background work** | WorkManager (daily recurring-expense job) |
 | **Async** | Kotlin Coroutines & Flow |
 | **Dates** | `java.time` + core library desugaring (works on API 24+) |
 | **Reports** | `android.graphics.pdf.PdfDocument` · custom XLSX writer |
@@ -258,11 +260,13 @@ app/src/main/java/com/guruprasad/mngexpense/
 ├── domain/                      # Pure Kotlin, no Android types
 │   ├── Expense.kt
 │   ├── Category.kt
-│   └── Period.kt                # Date ranges, labels, chart buckets
+│   ├── Period.kt                # Date ranges, labels, chart buckets
+│   └── RecurringExpense.kt      # Repeat schedules, catch-up, rescheduling
 │
 ├── data/
-│   ├── local/                   # Room: entity, DAO, database
-│   ├── repository/              # ExpenseRepository
+│   ├── local/                   # Room: entities, DAOs, database + migrations
+│   ├── repository/              # ExpenseRepository, RecurringRepository
+│   ├── recurring/               # Daily WorkManager job + "added" notification
 │   ├── export/                  # PdfWriter, XlsxWriter, ReportExporter
 │   ├── widget/                  # Home-screen widget (Glance) + chart bitmaps
 │   ├── tile/                    # Quick Settings "Add expense" tile
@@ -273,8 +277,9 @@ app/src/main/java/com/guruprasad/mngexpense/
 │   ├── screens/
 │   │   ├── dashboard/           # Dashboard UI + ViewModel
 │   │   ├── expense/             # Add / Edit UI + ViewModel
+│   │   ├── recurring/           # Recurring list + Add / Edit
 │   │   └── setting/             # Shake-to-open settings
-│   ├── common/                  # Category colours
+│   ├── common/                  # Category colours, date picker, relative dates
 │   └── theme/                   # Material 3 theme
 │
 └── util/                        # Currency formatting, preferences
@@ -338,14 +343,26 @@ The tile's subtitle shows **today's total** (Android 10+) and refreshes every ti
 
 ---
 
+## 🔁 Recurring expenses
+
+Set up a cost that repeats **once**, and MngExpense adds it for you on the right day.
+
+- **Create one:** tap the 🔁 icon on the dashboard → **Add recurring**, or turn on **Repeat** while adding a normal expense.
+- **Schedules:** daily, weekly, monthly or yearly, every *N* days / weeks / months / years, with an optional end date (great for loan EMIs). A rule on the 31st falls on the last day of shorter months.
+- **Never misses a payment:** a daily background job adds what is due just after midnight and shows a quiet notification. If the phone was off, everything missed is added the next time the app runs. Each date is added exactly once.
+- **Overview:** the list shows each rule's next date and your **fixed costs per month**. The dashboard shows what is **coming up this week**, and auto-added expenses carry a 🔁 mark.
+- **Change anytime:** pause and resume (paused months are skipped), edit the amount or the next payment date, or delete a rule. Expenses that were already added always stay in your history.
+
+---
+
 ## 🔐 Permissions
 
-Every permission is optional except where noted, and all of them are for the **shake-to-open** feature only. Expense tracking and exports need **none**.
+Every permission is optional. Apart from notifications, they are all for the **shake-to-open** feature only. Expense tracking, recurring expenses and exports need **none** (recurring expenses still work with notifications off; you just aren't told).
 
 | Permission | Why |
 |---|---|
 | `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_SPECIAL_USE` | Keeps shake detection running in the background |
-| `POST_NOTIFICATIONS` | Shows the "Shake to open is on" notification |
+| `POST_NOTIFICATIONS` | Shows the "Shake to open is on" notification, and tells you when recurring expenses were added |
 | `SYSTEM_ALERT_WINDOW` | Lets the app open itself after a shake |
 | `USE_FULL_SCREEN_INTENT` | Fallback to open over the lock screen |
 | `RECEIVE_BOOT_COMPLETED` | Restarts shake detection after a reboot (only if you turned it on) |
@@ -366,7 +383,7 @@ Every permission is optional except where noted, and all of them are for the **s
 - [x] ⚡ Quick Settings tile for one-tap entry
 - [x] 📲 App shortcut (long-press the icon)
 - [x] 🧩 Home-screen widget with Pie / Bar tabs
-- [ ] 🔁 Recurring expenses
+- [x] 🔁 Recurring expenses
 - [ ] ☁️ Backup & restore
 - [ ] 💱 Multiple currencies
 

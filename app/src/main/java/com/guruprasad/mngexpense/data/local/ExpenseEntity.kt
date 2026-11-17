@@ -16,7 +16,9 @@ data class ExpenseEntity(
     val category: String,
     /** Date stored as days since 1970-01-01 (LocalDate.toEpochDay) — timezone-proof. */
     @ColumnInfo(name = "epoch_day") val epochDay: Long,
-    val note: String = ""
+    val note: String = "",
+    /** Set when a recurring expense added this row (no foreign key: history stays if the rule is deleted). */
+    @ColumnInfo(name = "recurring_id") val recurringId: Long? = null
 )
 
 fun ExpenseEntity.toDomain() = Expense(
@@ -25,7 +27,8 @@ fun ExpenseEntity.toDomain() = Expense(
     amount = amount,
     category = Category.fromName(category),
     date = LocalDate.ofEpochDay(epochDay),
-    note = note
+    note = note,
+    recurringId = recurringId
 )
 
 fun Expense.toEntity() = ExpenseEntity(
@@ -34,5 +37,6 @@ fun Expense.toEntity() = ExpenseEntity(
     amount = amount,
     category = category.name,
     epochDay = date.toEpochDay(),
-    note = note
+    note = note,
+    recurringId = recurringId
 )

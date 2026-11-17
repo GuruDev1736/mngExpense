@@ -8,5 +8,7 @@ data class Expense(
     val amount: Double,
     val category: Category,
     val date: LocalDate,
-    val note: String = ""
+    val note: String = "",
+    /** Id of the [RecurringExpense] that added this expense automatically, if any. */
+    val recurringId: Long? = null
 )

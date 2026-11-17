@@ -9,3 +9,9 @@ import kotlinx.serialization.Serializable
 @Serializable data class ExpenseRoute(val id: Long? = null) : NavKey
 
 @Serializable data object SettingsRoute : NavKey
+
+/** List of recurring expenses (rent, subscriptions, ...). */
+@Serializable data object RecurringListRoute : NavKey
+
+/** Add a recurring expense when [id] is null, otherwise edit it. */
+@Serializable data class RecurringRoute(val id: Long? = null) : NavKey

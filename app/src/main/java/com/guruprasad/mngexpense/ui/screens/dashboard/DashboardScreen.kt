@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.EventRepeat
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -49,6 +50,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -74,8 +76,10 @@ import com.guruprasad.mngexpense.domain.Bucket
 import com.guruprasad.mngexpense.domain.Category
 import com.guruprasad.mngexpense.domain.Expense
 import com.guruprasad.mngexpense.domain.Period
+import com.guruprasad.mngexpense.domain.RecurringExpense
 import com.guruprasad.mngexpense.domain.TimeFilter
 import com.guruprasad.mngexpense.ui.common.color
+import com.guruprasad.mngexpense.ui.common.relativeDay
 import com.guruprasad.mngexpense.util.compactRupees
 import com.guruprasad.mngexpense.util.rupees
 import java.time.LocalDate
@@ -92,9 +96,11 @@ fun DashboardScreen(
     onAddExpense: () -> Unit = {},
     onExpenseClick: (Long) -> Unit = {},
     onOpenSettings: () -> Unit = {},
+    onOpenRecurring: () -> Unit = {},
     viewModel: DashboardViewModel = viewModel(factory = DashboardViewModel.Factory)
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val upcoming by viewModel.upcoming.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val snackbar = remember { SnackbarHostState() }
 
@@ -140,6 +146,8 @@ fun DashboardScreen(
         onAddExpense = onAddExpense,
         onExpenseClick = onExpenseClick,
         onOpenSettings = onOpenSettings,
+        upcoming = upcoming,
+        onOpenRecurring = onOpenRecurring,
         onExport = { format ->
             val name = viewModel.exportFileName(format)
             when (format) {
@@ -165,6 +173,8 @@ fun DashboardContent(
     onAddExpense: () -> Unit = {},
     onExpenseClick: (Long) -> Unit = {},
     onOpenSettings: () -> Unit = {},
+    upcoming: List<RecurringExpense> = emptyList(),
+    onOpenRecurring: () -> Unit = {},
     onExport: (ExportFormat) -> Unit = {}
 ) {
     val filter = state.period.filter
@@ -175,6 +185,9 @@ fun DashboardContent(
             TopAppBar(
                 title = { Text("Expense Dashboard") },
                 actions = {
+                    IconButton(onClick = onOpenRecurring) {
+                        Icon(Icons.Filled.EventRepeat, contentDescription = "Recurring expenses")
+                    }
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Filled.Settings, contentDescription = "Settings")
                     }
@@ -246,6 +259,11 @@ fun DashboardContent(
                         MaterialTheme.colorScheme.surfaceContainerHigh, Modifier.weight(1f)
                     )
                 }
+            }
+
+            // ---- Upcoming recurring expenses (next 7 days) ----
+            if (upcoming.isNotEmpty()) {
+                item { UpcomingCard(upcoming, onOpenRecurring) }
             }
 
             if (!state.loading && state.count == 0) {
@@ -402,7 +420,20 @@ private fun ExpenseRow(e: Expense, onClick: () -> Unit) {
         Box(Modifier.size(10.dp).clip(CircleShape).background(e.category.color))
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
-            Text(e.title, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    e.title, style = MaterialTheme.typography.bodyMedium, maxLines = 1,
+                    overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false)
+                )
+                if (e.recurringId != null) {
+                    Spacer(Modifier.width(6.dp))
+                    Icon(
+                        Icons.Filled.EventRepeat, contentDescription = "Recurring",
+                        modifier = Modifier.size(14.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
             Text(
                 "${e.category.label} · ${e.date.format(DateTimeFormatter.ofPattern("d MMM"))}",
                 style = MaterialTheme.typography.bodySmall,
@@ -410,6 +441,34 @@ private fun ExpenseRow(e: Expense, onClick: () -> Unit) {
             )
         }
         Text(rupees(e.amount), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+    }
+}
+
+@Composable
+private fun UpcomingCard(upcoming: List<RecurringExpense>, onSeeAll: () -> Unit) {
+    SectionCard("Upcoming this week") {
+        upcoming.take(4).forEachIndexed { i, rule ->
+            if (i > 0) HorizontalDivider()
+            Row(
+                Modifier.fillMaxWidth().clickable(onClick = onSeeAll).padding(vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(Modifier.size(10.dp).clip(CircleShape).background(rule.category.color))
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(rule.title, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(
+                        relativeDay(rule.nextDate!!),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Text(rupees(rule.amount), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+            }
+        }
+        TextButton(onClick = onSeeAll, modifier = Modifier.align(Alignment.End)) {
+            Text(if (upcoming.size > 4) "See all (${upcoming.size})" else "Manage recurring")
+        }
     }
 }
 

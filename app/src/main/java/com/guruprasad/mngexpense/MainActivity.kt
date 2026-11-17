@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,14 +25,20 @@ import androidx.navigation3.ui.NavDisplay
 import com.guruprasad.mngexpense.data.service.ShakeService
 import com.guruprasad.mngexpense.ui.screens.dashboard.DashboardScreen
 import com.guruprasad.mngexpense.ui.screens.expense.ExpenseEditScreen
+import com.guruprasad.mngexpense.ui.screens.recurring.RecurringEditScreen
+import com.guruprasad.mngexpense.ui.screens.recurring.RecurringListScreen
 import com.guruprasad.mngexpense.ui.screens.setting.ShakeSettingsScreen
 import com.guruprasad.mngexpense.ui.theme.MngExpenseTheme
 import com.guruprasad.mngexpense.util.ShakePrefs
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     /** Bumped each time something (Quick Settings tile, app shortcut) asks to open "Add expense". */
     private var addExpenseRequests by mutableIntStateOf(0)
+
+    /** Bumped when a "recurring expense added" notification is tapped. */
+    private var recurringRequests by mutableIntStateOf(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,10 +47,10 @@ class MainActivity : ComponentActivity() {
         ShakeService.createChannels(this)
         handleShakeIntent(intent)
         // Only on a fresh start — after rotation the back stack is already restored
-        if (savedInstanceState == null) handleAddExpenseIntent(intent)
+        if (savedInstanceState == null) handleNavigationIntent(intent)
         setContent {
             MngExpenseTheme {
-                AppNavigation(addExpenseRequests = addExpenseRequests)
+                AppNavigation(addExpenseRequests = addExpenseRequests, recurringRequests = recurringRequests)
             }
         }
     }
@@ -52,18 +59,23 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         handleShakeIntent(intent)
-        handleAddExpenseIntent(intent)
+        handleNavigationIntent(intent)
     }
 
-    private fun handleAddExpenseIntent(intent: Intent?) {
-        if (intent?.action != ACTION_ADD_EXPENSE) return
-        addExpenseRequests++
-        // Tells the launcher this action is used, so it ranks the shortcut higher
-        ShortcutManagerCompat.reportShortcutUsed(this, SHORTCUT_ADD_EXPENSE)
+    private fun handleNavigationIntent(intent: Intent?) {
+        when (intent?.action) {
+            ACTION_ADD_EXPENSE -> {
+                addExpenseRequests++
+                // Tells the launcher this action is used, so it ranks the shortcut higher
+                ShortcutManagerCompat.reportShortcutUsed(this, SHORTCUT_ADD_EXPENSE)
+            }
+            ACTION_OPEN_RECURRING -> recurringRequests++
+        }
     }
 
     companion object {
         const val ACTION_ADD_EXPENSE = "com.guruprasad.mngexpense.action.ADD_EXPENSE"
+        const val ACTION_OPEN_RECURRING = "com.guruprasad.mngexpense.action.OPEN_RECURRING"
 
         /** Must match android:shortcutId in res/xml/shortcuts.xml */
         const val SHORTCUT_ADD_EXPENSE = "add_expense"
@@ -73,12 +85,27 @@ class MainActivity : ComponentActivity() {
             Intent(context, MainActivity::class.java)
                 .setAction(ACTION_ADD_EXPENSE)
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+        /** Opens the app on the "Recurring expenses" list. */
+        fun recurringListIntent(context: Context): Intent =
+            Intent(context, MainActivity::class.java)
+                .setAction(ACTION_OPEN_RECURRING)
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
     }
 
     // Make sure detection is running whenever the app is opened
     override fun onResume() {
         super.onResume()
         if (ShakePrefs.isEnabled(this)) ShakeService.start(this)
+        // The app may have stayed open past midnight: add any recurring expenses now due
+        val app = application as MngExpenseApp
+        app.appScope.launch {
+            try {
+                app.recurringRepository.processDue()
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Recurring catch-up failed", e)
+            }
+        }
     }
 
     private fun showOverLockScreen() {
@@ -110,7 +137,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppNavigation(addExpenseRequests: Int = 0) {
+fun AppNavigation(addExpenseRequests: Int = 0, recurringRequests: Int = 0) {
     // The back stack: a list of routes. The last one is shown on screen.
     val backStack = rememberNavBackStack(DashboardRoute)
 
@@ -118,6 +145,13 @@ fun AppNavigation(addExpenseRequests: Int = 0) {
     LaunchedEffect(addExpenseRequests) {
         if (addExpenseRequests > 0 && backStack.lastOrNull() != ExpenseRoute()) {
             backStack.add(ExpenseRoute())
+        }
+    }
+
+    // "Recurring expense added" notification → open the recurring list
+    LaunchedEffect(recurringRequests) {
+        if (recurringRequests > 0 && backStack.lastOrNull() != RecurringListRoute) {
+            backStack.add(RecurringListRoute)
         }
     }
 
@@ -138,11 +172,26 @@ fun AppNavigation(addExpenseRequests: Int = 0) {
                 DashboardScreen(
                     onAddExpense = { backStack.add(ExpenseRoute()) },
                     onExpenseClick = { id -> backStack.add(ExpenseRoute(id)) },
-                    onOpenSettings = { backStack.add(SettingsRoute) }
+                    onOpenSettings = { backStack.add(SettingsRoute) },
+                    onOpenRecurring = { backStack.add(RecurringListRoute) }
                 )
             }
             entry<ExpenseRoute> { route ->
-                ExpenseEditScreen(expenseId = route.id, onClose = { goBack() })
+                ExpenseEditScreen(
+                    expenseId = route.id,
+                    onClose = { goBack() },
+                    onOpenRecurring = { id -> backStack.add(RecurringRoute(id)) }
+                )
+            }
+            entry<RecurringListRoute> {
+                RecurringListScreen(
+                    onBack = { goBack() },
+                    onAdd = { backStack.add(RecurringRoute()) },
+                    onOpen = { id -> backStack.add(RecurringRoute(id)) }
+                )
+            }
+            entry<RecurringRoute> { route ->
+                RecurringEditScreen(ruleId = route.id, onClose = { goBack() })
             }
             entry<SettingsRoute> {
                 ShakeSettingsScreen(onBack = { goBack() })

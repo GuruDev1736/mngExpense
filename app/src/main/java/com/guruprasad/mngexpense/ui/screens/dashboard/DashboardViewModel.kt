@@ -10,9 +10,12 @@ import android.net.Uri
 import com.guruprasad.mngexpense.data.export.ExportFormat
 import com.guruprasad.mngexpense.data.export.ReportExporter
 import com.guruprasad.mngexpense.data.repository.ExpenseRepository
+import com.guruprasad.mngexpense.data.repository.RecurringRepository
+import com.guruprasad.mngexpense.domain.RecurringExpense
 import com.guruprasad.mngexpense.domain.Bucket
 import com.guruprasad.mngexpense.domain.Category
 import com.guruprasad.mngexpense.domain.Expense
+import com.guruprasad.mngexpense.domain.Frequency
 import com.guruprasad.mngexpense.domain.Period
 import com.guruprasad.mngexpense.domain.TimeFilter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +27,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -55,6 +60,7 @@ data class DashboardUiState(
 class DashboardViewModel(
     private val repository: ExpenseRepository,
     private val exporter: ReportExporter? = null,
+    recurring: RecurringRepository? = null,
     private val today: () -> LocalDate = LocalDate::now
 ) : ViewModel() {
 
@@ -69,6 +75,16 @@ class DashboardViewModel(
             ) { current, previous -> buildState(p, current, previous) }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DashboardUiState())
+
+    /** Active (non-daily) recurring expenses due within the next week, soonest first. */
+    val upcoming: StateFlow<List<RecurringExpense>> = (recurring?.observeAll() ?: flowOf(emptyList()))
+        .map { rules ->
+            val limit = today().plusDays(UPCOMING_DAYS)
+            // Daily rules (milk, travel) would fill this card every day — leave them out
+            rules.filter { it.isActive && it.frequency != Frequency.DAILY && !it.nextDate!!.isAfter(limit) }
+                .sortedBy { it.nextDate }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _events = Channel<DashboardEvent>(Channel.BUFFERED)
     val events: Flow<DashboardEvent> = _events.receiveAsFlow()
@@ -116,10 +132,12 @@ class DashboardViewModel(
     }
 
     companion object {
+        const val UPCOMING_DAYS = 7L
+
         val Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as MngExpenseApp
-                DashboardViewModel(app.expenseRepository, app.reportExporter)
+                DashboardViewModel(app.expenseRepository, app.reportExporter, app.recurringRepository)
             }
         }
     }

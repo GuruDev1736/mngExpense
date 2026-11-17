@@ -7,8 +7,10 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.guruprasad.mngexpense.MngExpenseApp
 import com.guruprasad.mngexpense.data.repository.ExpenseRepository
+import com.guruprasad.mngexpense.data.repository.RecurringRepository
 import com.guruprasad.mngexpense.domain.Category
 import com.guruprasad.mngexpense.domain.Expense
+import com.guruprasad.mngexpense.domain.Frequency
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +25,11 @@ data class ExpenseFormState(
     val category: Category = Category.FOOD,
     val date: LocalDate = LocalDate.now(),
     val note: String = "",
+    /** Set when a recurring expense added this one automatically. */
+    val recurringId: Long? = null,
+    /** "Repeat" switch (new expenses only): also create a recurring rule from this expense. */
+    val repeat: Boolean = false,
+    val repeatFrequency: Frequency = Frequency.MONTHLY,
     val titleError: String? = null,
     val amountError: String? = null,
     val loading: Boolean = false,
@@ -34,6 +41,7 @@ data class ExpenseFormState(
 
 class ExpenseEditViewModel(
     private val repository: ExpenseRepository,
+    private val recurringRepository: RecurringRepository?,
     private val expenseId: Long?
 ) : ViewModel() {
 
@@ -51,6 +59,7 @@ class ExpenseEditViewModel(
                     category = e.category,
                     date = e.date,
                     note = e.note,
+                    recurringId = e.recurringId,
                     loading = false
                 )
             }
@@ -61,6 +70,8 @@ class ExpenseEditViewModel(
     fun onCategoryChange(c: Category) = _state.update { it.copy(category = c) }
     fun onDateChange(d: LocalDate) = _state.update { it.copy(date = d) }
     fun onNoteChange(v: String) = _state.update { it.copy(note = v) }
+    fun onRepeatChange(v: Boolean) = _state.update { it.copy(repeat = v) }
+    fun onRepeatFrequencyChange(f: Frequency) = _state.update { it.copy(repeatFrequency = f) }
 
     fun onAmountChange(v: String) {
         // Allow only digits with at most one decimal point and two decimals
@@ -76,17 +87,21 @@ class ExpenseEditViewModel(
             _state.update { it.copy(titleError = titleError, amountError = amountError) }
             return
         }
+        val expense = Expense(
+            id = s.id ?: 0,
+            title = s.title.trim(),
+            amount = amount!!,
+            category = s.category,
+            date = s.date,
+            note = s.note.trim(),
+            recurringId = s.recurringId
+        )
         viewModelScope.launch {
-            repository.save(
-                Expense(
-                    id = s.id ?: 0,
-                    title = s.title.trim(),
-                    amount = amount!!,
-                    category = s.category,
-                    date = s.date,
-                    note = s.note.trim()
-                )
-            )
+            if (!s.isEditing && s.repeat && recurringRepository != null) {
+                recurringRepository.saveRepeating(expense, s.repeatFrequency)
+            } else {
+                repository.save(expense)
+            }
             _state.update { it.copy(finished = true) }
         }
     }
@@ -108,7 +123,7 @@ class ExpenseEditViewModel(
         fun factory(expenseId: Long?) = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as MngExpenseApp
-                ExpenseEditViewModel(app.expenseRepository, expenseId)
+                ExpenseEditViewModel(app.expenseRepository, app.recurringRepository, expenseId)
             }
         }
     }

@@ -22,14 +22,18 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Crash reports are sent from release builds only (see the debug build type below)
+        // Crash reports on by default (each build type can override this below)
         manifestPlaceholders["crashlyticsEnabled"] = true
     }
 
     buildTypes {
         debug {
-            // Keep crashes from development and testing out of the Crashlytics dashboard
-            manifestPlaceholders["crashlyticsEnabled"] = false
+            // Separate app ID so the debug build installs next to the Play Store app
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            // Debug crashes are reported too, to the separate ".debug" app in Firebase,
+            // so they never mix with Play Store crashes. Set to false to turn this off.
+            manifestPlaceholders["crashlyticsEnabled"] = true
         }
         release {
             optimization {

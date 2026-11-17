@@ -19,6 +19,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MngExpense">
+
+        <!-- Crashlytics: on for release builds, off for debug (set in app/build.gradle.kts) -->
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="${crashlyticsEnabled}" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

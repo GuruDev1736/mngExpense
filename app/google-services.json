@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "20356322112",
+    "project_id": "mngexpense-4b711",
+    "storage_bucket": "mngexpense-4b711.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20356322112:android:690525dc541770276460a5",
+        "android_client_info": {
+          "package_name": "com.guruprasad.mngexpense"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoXADkY7pG4CYvree9DQuICk2FEY1_eqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

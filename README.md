@@ -143,6 +143,9 @@
 - Optional notes on every expense
 - Input checks for title and amount
 - 🔁 **Recurring expenses**: rent, EMIs, subscriptions are added automatically
+- 🎯 **Monthly budgets** (overall and per category) with alerts at 80% and when exceeded
+- 🔍 **Search & filter** every transaction by text, date range, category, amount and type
+- 💱 **Multiple currencies**: pick your home currency, and log expenses paid in any other currency
 
 </td>
 <td width="50%" valign="top">
@@ -261,11 +264,15 @@ app/src/main/java/com/guruprasad/mngexpense/
 │   ├── Expense.kt
 │   ├── Category.kt
 │   ├── Period.kt                # Date ranges, labels, chart buckets
-│   └── RecurringExpense.kt      # Repeat schedules, catch-up, rescheduling
+│   ├── RecurringExpense.kt      # Repeat schedules, catch-up, rescheduling
+│   ├── Budget.kt                # Budget status, pace, alert and over-budget rules
+│   ├── TransactionFilter.kt     # Search, filters, sorting and day grouping
+│   └── Currencies.kt            # Currency list and conversion
 │
 ├── data/
 │   ├── local/                   # Room: entities, DAOs, database + migrations
-│   ├── repository/              # ExpenseRepository, RecurringRepository
+│   ├── repository/              # Expense, Recurring and Budget repositories
+│   ├── budget/                  # Budget alert notifications
 │   ├── recurring/               # Daily WorkManager job + "added" notification
 │   ├── export/                  # PdfWriter, XlsxWriter, ReportExporter
 │   ├── widget/                  # Home-screen widget (Glance) + chart bitmaps
@@ -278,11 +285,13 @@ app/src/main/java/com/guruprasad/mngexpense/
 │   │   ├── dashboard/           # Dashboard UI + ViewModel
 │   │   ├── expense/             # Add / Edit UI + ViewModel
 │   │   ├── recurring/           # Recurring list + Add / Edit
+│   │   ├── budget/              # Budgets screen + amount dialog
+│   │   ├── transactions/        # All transactions: search, filter sheets, results
 │   │   └── setting/             # Shake-to-open settings
-│   ├── common/                  # Category colours, date picker, relative dates
+│   ├── common/                  # Expense row, category colours, budget progress, date picker
 │   └── theme/                   # Material 3 theme
 │
-└── util/                        # Currency formatting, preferences
+└── util/                        # Money formatting (home currency), preferences
 ```
 
 ---
@@ -355,6 +364,42 @@ Set up a cost that repeats **once**, and MngExpense adds it for you on the right
 
 ---
 
+## 💱 Multiple currencies
+
+- **Home currency:** choose it in ⚙️ **Settings → Home currency** (₹ by default). Totals, charts, budgets, reports, notifications and the widget all use it. Switching only relabels amounts, it doesn't convert them, so set it to the currency you live in.
+- **Spent abroad?** On the add form, tap the currency code inside the amount field (e.g. **INR ▾**) and pick another one, such as USD. Enter the exchange rate (1 USD = 83.2 INR) and the app shows the converted amount right away.
+- **Rates are remembered:** the next USD expense suggests 83.2 again. The app stays 100% offline, so rates are never fetched from the internet. Use the rate from your bank, card statement or exchange receipt.
+- **What you see:** lists show the home amount with what you actually paid underneath (₹8,320 / $100). Excel reports add *Paid in* and *Amount paid* columns, and PDFs show it next to the title.
+- Recurring expenses and budgets are in the home currency.
+
+---
+
+## 🔍 Search & filter
+
+Tap 🔍 on the dashboard (or **See all transactions** under *Recent*) to see every expense, grouped by day with daily totals.
+
+- **Search** titles and notes. Every word must match, in any order and any case ("auto office" finds "Auto to office"), and matches are highlighted.
+- **Filter** with chips:
+  - **Date:** all time, this month, last month, last 3 months, this year, or a custom range.
+  - **Category:** pick one or several.
+  - **Amount:** a minimum and/or maximum.
+  - **Type:** recurring or one-time.
+- **Sort** by newest, oldest, highest or lowest amount.
+- The result count and total update as you type. Tap any result to edit it.
+- **From the dashboard:** tap a category under *Spending by category* to see exactly those expenses for the period on screen.
+
+---
+
+## 🎯 Monthly budgets
+
+- **Set a limit** for all spending, for single categories, or both: tap the 🐷 icon on the dashboard. A budget repeats every month until you change it.
+- **See where you stand:** the dashboard's Month view shows how much is spent and left, the days to go and the categories close to their limit. Older months show whether you stayed under budget.
+- **Pace estimate:** "On track: about ₹28,800 by month end". Only day-to-day spending is extrapolated; fixed costs such as rent are counted once, plus the recurring payments still due this month.
+- **Warns before you save:** the add form says when an expense would take a budget over its limit.
+- **Alerts:** a notification when a budget reaches **80%**, and one when it's **exceeded**, each at most once per budget per month (deleting and re-adding an expense doesn't repeat them). Expenses added by recurring rules count too. Turn alerts off on the Budgets screen.
+
+---
+
 ## 🔐 Permissions
 
 Every permission is optional. Apart from notifications, they are all for the **shake-to-open** feature only. Expense tracking, recurring expenses and exports need **none** (recurring expenses still work with notifications off; you just aren't told).
@@ -362,7 +407,7 @@ Every permission is optional. Apart from notifications, they are all for the **s
 | Permission | Why |
 |---|---|
 | `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_SPECIAL_USE` | Keeps shake detection running in the background |
-| `POST_NOTIFICATIONS` | Shows the "Shake to open is on" notification, and tells you when recurring expenses were added |
+| `POST_NOTIFICATIONS` | Shake-to-open status, recurring expenses that were added, and budget alerts |
 | `SYSTEM_ALERT_WINDOW` | Lets the app open itself after a shake |
 | `USE_FULL_SCREEN_INTENT` | Fallback to open over the lock screen |
 | `RECEIVE_BOOT_COMPLETED` | Restarts shake detection after a reboot (only if you turned it on) |
@@ -378,14 +423,14 @@ Every permission is optional. Apart from notifications, they are all for the **s
 - [x] Day, week, month and year dashboards with charts
 - [x] PDF & Excel export
 - [x] Dark mode & dynamic colour
-- [ ] 🎯 Monthly budgets with alerts
-- [ ] 🔍 Search & filter transactions
+- [x] 🎯 Monthly budgets with alerts
+- [x] 🔍 Search & filter transactions
 - [x] ⚡ Quick Settings tile for one-tap entry
 - [x] 📲 App shortcut (long-press the icon)
 - [x] 🧩 Home-screen widget with Pie / Bar tabs
 - [x] 🔁 Recurring expenses
 - [ ] ☁️ Backup & restore
-- [ ] 💱 Multiple currencies
+- [x] 💱 Multiple currencies
 
 ---
 

@@ -6,7 +6,7 @@ import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.text.TextPaint
 import android.text.TextUtils
-import com.guruprasad.mngexpense.util.rupees
+import com.guruprasad.mngexpense.util.money
 import java.io.OutputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -68,14 +68,14 @@ object PdfWriter {
         c0.drawText("Generated ${LocalDate.now().format(dateFmt)}", MARGIN, y, sub); y += 28
 
         // ---- Summary ----
-        c0.drawText("Total spent: ${rupees(report.total)}   ·   ${report.expenses.size} transactions", MARGIN, y, bold)
+        c0.drawText("Total spent: ${money(report.total, report.currency)}   ·   ${report.expenses.size} transactions", MARGIN, y, bold)
         y += ROW_H
         report.byCategory.forEach { (cat, amount) ->
             ensureSpace(ROW_H)
             val pct = if (report.total > 0) (amount / report.total * 100).toInt() else 0
             page.canvas.drawText("${cat.label}  ($pct%)", MARGIN + 10, y, body)
             body.textAlign = Paint.Align.RIGHT
-            page.canvas.drawText(rupees(amount), MARGIN + 260, y, body)
+            page.canvas.drawText(money(amount, report.currency), MARGIN + 260, y, body)
             body.textAlign = Paint.Align.LEFT
             y += 16
         }
@@ -88,11 +88,13 @@ object PdfWriter {
             if (y + ROW_H > PAGE_H - MARGIN) { newPage(); tableHeader() }
             val c = page.canvas
             c.drawText(e.date.format(dateFmt), xDate, y, body)
-            val t = TextUtils.ellipsize(e.title, body, xCat - xTitle - 10, TextUtils.TruncateAt.END).toString()
+            // Paid in another currency: "Hotel ($120)"
+            val title = if (e.isForeign) "${e.title} (${money(e.originalAmount!!, e.currency!!)})" else e.title
+            val t = TextUtils.ellipsize(title, body, xCat - xTitle - 10, TextUtils.TruncateAt.END).toString()
             c.drawText(t, xTitle, y, body)
             c.drawText(e.category.label, xCat, y, body)
             body.textAlign = Paint.Align.RIGHT
-            c.drawText(rupees(e.amount), xAmountRight, y, body)
+            c.drawText(money(e.amount, report.currency), xAmountRight, y, body)
             body.textAlign = Paint.Align.LEFT
             y += ROW_H
         }
@@ -100,7 +102,7 @@ object PdfWriter {
         page.canvas.drawLine(MARGIN, y - 12, PAGE_W - MARGIN, y - 12, line)
         page.canvas.drawText("Total", xCat, y, bold)
         bold.textAlign = Paint.Align.RIGHT
-        page.canvas.drawText(rupees(report.total), xAmountRight, y, bold)
+        page.canvas.drawText(money(report.total, report.currency), xAmountRight, y, bold)
 
         doc.finishPage(page)
         try {

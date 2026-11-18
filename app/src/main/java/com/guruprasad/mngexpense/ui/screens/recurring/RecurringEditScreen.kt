@@ -68,7 +68,8 @@ import com.guruprasad.mngexpense.domain.Category
 import com.guruprasad.mngexpense.domain.Frequency
 import com.guruprasad.mngexpense.ui.common.DatePickerModal
 import com.guruprasad.mngexpense.ui.common.color
-import com.guruprasad.mngexpense.util.rupees
+import com.guruprasad.mngexpense.util.money
+import com.guruprasad.mngexpense.util.currencySymbol
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -164,7 +165,7 @@ fun RecurringEditContent(
                 value = state.amount,
                 onValueChange = onAmountChange,
                 label = { Text("Amount") },
-                prefix = { Text("₹ ") },
+                prefix = { Text(currencySymbol() + " ") },
                 isError = state.amountError != null,
                 supportingText = state.amountError?.let { { Text(it) } },
                 singleLine = true,
@@ -363,11 +364,11 @@ private fun PreviewCard(state: RecurringFormState, preview: RecurringPreview, hi
                     )
                 }
                 preview.monthlyEquivalent?.let {
-                    Text("≈ ${rupees(it)} per month", style = MaterialTheme.typography.bodySmall)
+                    Text("≈ ${money(it, rounded = true)} per month", style = MaterialTheme.typography.bodySmall)
                 }
                 if (history != null && history.count > 0) {
                     Text(
-                        "Added ${history.count} ${if (history.count == 1) "time" else "times"} so far · ${rupees(history.total)}",
+                        "Added ${history.count} ${if (history.count == 1) "time" else "times"} so far · ${money(history.total)}",
                         style = MaterialTheme.typography.bodySmall
                     )
                 }

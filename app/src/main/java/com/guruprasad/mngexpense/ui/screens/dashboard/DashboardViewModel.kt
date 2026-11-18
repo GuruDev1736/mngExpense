@@ -9,10 +9,13 @@ import com.guruprasad.mngexpense.MngExpenseApp
 import android.net.Uri
 import com.guruprasad.mngexpense.data.export.ExportFormat
 import com.guruprasad.mngexpense.data.export.ReportExporter
+import com.guruprasad.mngexpense.data.repository.BudgetRepository
 import com.guruprasad.mngexpense.data.repository.ExpenseRepository
 import com.guruprasad.mngexpense.data.repository.RecurringRepository
 import com.guruprasad.mngexpense.domain.RecurringExpense
 import com.guruprasad.mngexpense.domain.Bucket
+import com.guruprasad.mngexpense.domain.BudgetLevel
+import com.guruprasad.mngexpense.domain.BudgetStatus
 import com.guruprasad.mngexpense.domain.Category
 import com.guruprasad.mngexpense.domain.Expense
 import com.guruprasad.mngexpense.domain.Frequency
@@ -33,12 +36,22 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.YearMonth
 
 /** One-off messages for the screen (shown as a snackbar). */
 sealed interface DashboardEvent {
     data class ExportDone(val uri: Uri, val format: ExportFormat) : DashboardEvent
     data class ExportFailed(val message: String) : DashboardEvent
 }
+
+/** Budget card on the dashboard (Month view only). */
+data class DashboardBudget(
+    val overall: BudgetStatus?,
+    /** Category budgets at 80 % or more, worst first. */
+    val attention: List<BudgetStatus>,
+    val hasBudgets: Boolean,
+    val isCurrentMonth: Boolean
+)
 
 data class CategoryTotal(val category: Category, val amount: Double)
 
@@ -61,6 +74,7 @@ class DashboardViewModel(
     private val repository: ExpenseRepository,
     private val exporter: ReportExporter? = null,
     recurring: RecurringRepository? = null,
+    budgets: BudgetRepository? = null,
     private val today: () -> LocalDate = LocalDate::now
 ) : ViewModel() {
 
@@ -85,6 +99,24 @@ class DashboardViewModel(
                 .sortedBy { it.nextDate }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** Budget progress for the month on screen; null outside the Month view. */
+    val budget: StateFlow<DashboardBudget?> = period
+        .flatMapLatest { p ->
+            if (budgets == null || p.filter != TimeFilter.MONTH) return@flatMapLatest flowOf(null)
+            val month = YearMonth.from(p.start)
+            budgets.observeStatuses(month).map { statuses ->
+                DashboardBudget(
+                    overall = statuses.firstOrNull { it.budget.category == null },
+                    attention = statuses
+                        .filter { it.budget.category != null && it.level != BudgetLevel.ON_TRACK }
+                        .sortedByDescending { it.fraction },
+                    hasBudgets = statuses.isNotEmpty(),
+                    isCurrentMonth = month == YearMonth.from(today())
+                )
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val _events = Channel<DashboardEvent>(Channel.BUFFERED)
     val events: Flow<DashboardEvent> = _events.receiveAsFlow()
@@ -137,7 +169,7 @@ class DashboardViewModel(
         val Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as MngExpenseApp
-                DashboardViewModel(app.expenseRepository, app.reportExporter, app.recurringRepository)
+                DashboardViewModel(app.expenseRepository, app.reportExporter, app.recurringRepository, app.budgetRepository)
             }
         }
     }

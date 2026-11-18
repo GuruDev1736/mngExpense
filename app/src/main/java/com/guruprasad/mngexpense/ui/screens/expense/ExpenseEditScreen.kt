@@ -6,7 +6,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.EventRepeat
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Switch
@@ -63,7 +65,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.guruprasad.mngexpense.domain.Category
+import com.guruprasad.mngexpense.ui.common.CurrencyPickerDialog
 import com.guruprasad.mngexpense.ui.common.color
+import com.guruprasad.mngexpense.util.currencySymbol
+import com.guruprasad.mngexpense.util.money
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -77,13 +82,17 @@ fun ExpenseEditScreen(
     viewModel: ExpenseEditViewModel = viewModel(factory = ExpenseEditViewModel.factory(expenseId))
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val budgetHint by viewModel.budgetHint.collectAsStateWithLifecycle()
     LaunchedEffect(state.finished) { if (state.finished) onClose() }
 
     ExpenseEditContent(
         state = state,
+        budgetHint = budgetHint,
         onBack = onClose,
         onTitleChange = viewModel::onTitleChange,
         onAmountChange = viewModel::onAmountChange,
+        onCurrencyChange = viewModel::onCurrencyChange,
+        onRateChange = viewModel::onRateChange,
         onCategoryChange = viewModel::onCategoryChange,
         onDateChange = viewModel::onDateChange,
         onNoteChange = viewModel::onNoteChange,
@@ -99,9 +108,12 @@ fun ExpenseEditScreen(
 @Composable
 fun ExpenseEditContent(
     state: ExpenseFormState,
+    budgetHint: String? = null,
     onBack: () -> Unit = {},
     onTitleChange: (String) -> Unit = {},
     onAmountChange: (String) -> Unit = {},
+    onCurrencyChange: (String) -> Unit = {},
+    onRateChange: (String) -> Unit = {},
     onCategoryChange: (Category) -> Unit = {},
     onDateChange: (LocalDate) -> Unit = {},
     onNoteChange: (String) -> Unit = {},
@@ -113,6 +125,7 @@ fun ExpenseEditContent(
 ) {
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
+    var pickCurrency by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -152,7 +165,14 @@ fun ExpenseEditContent(
                 value = state.amount,
                 onValueChange = onAmountChange,
                 label = { Text("Amount") },
-                prefix = { Text("₹ ") },
+                prefix = { Text(currencySymbol(state.currency) + " ") },
+                trailingIcon = {
+                    // Pay in another currency (e.g. on a trip)
+                    TextButton(onClick = { pickCurrency = true }, modifier = Modifier.padding(end = 4.dp)) {
+                        Text(state.currency)
+                        Icon(Icons.Filled.ArrowDropDown, contentDescription = "Change currency")
+                    }
+                },
                 isError = state.amountError != null,
                 supportingText = state.amountError?.let { { Text(it) } },
                 singleLine = true,
@@ -160,6 +180,8 @@ fun ExpenseEditContent(
                 textStyle = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.fillMaxWidth()
             )
+            if (state.isForeign) ExchangeRateRow(state, onRateChange)
+            budgetHint?.let { BudgetHint(it) }
             OutlinedTextField(
                 value = state.title,
                 onValueChange = onTitleChange,
@@ -203,7 +225,7 @@ fun ExpenseEditContent(
             )
 
             // ---- Recurring ----
-            if (!state.isEditing) {
+            if (!state.isEditing && !state.isForeign) {
                 RepeatSection(state, onRepeatChange, onRepeatFrequencyChange)
             } else if (state.recurringId != null) {
                 AutoAddedCard(onManage = { onOpenRecurring(state.recurringId) })
@@ -249,6 +271,15 @@ fun ExpenseEditContent(
             },
             dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancel") } }
         ) { DatePicker(pickerState) }
+    }
+
+    if (pickCurrency) {
+        CurrencyPickerDialog(
+            title = "Paid in",
+            selected = state.currency,
+            onPick = { onCurrencyChange(it); pickCurrency = false },
+            onDismiss = { pickCurrency = false }
+        )
     }
 
     if (confirmDelete) {
@@ -308,6 +339,46 @@ private fun RepeatSection(
                 }
             }
         }
+    }
+}
+
+/** "1 USD = [83.2] INR  → ₹8,320" for an amount in a foreign currency. */
+@Composable
+private fun ExchangeRateRow(state: ExpenseFormState, onRateChange: (String) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        OutlinedTextField(
+            value = state.rate,
+            onValueChange = onRateChange,
+            label = { Text("Exchange rate") },
+            prefix = { Text("1 ${state.currency} = ") },
+            suffix = { Text(state.home) },
+            isError = state.rateError != null,
+            supportingText = {
+                Text(
+                    state.rateError ?: state.homeAmount?.let { "= ${money(it, state.home)} in your home currency" }
+                        ?: "Rate from your bank, card statement or exchange receipt"
+                )
+            },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Next),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+/** Warning under the amount when saving would go over a budget. */
+@Composable
+private fun BudgetHint(text: String) {
+    Row(
+        Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            Icons.Filled.Warning, contentDescription = null,
+            tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp)
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
     }
 }
 

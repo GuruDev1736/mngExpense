@@ -52,4 +52,25 @@ class XlsxWriterTest {
         assertTrue(sheet1.contains("<v>46327</v>"))          // 1 Nov 2026 as an Excel date serial
         assertTrue(sheet1.contains("<f>SUM(D4:D5)</f><v>160.50</v>"))
     }
+
+    @Test fun foreignExpensesAddPaidInColumns() {
+        val foreign = ExpenseReport(
+            "Expense report", "November 2026",
+            listOf(
+                Expense(1, "Hotel", 8320.0, Category.OTHER, LocalDate.of(2026, 11, 3), currency = "USD", originalAmount = 100.0),
+                Expense(2, "Bus", 40.0, Category.TRANSPORT, LocalDate.of(2026, 11, 4))
+            ),
+            currency = "INR"
+        )
+        val buf = ByteArrayOutputStream()
+        XlsxWriter.write(foreign, buf)
+        val sheet = unzip(buf.toByteArray())["xl/worksheets/sheet1.xml"]!!
+        assertTrue(sheet.contains("Amount (INR)"))
+        assertTrue(sheet.contains("Paid in"))
+        assertTrue(sheet.contains(">USD<"))
+
+        val plain = ByteArrayOutputStream()
+        XlsxWriter.write(report, plain)
+        assertTrue(!unzip(plain.toByteArray())["xl/worksheets/sheet1.xml"]!!.contains("Paid in"))
+    }
 }

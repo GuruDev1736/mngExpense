@@ -10,7 +10,7 @@ import android.service.quicksettings.TileService
 import com.guruprasad.mngexpense.MainActivity
 import com.guruprasad.mngexpense.MngExpenseApp
 import com.guruprasad.mngexpense.R
-import com.guruprasad.mngexpense.util.rupees
+import com.guruprasad.mngexpense.util.money
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -40,7 +40,7 @@ class QuickAddTileService : TileService() {
                 .observeBetween(today, today.plusDays(1))
                 .first()
                 .sumOf { it.amount }
-            updateTile(subtitle = "Today: ${rupees(total)}")
+            updateTile(subtitle = "Today: ${money(total)}")
         }
     }
 

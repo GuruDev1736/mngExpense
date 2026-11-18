@@ -14,31 +14,34 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.guruprasad.mngexpense.data.service.ShakeService
+import com.guruprasad.mngexpense.domain.Category
+import com.guruprasad.mngexpense.ui.screens.budget.BudgetScreen
 import com.guruprasad.mngexpense.ui.screens.dashboard.DashboardScreen
 import com.guruprasad.mngexpense.ui.screens.expense.ExpenseEditScreen
 import com.guruprasad.mngexpense.ui.screens.recurring.RecurringEditScreen
 import com.guruprasad.mngexpense.ui.screens.recurring.RecurringListScreen
 import com.guruprasad.mngexpense.ui.screens.setting.ShakeSettingsScreen
+import com.guruprasad.mngexpense.ui.screens.transactions.TransactionsScreen
 import com.guruprasad.mngexpense.ui.theme.MngExpenseTheme
 import com.guruprasad.mngexpense.util.ShakePrefs
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class MainActivity : ComponentActivity() {
 
-    /** Bumped each time something (Quick Settings tile, app shortcut) asks to open "Add expense". */
-    private var addExpenseRequests by mutableIntStateOf(0)
-
-    /** Bumped when a "recurring expense added" notification is tapped. */
-    private var recurringRequests by mutableIntStateOf(0)
+    /** Screen that a tile, shortcut or notification asked to open (see [NavRequest]). */
+    private var navRequest by mutableStateOf<NavRequest?>(null)
+    private var navRequestCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +53,7 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null) handleNavigationIntent(intent)
         setContent {
             MngExpenseTheme {
-                AppNavigation(addExpenseRequests = addExpenseRequests, recurringRequests = recurringRequests)
+                AppNavigation(navRequest = navRequest)
             }
         }
     }
@@ -63,19 +66,23 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleNavigationIntent(intent: Intent?) {
-        when (intent?.action) {
+        val route = when (intent?.action) {
             ACTION_ADD_EXPENSE -> {
-                addExpenseRequests++
                 // Tells the launcher this action is used, so it ranks the shortcut higher
                 ShortcutManagerCompat.reportShortcutUsed(this, SHORTCUT_ADD_EXPENSE)
+                ExpenseRoute()
             }
-            ACTION_OPEN_RECURRING -> recurringRequests++
+            ACTION_OPEN_RECURRING -> RecurringListRoute
+            ACTION_OPEN_BUDGETS -> BudgetsRoute
+            else -> return
         }
+        navRequest = NavRequest(route, ++navRequestCount)
     }
 
     companion object {
         const val ACTION_ADD_EXPENSE = "com.guruprasad.mngexpense.action.ADD_EXPENSE"
         const val ACTION_OPEN_RECURRING = "com.guruprasad.mngexpense.action.OPEN_RECURRING"
+        const val ACTION_OPEN_BUDGETS = "com.guruprasad.mngexpense.action.OPEN_BUDGETS"
 
         /** Must match android:shortcutId in res/xml/shortcuts.xml */
         const val SHORTCUT_ADD_EXPENSE = "add_expense"
@@ -90,6 +97,12 @@ class MainActivity : ComponentActivity() {
         fun recurringListIntent(context: Context): Intent =
             Intent(context, MainActivity::class.java)
                 .setAction(ACTION_OPEN_RECURRING)
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+        /** Opens the app on the "Budgets" screen. */
+        fun budgetsIntent(context: Context): Intent =
+            Intent(context, MainActivity::class.java)
+                .setAction(ACTION_OPEN_BUDGETS)
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
     }
 
@@ -136,23 +149,18 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/** Ask [AppNavigation] to open [route]; [id] makes a repeated request for the same screen distinct. */
+data class NavRequest(val route: NavKey, val id: Int)
+
 @Composable
-fun AppNavigation(addExpenseRequests: Int = 0, recurringRequests: Int = 0) {
+fun AppNavigation(navRequest: NavRequest? = null) {
     // The back stack: a list of routes. The last one is shown on screen.
     val backStack = rememberNavBackStack(DashboardRoute)
 
-    // Quick Settings tile / shortcut → open "Add expense" (unless it is already showing)
-    LaunchedEffect(addExpenseRequests) {
-        if (addExpenseRequests > 0 && backStack.lastOrNull() != ExpenseRoute()) {
-            backStack.add(ExpenseRoute())
-        }
-    }
-
-    // "Recurring expense added" notification → open the recurring list
-    LaunchedEffect(recurringRequests) {
-        if (recurringRequests > 0 && backStack.lastOrNull() != RecurringListRoute) {
-            backStack.add(RecurringListRoute)
-        }
+    // Tile / shortcut / notification → open that screen (unless it is already showing)
+    LaunchedEffect(navRequest) {
+        val route = navRequest?.route ?: return@LaunchedEffect
+        if (backStack.lastOrNull() != route) backStack.add(route)
     }
 
     fun goBack() {
@@ -173,7 +181,9 @@ fun AppNavigation(addExpenseRequests: Int = 0, recurringRequests: Int = 0) {
                     onAddExpense = { backStack.add(ExpenseRoute()) },
                     onExpenseClick = { id -> backStack.add(ExpenseRoute(id)) },
                     onOpenSettings = { backStack.add(SettingsRoute) },
-                    onOpenRecurring = { backStack.add(RecurringListRoute) }
+                    onOpenRecurring = { backStack.add(RecurringListRoute) },
+                    onOpenBudgets = { backStack.add(BudgetsRoute) },
+                    onOpenTransactions = { route -> backStack.add(route) }
                 )
             }
             entry<ExpenseRoute> { route ->
@@ -189,6 +199,19 @@ fun AppNavigation(addExpenseRequests: Int = 0, recurringRequests: Int = 0) {
                     onAdd = { backStack.add(RecurringRoute()) },
                     onOpen = { id -> backStack.add(RecurringRoute(id)) }
                 )
+            }
+            entry<TransactionsRoute> { route ->
+                TransactionsScreen(
+                    initialCategory = route.category?.let { name -> Category.entries.firstOrNull { it.name == name } },
+                    initialStart = route.startDay?.let(LocalDate::ofEpochDay),
+                    initialEnd = route.endDay?.let(LocalDate::ofEpochDay),
+                    focusSearch = route.focusSearch,
+                    onBack = { goBack() },
+                    onOpenExpense = { id -> backStack.add(ExpenseRoute(id)) }
+                )
+            }
+            entry<BudgetsRoute> {
+                BudgetScreen(onBack = { goBack() })
             }
             entry<RecurringRoute> { route ->
                 RecurringEditScreen(ruleId = route.id, onClose = { goBack() })

@@ -7,8 +7,13 @@ import com.guruprasad.mngexpense.domain.Expense
 data class ExpenseReport(
     val title: String,          // e.g. "Expense report"
     val periodLabel: String,    // e.g. "November 2026"
-    val expenses: List<Expense> // oldest first
+    val expenses: List<Expense>, // oldest first
+    /** Home currency code: every amount and total is in it. */
+    val currency: String = "INR"
 ) {
+    /** Some expenses were paid in another currency — reports then show what was actually paid. */
+    val hasForeign: Boolean = expenses.any { it.isForeign }
+
     val total: Double = expenses.sumOf { it.amount }
 
     val byCategory: List<Pair<Category, Double>> = expenses

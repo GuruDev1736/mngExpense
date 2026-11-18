@@ -30,6 +30,8 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.EventRepeat
+import androidx.compose.material.icons.filled.Savings
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -71,6 +73,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guruprasad.mngexpense.TransactionsRoute
 import com.guruprasad.mngexpense.data.export.ExportFormat
 import com.guruprasad.mngexpense.domain.Bucket
 import com.guruprasad.mngexpense.domain.Category
@@ -78,10 +81,15 @@ import com.guruprasad.mngexpense.domain.Expense
 import com.guruprasad.mngexpense.domain.Period
 import com.guruprasad.mngexpense.domain.RecurringExpense
 import com.guruprasad.mngexpense.domain.TimeFilter
+import com.guruprasad.mngexpense.ui.common.BudgetProgressBar
+import com.guruprasad.mngexpense.ui.common.ExpenseListItem
+import com.guruprasad.mngexpense.ui.common.budgetColor
+import com.guruprasad.mngexpense.ui.common.budgetLeftText
+import com.guruprasad.mngexpense.ui.common.budgetPaceText
 import com.guruprasad.mngexpense.ui.common.color
 import com.guruprasad.mngexpense.ui.common.relativeDay
-import com.guruprasad.mngexpense.util.compactRupees
-import com.guruprasad.mngexpense.util.rupees
+import com.guruprasad.mngexpense.util.compactMoney
+import com.guruprasad.mngexpense.util.money
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -97,10 +105,13 @@ fun DashboardScreen(
     onExpenseClick: (Long) -> Unit = {},
     onOpenSettings: () -> Unit = {},
     onOpenRecurring: () -> Unit = {},
+    onOpenBudgets: () -> Unit = {},
+    onOpenTransactions: (TransactionsRoute) -> Unit = {},
     viewModel: DashboardViewModel = viewModel(factory = DashboardViewModel.Factory)
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val upcoming by viewModel.upcoming.collectAsStateWithLifecycle()
+    val budget by viewModel.budget.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val snackbar = remember { SnackbarHostState() }
 
@@ -148,6 +159,9 @@ fun DashboardScreen(
         onOpenSettings = onOpenSettings,
         upcoming = upcoming,
         onOpenRecurring = onOpenRecurring,
+        budget = budget,
+        onOpenBudgets = onOpenBudgets,
+        onOpenTransactions = onOpenTransactions,
         onExport = { format ->
             val name = viewModel.exportFileName(format)
             when (format) {
@@ -175,6 +189,9 @@ fun DashboardContent(
     onOpenSettings: () -> Unit = {},
     upcoming: List<RecurringExpense> = emptyList(),
     onOpenRecurring: () -> Unit = {},
+    budget: DashboardBudget? = null,
+    onOpenBudgets: () -> Unit = {},
+    onOpenTransactions: (TransactionsRoute) -> Unit = {},
     onExport: (ExportFormat) -> Unit = {}
 ) {
     val filter = state.period.filter
@@ -185,6 +202,12 @@ fun DashboardContent(
             TopAppBar(
                 title = { Text("Expense Dashboard") },
                 actions = {
+                    IconButton(onClick = { onOpenTransactions(TransactionsRoute(focusSearch = true)) }) {
+                        Icon(Icons.Filled.Search, contentDescription = "Search transactions")
+                    }
+                    IconButton(onClick = onOpenBudgets) {
+                        Icon(Icons.Filled.Savings, contentDescription = "Budgets")
+                    }
                     IconButton(onClick = onOpenRecurring) {
                         Icon(Icons.Filled.EventRepeat, contentDescription = "Recurring expenses")
                     }
@@ -251,14 +274,19 @@ fun DashboardContent(
                 } ?: "No data for last ${filter.title.lowercase()}"
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     StatCard(
-                        "Total spent", rupees(state.total), change,
+                        "Total spent", money(state.total), change,
                         MaterialTheme.colorScheme.primaryContainer, Modifier.weight(1f)
                     )
                     StatCard(
-                        "Transactions", state.count.toString(), "Avg ${rupees(state.averagePerDay)} / day",
+                        "Transactions", state.count.toString(), "Avg ${money(state.averagePerDay, rounded = true)} / day",
                         MaterialTheme.colorScheme.surfaceContainerHigh, Modifier.weight(1f)
                     )
                 }
+            }
+
+            // ---- Monthly budget (Month view) ----
+            if (budget != null && (budget.hasBudgets || budget.isCurrentMonth)) {
+                item { BudgetCard(budget, onOpenBudgets) }
             }
 
             // ---- Upcoming recurring expenses (next 7 days) ----
@@ -285,13 +313,24 @@ fun DashboardContent(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
-                                    rupees(state.total), style = MaterialTheme.typography.titleLarge,
+                                    money(state.total), style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.SemiBold
                                 )
                             }
                         }
                         Spacer(Modifier.height(16.dp))
-                        state.categories.forEach { c -> LegendRow(c, state.total) }
+                        state.categories.forEach { c ->
+                            LegendRow(c, state.total, onClick = {
+                                // Same category and period as on screen
+                                onOpenTransactions(
+                                    TransactionsRoute(
+                                        category = c.category.name,
+                                        startDay = state.period.start.toEpochDay(),
+                                        endDay = state.period.endExclusive.minusDays(1).toEpochDay()
+                                    )
+                                )
+                            })
+                        }
                     }
                 }
 
@@ -313,8 +352,12 @@ fun DashboardContent(
                     SectionCard("Recent") {
                         state.recent.forEachIndexed { i, e ->
                             if (i > 0) HorizontalDivider()
-                            ExpenseRow(e, onClick = { onExpenseClick(e.id) })
+                            ExpenseListItem(e, onClick = { onExpenseClick(e.id) })
                         }
+                        TextButton(
+                            onClick = { onOpenTransactions(TransactionsRoute()) },
+                            modifier = Modifier.align(Alignment.End)
+                        ) { Text("See all transactions") }
                     }
                 }
 
@@ -391,9 +434,12 @@ private fun SectionCard(title: String, content: @Composable ColumnScope.() -> Un
 }
 
 @Composable
-private fun LegendRow(c: CategoryTotal, total: Double) {
+private fun LegendRow(c: CategoryTotal, total: Double, onClick: () -> Unit) {
     val percent = if (total > 0) (c.amount / total * 100).toInt() else 0
-    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Box(Modifier.size(12.dp).clip(RoundedCornerShape(3.dp)).background(c.category.color))
         Spacer(Modifier.width(12.dp))
         Text(c.category.label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
@@ -404,43 +450,75 @@ private fun LegendRow(c: CategoryTotal, total: Double) {
             modifier = Modifier.width(40.dp) // fixed column so amounts line up
         )
         Spacer(Modifier.width(16.dp))
-        Text(rupees(c.amount), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+        Text(money(c.amount), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
     }
 }
 
 @Composable
-private fun ExpenseRow(e: Expense, onClick: () -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(Modifier.size(10.dp).clip(CircleShape).background(e.category.color))
-        Spacer(Modifier.width(12.dp))
-        Column(Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+private fun BudgetCard(budget: DashboardBudget, onOpen: () -> Unit) {
+    if (!budget.hasBudgets) {
+        // Gentle prompt, current month only
+        Card(
+            Modifier.fillMaxWidth().clickable(onClick = onOpen),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+        ) {
+            Row(Modifier.padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Filled.Savings, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Spacer(Modifier.width(12.dp))
                 Text(
-                    e.title, style = MaterialTheme.typography.bodyMedium, maxLines = 1,
-                    overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false)
+                    "Set a monthly budget to see how much is left",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
                 )
-                if (e.recurringId != null) {
-                    Spacer(Modifier.width(6.dp))
-                    Icon(
-                        Icons.Filled.EventRepeat, contentDescription = "Recurring",
-                        modifier = Modifier.size(14.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                TextButton(onClick = onOpen) { Text("Set") }
+            }
+        }
+        return
+    }
+    SectionCard("Budget") {
+        budget.overall?.let { s ->
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    money(s.spent), style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    " of ${money(s.budget.amount)}", style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 2.dp)
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            BudgetProgressBar(s)
+            Spacer(Modifier.height(8.dp))
+            Text(budgetLeftText(s), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+            budgetPaceText(s)?.let {
+                Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        if (budget.attention.isNotEmpty()) {
+            if (budget.overall != null) Spacer(Modifier.height(12.dp))
+            budget.attention.take(3).forEach { s ->
+                Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Box(Modifier.size(10.dp).clip(CircleShape).background(s.budget.category!!.color))
+                    Spacer(Modifier.width(10.dp))
+                    Text(s.budget.category.label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.width(110.dp))
+                    BudgetProgressBar(s, Modifier.weight(1f), height = 6)
+                    Spacer(Modifier.width(10.dp))
+                    Text(
+                        if (s.left < 0) "Over" else "${s.percent}%",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = budgetColor(s.level),
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.width(44.dp)
                     )
                 }
             }
-            Text(
-                "${e.category.label} · ${e.date.format(DateTimeFormatter.ofPattern("d MMM"))}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        } else if (budget.overall == null) {
+            Text("All category budgets are on track", style = MaterialTheme.typography.bodyMedium)
         }
-        Text(rupees(e.amount), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+        TextButton(onClick = onOpen, modifier = Modifier.align(Alignment.End)) { Text("All budgets") }
     }
 }
 
@@ -463,7 +541,7 @@ private fun UpcomingCard(upcoming: List<RecurringExpense>, onSeeAll: () -> Unit)
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
-                Text(rupees(rule.amount), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                Text(money(rule.amount), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
             }
         }
         TextButton(onClick = onSeeAll, modifier = Modifier.align(Alignment.End)) {
@@ -527,7 +605,7 @@ private fun BarChart(data: List<Bucket>, barColor: Color, chartHeight: Int = 180
             Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                 if (showValues && bar.amount > 0) {
                     Text(
-                        compactRupees(bar.amount), style = MaterialTheme.typography.labelSmall,
+                        compactMoney(bar.amount), style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1
                     )
                     Spacer(Modifier.height(4.dp))

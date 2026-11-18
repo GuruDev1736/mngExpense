@@ -44,12 +44,14 @@ object XlsxWriter {
         val header = n
         rows.row(n++) {
             text("A", "Date", S_BOLD); text("B", "Title", S_BOLD); text("C", "Category", S_BOLD)
-            text("D", "Amount (₹)", S_BOLD); text("E", "Note", S_BOLD)
+            text("D", "Amount (${r.currency})", S_BOLD); text("E", "Note", S_BOLD)
+            if (r.hasForeign) { text("F", "Paid in", S_BOLD); text("G", "Amount paid", S_BOLD) }
         }
         r.expenses.forEach { e ->
             rows.row(n++) {
                 date("A", e.date); text("B", e.title); text("C", e.category.label)
                 number("D", e.amount, S_MONEY); text("E", e.note)
+                if (e.isForeign) { text("F", e.currency!!); number("G", e.originalAmount!!, S_MONEY) }
             }
         }
         val last = n - 1
@@ -57,13 +59,14 @@ object XlsxWriter {
             text("C", "Total", S_BOLD)
             formula("D", if (last > header) "SUM(D${header + 1}:D$last)" else "0", r.total, S_BOLD_MONEY)
         }
-        return sheet(rows, colWidths = listOf(14.0, 32.0, 16.0, 14.0, 40.0))
+        val widths = listOf(14.0, 32.0, 16.0, 14.0, 40.0) + if (r.hasForeign) listOf(10.0, 14.0) else emptyList()
+        return sheet(rows, colWidths = widths)
     }
 
     private fun summarySheet(r: ExpenseReport): String {
         val rows = StringBuilder()
         var n = 1
-        rows.row(n++) { text("A", "Category", S_BOLD); text("B", "Amount (₹)", S_BOLD); text("C", "Share", S_BOLD) }
+        rows.row(n++) { text("A", "Category", S_BOLD); text("B", "Amount (${r.currency})", S_BOLD); text("C", "Share", S_BOLD) }
         r.byCategory.forEach { (c, amount) ->
             rows.row(n++) {
                 text("A", c.label); number("B", amount, S_MONEY)

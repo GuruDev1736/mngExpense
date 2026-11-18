@@ -137,6 +137,9 @@ fun ShakeSettingsScreen(onBack: () -> Unit = {}) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // ---- Currency ----
+            CurrencyCard()
+
             // ---- Quick add: tile + home-screen widget ----
             QuickTileCard()
             WidgetCard()

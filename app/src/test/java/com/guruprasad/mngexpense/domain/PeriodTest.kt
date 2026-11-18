@@ -1,6 +1,6 @@
 package com.guruprasad.mngexpense.domain
 
-import com.guruprasad.mngexpense.util.compactRupees
+import com.guruprasad.mngexpense.util.compactMoney
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.LocalDate
@@ -50,9 +50,9 @@ class PeriodTest {
     }
 
     @Test fun compactLabels() {
-        assertEquals("₹850", compactRupees(850.0))
-        assertEquals("₹2k", compactRupees(2000.0))
-        assertEquals("₹10.5k", compactRupees(10500.0))
-        assertEquals("₹1.2L", compactRupees(120000.0))
+        assertEquals("₹850", compactMoney(850.0))
+        assertEquals("₹2k", compactMoney(2000.0))
+        assertEquals("₹10.5k", compactMoney(10500.0))
+        assertEquals("₹1.2L", compactMoney(120000.0))
     }
 }

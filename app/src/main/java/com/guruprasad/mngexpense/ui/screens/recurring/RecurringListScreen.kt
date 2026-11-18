@@ -52,7 +52,7 @@ import com.guruprasad.mngexpense.domain.Frequency
 import com.guruprasad.mngexpense.domain.RecurringExpense
 import com.guruprasad.mngexpense.ui.common.color
 import com.guruprasad.mngexpense.ui.common.relativeDay
-import com.guruprasad.mngexpense.util.rupees
+import com.guruprasad.mngexpense.util.money
 import java.time.LocalDate
 
 @Composable
@@ -143,7 +143,7 @@ private fun SummaryCard(state: RecurringListState) {
         Column(Modifier.padding(16.dp)) {
             Text("Fixed costs per month", style = MaterialTheme.typography.labelLarge)
             Text(
-                rupees(state.monthlyTotal),
+                money(state.monthlyTotal, rounded = true),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(vertical = 4.dp)
@@ -188,7 +188,7 @@ private fun RecurringRow(
                         maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f)
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text(rupees(rule.amount), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                    Text(money(rule.amount), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(

@@ -54,8 +54,8 @@ import com.guruprasad.mngexpense.MngExpenseApp
 import com.guruprasad.mngexpense.domain.Category
 import com.guruprasad.mngexpense.domain.Expense
 import com.guruprasad.mngexpense.ui.common.color
-import com.guruprasad.mngexpense.util.compactRupees
-import com.guruprasad.mngexpense.util.rupees
+import com.guruprasad.mngexpense.util.compactMoney
+import com.guruprasad.mngexpense.util.money
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -139,7 +139,7 @@ private fun WidgetContent(today: LocalDate, expenses: List<Expense>, tab: String
                     style = TextStyle(color = GlanceTheme.colors.onSurfaceVariant, fontSize = 12.sp)
                 )
                 Text(
-                    rupees(total),
+                    money(total),
                     style = TextStyle(
                         color = GlanceTheme.colors.onSurface,
                         fontSize = 22.sp,
@@ -294,7 +294,7 @@ private fun BarChart(totals: List<Pair<Category, Double>>, area: DpSize) {
     Column(GlanceModifier.fillMaxWidth()) {
         // Values above, labels below: real Text, so colours follow light/dark mode.
         // Each sits in an equal-weight slot that lines up with its bar in the bitmap.
-        SlotRow(totals.map { compactRupees(it.second) }, bold = true, height = textRow)
+        SlotRow(totals.map { compactMoney(it.second) }, bold = true, height = textRow)
         Image(
             provider = ImageProvider(bitmap),
             contentDescription = "Bar chart of today's spending by category",

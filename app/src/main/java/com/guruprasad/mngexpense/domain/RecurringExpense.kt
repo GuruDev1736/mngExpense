@@ -85,6 +85,20 @@ data class RecurringExpense(
         return result
     }
 
+    /** Dates still to be added that fall after [after] and on or before [until], oldest first. */
+    fun upcomingDates(after: LocalDate, until: LocalDate, limit: Int = MAX_CATCH_UP): List<LocalDate> {
+        if (paused) return emptyList()
+        val result = mutableListOf<LocalDate>()
+        var n = nextIndex
+        while (result.size < limit) {
+            val d = occurrence(n)
+            if (d.isAfter(until) || !withinEnd(d)) break
+            if (d.isAfter(after)) result += d
+            n++
+        }
+        return result
+    }
+
     /** Smallest occurrence index whose date is after [date]. */
     fun firstIndexAfter(date: LocalDate): Int {
         if (startDate.isAfter(date)) return 0

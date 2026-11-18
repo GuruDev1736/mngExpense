@@ -23,8 +23,8 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.guruprasad.mngexpense" />
-                  <option name="mobileSdkAppId" value="1:20356322112:android:690525dc541770276460a5" />
+                  <option name="appId" value="com.guruprasad.mngexpense.debug" />
+                  <option name="mobileSdkAppId" value="1:20356322112:android:ea21c52cf2c658cd6460a5" />
                   <option name="projectId" value="mngexpense-4b711" />
                   <option name="projectNumber" value="20356322112" />
                 </ConnectionSetting>

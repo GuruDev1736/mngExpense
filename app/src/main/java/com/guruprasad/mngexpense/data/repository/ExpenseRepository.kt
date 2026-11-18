@@ -21,6 +21,11 @@ class ExpenseRepository(
         dao.observeBetween(start.toEpochDay(), endExclusive.toEpochDay())
             .map { list -> list.map { it.toDomain() } }
 
+    /** Expenses from [start] (inclusive) to [endExclusive]; a null end means no limit on that side. */
+    fun observeRange(start: LocalDate?, endExclusive: LocalDate?): Flow<List<Expense>> =
+        dao.observeBetween(start?.toEpochDay() ?: Long.MIN_VALUE, endExclusive?.toEpochDay() ?: Long.MAX_VALUE)
+            .map { list -> list.map { it.toDomain() } }
+
     suspend fun get(id: Long): Expense? = dao.getById(id)?.toDomain()
 
     suspend fun save(expense: Expense): Long =

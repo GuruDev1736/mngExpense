@@ -11,7 +11,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.guruprasad.mngexpense.MainActivity
 import com.guruprasad.mngexpense.R
 import com.guruprasad.mngexpense.domain.Expense
-import com.guruprasad.mngexpense.util.rupees
+import com.guruprasad.mngexpense.util.money
 
 /** "Added: Rent ₹15,000" — tells the user what was added automatically in the background. */
 object RecurringNotifier {
@@ -39,11 +39,11 @@ object RecurringNotifier {
         val total = added.sumOf { it.amount }
         val title = if (added.size == 1) "Added: ${added[0].title}"
         else "Added ${added.size} recurring expenses"
-        val text = if (added.size == 1) "${rupees(total)} · ${added[0].category.label}"
-        else "${rupees(total)} in total"
+        val text = if (added.size == 1) "${money(total)} · ${added[0].category.label}"
+        else "${money(total)} in total"
 
         val inbox = NotificationCompat.InboxStyle()
-        added.take(6).forEach { inbox.addLine("${it.title}  ${rupees(it.amount)}") }
+        added.take(6).forEach { inbox.addLine("${it.title}  ${money(it.amount)}") }
         if (added.size > 6) inbox.addLine("+${added.size - 6} more")
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)

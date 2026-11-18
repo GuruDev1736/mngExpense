@@ -1,5 +1,6 @@
 package com.guruprasad.mngexpense.data.export
 
+import com.guruprasad.mngexpense.util.AppCurrency
 import android.content.Context
 import android.net.Uri
 import com.guruprasad.mngexpense.data.repository.ExpenseRepository
@@ -26,7 +27,7 @@ class ReportExporter(
     suspend fun export(period: Period, format: ExportFormat, uri: Uri) = withContext(Dispatchers.IO) {
         val expenses = repository.observeBetween(period.start, period.endExclusive).first()
             .sortedWith(compareBy({ it.date }, { it.id }))
-        val report = ExpenseReport("Expense report", period.label(), expenses)
+        val report = ExpenseReport("Expense report", period.label(), expenses, AppCurrency.code)
         val out = context.contentResolver.openOutputStream(uri, "wt")
             ?: throw IOException("Could not open $uri")
         out.use {

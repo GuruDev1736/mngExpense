@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Signed release builds (APK / AAB / R8 mapping) - keep local, not in git
+/app/release/

@@ -14,5 +14,6 @@
 .cxx
 local.properties
 
-# Signed release builds (APK / AAB / R8 mapping) - keep local, not in git
+# Builds exported from Android Studio (APK / AAB / R8 mapping) - keep local, not in git
 /app/release/
+/app/debug/

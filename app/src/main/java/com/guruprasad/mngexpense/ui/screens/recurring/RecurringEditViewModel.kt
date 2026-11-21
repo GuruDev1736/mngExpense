@@ -27,7 +27,7 @@ data class RecurringFormState(
     val id: Long? = null,
     val title: String = "",
     val amount: String = "",
-    val category: Category = Category.BILLS,
+    val category: Category = Category.firstOr(Category.BILLS),
     val note: String = "",
     val frequency: Frequency = Frequency.MONTHLY,
     val every: Int = 1,

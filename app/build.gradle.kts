@@ -58,6 +58,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -86,6 +87,7 @@ dependencies {
     implementation("androidx.navigation3:navigation3-runtime:1.2.1")
     implementation("androidx.navigation3:navigation3-ui:1.2.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.13.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.13.0")
 
     //icons
 

@@ -35,4 +35,15 @@ interface RecurringExpenseDao {
             "WHERE recurring_id = :id GROUP BY recurring_id"
     )
     fun observeHistory(id: Long): Flow<RecurringHistory?>
+
+    // ---- Backup & restore ----
+
+    @Query("SELECT * FROM recurring_expenses ORDER BY id")
+    suspend fun getAll(): List<RecurringExpenseEntity>
+
+    @Query("DELETE FROM recurring_expenses")
+    suspend fun deleteAll()
+
+    @androidx.room.Insert
+    suspend fun insertAll(rules: List<RecurringExpenseEntity>)
 }

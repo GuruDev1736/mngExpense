@@ -50,7 +50,9 @@ object BudgetNotifier {
                 .setCategory(NotificationCompat.CATEGORY_REMINDER)
                 .build()
             // One notification per budget: a later "exceeded" replaces that budget's "80% used"
-            nm.notify(NOTIF_ID_BASE + (alert.status.budget.category?.ordinal?.plus(1) ?: 0), notification)
+            // One notification per budget: a stable id from its key (0 = the overall budget)
+            val slot = alert.status.budget.category?.let { Math.floorMod(it.key.hashCode(), 99) + 1 } ?: 0
+            nm.notify(NOTIF_ID_BASE + slot, notification)
         }
     }
 

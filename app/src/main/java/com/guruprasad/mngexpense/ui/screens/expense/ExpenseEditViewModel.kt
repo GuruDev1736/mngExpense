@@ -39,7 +39,7 @@ data class ExpenseFormState(
     val id: Long? = null,
     val title: String = "",
     val amount: String = "",
-    val category: Category = Category.FOOD,
+    val category: Category = Category.firstOr(Category.FOOD),
     val date: LocalDate = LocalDate.now(),
     val note: String = "",
     /** Set when a recurring expense added this one automatically. */

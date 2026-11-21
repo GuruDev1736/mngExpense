@@ -26,4 +26,20 @@ object CurrencyPrefs {
     fun saveRate(ctx: Context, code: String, home: String, rate: Double) {
         prefs(ctx).edit { putString("$RATE_PREFIX${code}_$home", rate.toString()) }
     }
+
+    /** Every saved rate as "USD_INR" → 83.2 (for backups). */
+    fun allRates(ctx: Context): Map<String, Double> =
+        prefs(ctx).all.mapNotNull { (key, value) ->
+            if (!key.startsWith(RATE_PREFIX)) return@mapNotNull null
+            val rate = (value as? String)?.toDoubleOrNull() ?: return@mapNotNull null
+            key.removePrefix(RATE_PREFIX) to rate
+        }.toMap()
+
+    /** Replaces the saved rates with [rates] (from a backup). */
+    fun replaceRates(ctx: Context, rates: Map<String, Double>) {
+        prefs(ctx).edit {
+            prefs(ctx).all.keys.filter { it.startsWith(RATE_PREFIX) }.forEach(::remove)
+            rates.forEach { (pair, rate) -> putString("$RATE_PREFIX$pair", rate.toString()) }
+        }
+    }
 }

@@ -11,11 +11,18 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.material3.adaptive.navigationsuite.rememberNavigationSuiteScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -25,13 +32,17 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.guruprasad.mngexpense.data.service.ShakeService
 import com.guruprasad.mngexpense.domain.Category
+import com.guruprasad.mngexpense.ui.screens.backup.BackupScreen
+import com.guruprasad.mngexpense.ui.screens.backup.RestorePrompt
 import com.guruprasad.mngexpense.ui.screens.budget.BudgetScreen
+import com.guruprasad.mngexpense.ui.screens.category.CategoriesScreen
 import com.guruprasad.mngexpense.ui.screens.dashboard.DashboardScreen
 import com.guruprasad.mngexpense.ui.screens.expense.ExpenseEditScreen
 import com.guruprasad.mngexpense.ui.screens.recurring.RecurringEditScreen
 import com.guruprasad.mngexpense.ui.screens.recurring.RecurringListScreen
 import com.guruprasad.mngexpense.ui.screens.setting.ShakeSettingsScreen
 import com.guruprasad.mngexpense.ui.screens.transactions.TransactionsScreen
+import com.guruprasad.mngexpense.ui.navigation.TopLevelTab
 import com.guruprasad.mngexpense.ui.theme.MngExpenseTheme
 import com.guruprasad.mngexpense.util.ShakePrefs
 import kotlinx.coroutines.launch
@@ -54,6 +65,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             MngExpenseTheme {
                 AppNavigation(navRequest = navRequest)
+                // First launch after a reinstall: "Restore your backup?"
+                RestorePrompt()
             }
         }
     }
@@ -74,6 +87,7 @@ class MainActivity : ComponentActivity() {
             }
             ACTION_OPEN_RECURRING -> RecurringListRoute
             ACTION_OPEN_BUDGETS -> BudgetsRoute
+            ACTION_OPEN_BACKUP -> BackupRoute
             else -> return
         }
         navRequest = NavRequest(route, ++navRequestCount)
@@ -83,6 +97,7 @@ class MainActivity : ComponentActivity() {
         const val ACTION_ADD_EXPENSE = "com.guruprasad.mngexpense.action.ADD_EXPENSE"
         const val ACTION_OPEN_RECURRING = "com.guruprasad.mngexpense.action.OPEN_RECURRING"
         const val ACTION_OPEN_BUDGETS = "com.guruprasad.mngexpense.action.OPEN_BUDGETS"
+        const val ACTION_OPEN_BACKUP = "com.guruprasad.mngexpense.action.OPEN_BACKUP"
 
         /** Must match android:shortcutId in res/xml/shortcuts.xml */
         const val SHORTCUT_ADD_EXPENSE = "add_expense"
@@ -103,6 +118,12 @@ class MainActivity : ComponentActivity() {
         fun budgetsIntent(context: Context): Intent =
             Intent(context, MainActivity::class.java)
                 .setAction(ACTION_OPEN_BUDGETS)
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+        /** Opens the app on the "Backup & restore" screen. */
+        fun backupIntent(context: Context): Intent =
+            Intent(context, MainActivity::class.java)
+                .setAction(ACTION_OPEN_BACKUP)
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
     }
 
@@ -155,70 +176,122 @@ data class NavRequest(val route: NavKey, val id: Int)
 @Composable
 fun AppNavigation(navRequest: NavRequest? = null) {
     // The back stack: a list of routes. The last one is shown on screen.
+    // It always starts with the dashboard, so Back from any tab goes Home first.
     val backStack = rememberNavBackStack(DashboardRoute)
+    val current = backStack.lastOrNull()
+    val currentTab = TopLevelTab.of(current)
 
-    // Tile / shortcut / notification → open that screen (unless it is already showing)
-    LaunchedEffect(navRequest) {
-        val route = navRequest?.route ?: return@LaunchedEffect
-        if (backStack.lastOrNull() != route) backStack.add(route)
+    /** Opens [tab] fresh: Home, or Home + that tab's screen. */
+    fun selectTab(tab: TopLevelTab) {
+        if (current == tab.root) return
+        while (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+        if (backStack.firstOrNull() != DashboardRoute) {
+            backStack.clear()
+            backStack.add(DashboardRoute)
+        }
+        if (tab != TopLevelTab.HOME) backStack.add(tab.root)
+    }
+
+    fun open(route: NavKey) {
+        val tab = TopLevelTab.entries.firstOrNull { it.root == route }
+        if (tab != null) selectTab(tab) else if (current != route) backStack.add(route)
     }
 
     fun goBack() {
-        if (backStack.size > 1) backStack.removeLastOrNull()
+        if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
     }
 
-    NavDisplay(
-        backStack = backStack,
-        onBack = { goBack() },   // system Back button / gesture
-        // Give each screen its own saved state and ViewModels (cleared when the screen is popped)
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
-        entryProvider = entryProvider {
-            entry<DashboardRoute> {
-                DashboardScreen(
-                    onAddExpense = { backStack.add(ExpenseRoute()) },
-                    onExpenseClick = { id -> backStack.add(ExpenseRoute(id)) },
-                    onOpenSettings = { backStack.add(SettingsRoute) },
-                    onOpenRecurring = { backStack.add(RecurringListRoute) },
-                    onOpenBudgets = { backStack.add(BudgetsRoute) },
-                    onOpenTransactions = { route -> backStack.add(route) }
+    // Tile / shortcut / notification → open that screen
+    LaunchedEffect(navRequest) {
+        navRequest?.route?.let(::open)
+    }
+
+    // Bottom bar on phones; side rail on tablets, foldables and in landscape
+    val suiteState = rememberNavigationSuiteScaffoldState()
+    val showNavigation = TopLevelTab.showsNavigation(current)
+    LaunchedEffect(showNavigation) {
+        if (showNavigation) suiteState.show() else suiteState.hide()
+    }
+
+    // The library's default keeps a bottom bar on a phone in landscape, where it eats a third of
+    // the short screen: use the side rail whenever the window is wide enough
+    val wide = LocalConfiguration.current.screenWidthDp >= 600
+    NavigationSuiteScaffold(
+        state = suiteState,
+        layoutType = if (wide) NavigationSuiteType.NavigationRail else NavigationSuiteType.NavigationBar,
+        navigationSuiteItems = {
+            TopLevelTab.entries.forEach { tab ->
+                val selected = tab == currentTab
+                item(
+                    selected = selected,
+                    onClick = { selectTab(tab) },
+                    icon = { Icon(if (selected) tab.selectedIcon else tab.icon, contentDescription = null) },
+                    label = { Text(tab.label, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                 )
-            }
-            entry<ExpenseRoute> { route ->
-                ExpenseEditScreen(
-                    expenseId = route.id,
-                    onClose = { goBack() },
-                    onOpenRecurring = { id -> backStack.add(RecurringRoute(id)) }
-                )
-            }
-            entry<RecurringListRoute> {
-                RecurringListScreen(
-                    onBack = { goBack() },
-                    onAdd = { backStack.add(RecurringRoute()) },
-                    onOpen = { id -> backStack.add(RecurringRoute(id)) }
-                )
-            }
-            entry<TransactionsRoute> { route ->
-                TransactionsScreen(
-                    initialCategory = route.category?.let { name -> Category.entries.firstOrNull { it.name == name } },
-                    initialStart = route.startDay?.let(LocalDate::ofEpochDay),
-                    initialEnd = route.endDay?.let(LocalDate::ofEpochDay),
-                    focusSearch = route.focusSearch,
-                    onBack = { goBack() },
-                    onOpenExpense = { id -> backStack.add(ExpenseRoute(id)) }
-                )
-            }
-            entry<BudgetsRoute> {
-                BudgetScreen(onBack = { goBack() })
-            }
-            entry<RecurringRoute> { route ->
-                RecurringEditScreen(ruleId = route.id, onClose = { goBack() })
-            }
-            entry<SettingsRoute> {
-                ShakeSettingsScreen(onBack = { goBack() })
             }
         }
-    )
+    ) {
+        NavDisplay(
+            backStack = backStack,
+            onBack = { goBack() },   // system Back button / gesture
+            // Give each screen its own saved state and ViewModels (cleared when the screen is popped)
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
+            entryProvider = entryProvider {
+                entry<DashboardRoute> {
+                    DashboardScreen(
+                        onAddExpense = { backStack.add(ExpenseRoute()) },
+                        onExpenseClick = { id -> backStack.add(ExpenseRoute(id)) },
+                        onOpenRecurring = { selectTab(TopLevelTab.RECURRING) },
+                        onOpenBudgets = { selectTab(TopLevelTab.BUDGETS) },
+                        onOpenTransactions = { route -> backStack.add(route) }
+                    )
+                }
+                entry<ExpenseRoute> { route ->
+                    ExpenseEditScreen(
+                        expenseId = route.id,
+                        onClose = { goBack() },
+                        onOpenRecurring = { id -> backStack.add(RecurringRoute(id)) }
+                    )
+                }
+                entry<RecurringListRoute> {
+                    RecurringListScreen(
+                        onAdd = { backStack.add(RecurringRoute()) },
+                        onOpen = { id -> backStack.add(RecurringRoute(id)) }
+                    )
+                }
+                entry<TransactionsRoute> { route ->
+                    TransactionsScreen(
+                        initialCategory = route.category?.let { name -> Category.entries.firstOrNull { it.key == name } },
+                        initialStart = route.startDay?.let(LocalDate::ofEpochDay),
+                        initialEnd = route.endDay?.let(LocalDate::ofEpochDay),
+                        focusSearch = route.focusSearch,
+                        // The plain tab has no arrow; a search or chart drill-down from Home does
+                        onBack = if (route == TopLevelTab.TRANSACTIONS.root) null else ({ goBack() }),
+                        onOpenExpense = { id -> backStack.add(ExpenseRoute(id)) }
+                    )
+                }
+                entry<BudgetsRoute> {
+                    BudgetScreen()
+                }
+                entry<RecurringRoute> { route ->
+                    RecurringEditScreen(ruleId = route.id, onClose = { goBack() })
+                }
+                entry<SettingsRoute> {
+                    ShakeSettingsScreen(
+                        onOpenBackup = { backStack.add(BackupRoute) },
+                        onOpenCategories = { backStack.add(CategoriesRoute) }
+                    )
+                }
+                entry<CategoriesRoute> {
+                    CategoriesScreen(onBack = { goBack() })
+                }
+                entry<BackupRoute> {
+                    BackupScreen(onBack = { goBack() })
+                }
+            }
+        )
+    }
 }

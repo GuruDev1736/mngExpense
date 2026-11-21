@@ -78,7 +78,7 @@ class BudgetRepository(
         combine(observeBudgets(), observeSpending(month)) { budgets, spending ->
             val day = today()
             budgets
-                .sortedBy { it.category?.ordinal ?: -1 }
+                .sortedBy { it.category?.order ?: -1 }
                 .map {
                     BudgetStatus(
                         it, spending.of(it.category), month, day,

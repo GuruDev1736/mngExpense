@@ -138,7 +138,7 @@
 
 ### 💰 Track
 - Add, edit and delete expenses in a few taps
-- **7 categories**: Food, Transport, Shopping, Bills, Entertainment, Health, Other
+- 🏷️ **Your own categories**: start with 7 built-in ones, then add, rename, recolour, pick an icon, reorder or delete
 - Date picker that blocks future dates
 - Optional notes on every expense
 - Input checks for title and amount
@@ -167,12 +167,14 @@
 - **PDF**: A4, multi-page, summary + full table, page numbers
 - **Excel (.xlsx)**: *Expenses* sheet with a live `SUM` total + *Summary* sheet by category
 - Save anywhere through the system file picker. **No storage permission needed.**
+- **Backup & restore** to a folder that survives an uninstall, on a schedule
 - Open the file right away from the "Report saved" snackbar
 
 </td>
 <td width="50%" valign="top">
 
 ### 🎨 Delight
+- **Bottom navigation** (Home · Transactions · Budgets · Recurring · Settings) that becomes a **side rail** on tablets, foldables and in landscape
 - **Material You** dynamic colour on Android 12+
 - Full **dark mode**
 - Indian number formatting (`₹2,36,750`)
@@ -262,7 +264,7 @@ app/src/main/java/com/guruprasad/mngexpense/
 │
 ├── domain/                      # Pure Kotlin, no Android types
 │   ├── Expense.kt
-│   ├── Category.kt
+│   ├── Category.kt              # Category keys, built-in defaults, live store, name rules
 │   ├── Period.kt                # Date ranges, labels, chart buckets
 │   ├── RecurringExpense.kt      # Repeat schedules, catch-up, rescheduling
 │   ├── Budget.kt                # Budget status, pace, alert and over-budget rules
@@ -274,6 +276,7 @@ app/src/main/java/com/guruprasad/mngexpense/
 │   ├── repository/              # Expense, Recurring and Budget repositories
 │   ├── budget/                  # Budget alert notifications
 │   ├── recurring/               # Daily WorkManager job + "added" notification
+│   ├── backup/                  # Backup JSON format, storage folder, scheduled job, restore
 │   ├── export/                  # PdfWriter, XlsxWriter, ReportExporter
 │   ├── widget/                  # Home-screen widget (Glance) + chart bitmaps
 │   ├── tile/                    # Quick Settings "Add expense" tile
@@ -287,7 +290,10 @@ app/src/main/java/com/guruprasad/mngexpense/
 │   │   ├── recurring/           # Recurring list + Add / Edit
 │   │   ├── budget/              # Budgets screen + amount dialog
 │   │   ├── transactions/        # All transactions: search, filter sheets, results
+│   │   ├── backup/              # Backup & restore screen + first-launch restore prompt
+│   │   ├── category/            # Manage categories: add, edit, reorder, delete
 │   │   └── setting/             # Shake-to-open settings
+│   ├── navigation/              # Bottom bar / side rail tabs
 │   ├── common/                  # Expense row, category colours, budget progress, date picker
 │   └── theme/                   # Material 3 theme
 │
@@ -400,9 +406,38 @@ Tap 🔍 on the dashboard (or **See all transactions** under *Recent*) to see ev
 
 ---
 
+## 🏷️ Categories
+
+Settings → **Categories**, or the **＋ New** chip right in the add-expense form.
+
+- **Add** a category with a name, one of 20 colours and one of 40 icons. It works everywhere straight away: expenses, recurring expenses, budgets, charts, filters, the widget and reports.
+- **Edit** any category, built-in ones too. A rename shows everywhere at once; expenses keep their category.
+- **Reorder** with *Move up / Move down*. The order is the order in every list and chart.
+- **Delete** asks where its expenses and recurring expenses should go (*Other* by default), and removes its budget. Nothing is lost. *Other* is always kept, as the fallback.
+- **Restore built-in categories** (⋮ menu) brings back deleted built-in ones and their original names and colours; your own categories stay.
+- Categories are included in backups.
+
+---
+
+## 💾 Backup & restore
+
+Settings → **Backup & restore**.
+
+- **Back up now**, or turn on a **scheduled backup**: daily, weekly or monthly. Each backup is one JSON file with everything: expenses, recurring expenses, budgets, home currency and exchange rates.
+- Files are saved in **`Documents/MngExpense/Backups`**, outside the app, so **they survive an uninstall**.
+- **Reinstall the app** and, while it's still empty, it asks *"Restore your backup?"*. **Yes** restores the newest backup, including the backup schedule. **No** starts fresh and **keeps the file**: you can restore it any time later from the same screen.
+- **Import a backup file…** restores a backup copied from another phone or saved anywhere else.
+- Restoring replaces the app's data, all or nothing. Backup files are never changed. The latest 10 scheduled backups are kept; backups made with *Back up now* are never removed.
+- A notification tells you if a scheduled backup couldn't be saved.
+
+> [!NOTE]
+> Android 11+ only lets an app read files in shared storage that were created before a reinstall if it has **"All files access"**, so the app asks for it (Android 7–10 use the regular storage permission). Android resets this permission on uninstall, so after a reinstall the app asks for it once more before it can find the backup.
+
+---
+
 ## 🔐 Permissions
 
-Every permission is optional. Apart from notifications, they are all for the **shake-to-open** feature only. Expense tracking, recurring expenses and exports need **none** (recurring expenses still work with notifications off; you just aren't told).
+Every permission is optional. Apart from notifications and storage, they are all for the **shake-to-open** feature only. Expense tracking, recurring expenses and exports need **none** (recurring expenses still work with notifications off; you just aren't told).
 
 | Permission | Why |
 |---|---|
@@ -411,9 +446,10 @@ Every permission is optional. Apart from notifications, they are all for the **s
 | `SYSTEM_ALERT_WINDOW` | Lets the app open itself after a shake |
 | `USE_FULL_SCREEN_INTENT` | Fallback to open over the lock screen |
 | `RECEIVE_BOOT_COMPLETED` | Restarts shake detection after a reboot (only if you turned it on) |
+| `MANAGE_EXTERNAL_STORAGE` (Android 11+) / `READ_`/`WRITE_EXTERNAL_STORAGE` (Android 7–10) | Backups in `Documents/MngExpense`, readable again after a reinstall |
 
 > [!NOTE]
-> Shake-to-open is **off by default**. Reports are saved through Android's Storage Access Framework, so the app never asks for storage access.
+> Shake-to-open is **off by default**. Reports are saved through Android's Storage Access Framework and need no storage permission; only backups do.
 
 ---
 
@@ -429,7 +465,8 @@ Every permission is optional. Apart from notifications, they are all for the **s
 - [x] 📲 App shortcut (long-press the icon)
 - [x] 🧩 Home-screen widget with Pie / Bar tabs
 - [x] 🔁 Recurring expenses
-- [ ] ☁️ Backup & restore
+- [x] 💾 Backup & restore
+- [x] 🏷️ Custom categories
 - [x] 💱 Multiple currencies
 
 ---

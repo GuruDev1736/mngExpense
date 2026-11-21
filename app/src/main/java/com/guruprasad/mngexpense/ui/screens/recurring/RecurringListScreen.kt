@@ -57,7 +57,7 @@ import java.time.LocalDate
 
 @Composable
 fun RecurringListScreen(
-    onBack: () -> Unit,
+    onBack: (() -> Unit)? = null,
     onAdd: () -> Unit,
     onOpen: (Long) -> Unit,
     viewModel: RecurringListViewModel = viewModel(factory = RecurringListViewModel.Factory)
@@ -76,7 +76,7 @@ fun RecurringListScreen(
 @Composable
 fun RecurringListContent(
     state: RecurringListState,
-    onBack: () -> Unit = {},
+    onBack: (() -> Unit)? = null,
     onAdd: () -> Unit = {},
     onOpen: (Long) -> Unit = {},
     onPausedChange: (RecurringExpense, Boolean) -> Unit = { _, _ -> },
@@ -87,7 +87,8 @@ fun RecurringListContent(
             TopAppBar(
                 title = { Text("Recurring expenses") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    // No arrow when shown as a tab of the bottom bar / side rail
+                    if (onBack != null) IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }

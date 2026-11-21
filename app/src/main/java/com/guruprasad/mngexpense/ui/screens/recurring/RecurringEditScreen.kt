@@ -1,5 +1,6 @@
 package com.guruprasad.mngexpense.ui.screens.recurring
 
+import com.guruprasad.mngexpense.ui.common.CategoryChips
 import androidx.compose.foundation.background
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.semantics.Role
@@ -189,16 +190,7 @@ fun RecurringEditContent(
             )
 
             Text("Category", style = MaterialTheme.typography.titleSmall)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Category.entries.forEach { c ->
-                    FilterChip(
-                        selected = c == state.category,
-                        onClick = { onCategoryChange(c) },
-                        label = { Text(c.label) },
-                        leadingIcon = { Box(Modifier.size(10.dp).background(c.color, CircleShape)) }
-                    )
-                }
-            }
+            CategoryChips(selected = state.category, onSelect = onCategoryChange)
 
             // ---- Schedule ----
             Text("Repeats", style = MaterialTheme.typography.titleSmall)

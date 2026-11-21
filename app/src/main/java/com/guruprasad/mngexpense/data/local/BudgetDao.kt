@@ -31,4 +31,21 @@ interface BudgetDao {
     /** Housekeeping: forget alerts of months before [month]. */
     @Query("DELETE FROM budget_alerts WHERE month < :month")
     suspend fun deleteAlertsBefore(month: String)
+
+    // ---- Backup & restore ----
+
+    @Query("SELECT * FROM budget_alerts")
+    suspend fun getAllAlerts(): List<BudgetAlertEntity>
+
+    @Query("DELETE FROM budgets")
+    suspend fun deleteAll()
+
+    @Query("DELETE FROM budget_alerts")
+    suspend fun deleteAllAlerts()
+
+    @Insert
+    suspend fun insertAll(budgets: List<BudgetEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAlerts(alerts: List<BudgetAlertEntity>)
 }

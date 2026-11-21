@@ -29,10 +29,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.EventRepeat
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -103,7 +101,6 @@ import kotlin.math.min
 fun DashboardScreen(
     onAddExpense: () -> Unit = {},
     onExpenseClick: (Long) -> Unit = {},
-    onOpenSettings: () -> Unit = {},
     onOpenRecurring: () -> Unit = {},
     onOpenBudgets: () -> Unit = {},
     onOpenTransactions: (TransactionsRoute) -> Unit = {},
@@ -156,7 +153,6 @@ fun DashboardScreen(
         onNextPeriod = viewModel::nextPeriod,
         onAddExpense = onAddExpense,
         onExpenseClick = onExpenseClick,
-        onOpenSettings = onOpenSettings,
         upcoming = upcoming,
         onOpenRecurring = onOpenRecurring,
         budget = budget,
@@ -186,7 +182,6 @@ fun DashboardContent(
     onNextPeriod: () -> Unit = {},
     onAddExpense: () -> Unit = {},
     onExpenseClick: (Long) -> Unit = {},
-    onOpenSettings: () -> Unit = {},
     upcoming: List<RecurringExpense> = emptyList(),
     onOpenRecurring: () -> Unit = {},
     budget: DashboardBudget? = null,
@@ -204,15 +199,6 @@ fun DashboardContent(
                 actions = {
                     IconButton(onClick = { onOpenTransactions(TransactionsRoute(focusSearch = true)) }) {
                         Icon(Icons.Filled.Search, contentDescription = "Search transactions")
-                    }
-                    IconButton(onClick = onOpenBudgets) {
-                        Icon(Icons.Filled.Savings, contentDescription = "Budgets")
-                    }
-                    IconButton(onClick = onOpenRecurring) {
-                        Icon(Icons.Filled.EventRepeat, contentDescription = "Recurring expenses")
-                    }
-                    IconButton(onClick = onOpenSettings) {
-                        Icon(Icons.Filled.Settings, contentDescription = "Settings")
                     }
                 }
             )
@@ -324,7 +310,7 @@ fun DashboardContent(
                                 // Same category and period as on screen
                                 onOpenTransactions(
                                     TransactionsRoute(
-                                        category = c.category.name,
+                                        category = c.category.key,
                                         startDay = state.period.start.toEpochDay(),
                                         endDay = state.period.endExclusive.minusDays(1).toEpochDay()
                                     )

@@ -6,19 +6,21 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.guruprasad.mngexpense.domain.Category
 
 @Database(
     entities = [
         ExpenseEntity::class, RecurringExpenseEntity::class,
-        BudgetEntity::class, BudgetAlertEntity::class
+        BudgetEntity::class, BudgetAlertEntity::class, CategoryEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun expenseDao(): ExpenseDao
     abstract fun recurringExpenseDao(): RecurringExpenseDao
     abstract fun budgetDao(): BudgetDao
+    abstract fun categoryDao(): CategoryDao
 
     companion object {
         /** v2: recurring expenses. Existing expenses are kept. */
@@ -59,9 +61,39 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /** v5: categories the user can add, rename, recolour, reorder and delete. Starts with the built-in ones. */
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                createCategoriesTable(db)
+                seedDefaultCategories(db)
+            }
+        }
+
+        private fun createCategoriesTable(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `categories` (" +
+                    "`category_key` TEXT NOT NULL, `name` TEXT NOT NULL, `color` INTEGER NOT NULL, " +
+                    "`icon` TEXT NOT NULL, `sort_order` INTEGER NOT NULL, PRIMARY KEY(`category_key`))"
+            )
+        }
+
+        /** Inserts the built-in categories that are missing (never overwrites the user's changes). */
+        fun seedDefaultCategories(db: SupportSQLiteDatabase) {
+            Category.DEFAULTS.forEach { c ->
+                db.execSQL(
+                    "INSERT OR IGNORE INTO `categories` (`category_key`, `name`, `color`, `icon`, `sort_order`) VALUES (?, ?, ?, ?, ?)",
+                    arrayOf<Any>(c.key, c.name, c.color, c.icon, c.sortOrder)
+                )
+            }
+        }
+
         fun build(context: Context): AppDatabase =
             Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "mngexpense.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                .addCallback(object : Callback() {
+                    // A new install: Room created the tables, add the built-in categories
+                    override fun onCreate(db: SupportSQLiteDatabase) = seedDefaultCategories(db)
+                })
                 .build()
     }
 }

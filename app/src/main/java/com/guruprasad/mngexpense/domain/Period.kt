@@ -54,8 +54,11 @@ data class Period(val filter: TimeFilter, val start: LocalDate, val endExclusive
      * Day → by category, Week → Mon..Sun, Month → week 1..5, Year → Jan..Dec.
      */
     fun buckets(expenses: List<Expense>, locale: Locale = Locale.getDefault()): List<Bucket> = when (filter) {
-        TimeFilter.DAY -> Category.entries.map { c ->
-            Bucket(c.shortLabel, expenses.filter { it.category == c }.sumOf { it.amount })
+        TimeFilter.DAY -> {
+            val bars = Category.entries.map { c -> c to expenses.filter { it.category == c }.sumOf { it.amount } }
+            // Up to 7 categories: one bar each, like before. More: only those with spending,
+            // so many custom categories don't squeeze the chart into slivers
+            (if (bars.size <= 7) bars else bars.filter { it.second > 0 }).map { (c, total) -> Bucket(c.shortLabel, total) }
         }
         TimeFilter.WEEK -> (0 until 7).map { i ->
             val day = start.plusDays(i.toLong())

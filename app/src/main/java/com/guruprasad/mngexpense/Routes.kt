@@ -16,6 +16,12 @@ import kotlinx.serialization.Serializable
 /** Add a recurring expense when [id] is null, otherwise edit it. */
 @Serializable data class RecurringRoute(val id: Long? = null) : NavKey
 
+/** Manage categories: add, edit, reorder, delete. */
+@Serializable data object CategoriesRoute : NavKey
+
+/** Backup & restore: back up now, scheduled backups, restore. */
+@Serializable data object BackupRoute : NavKey
+
 /** Monthly budgets: overall + per category. */
 @Serializable data object BudgetsRoute : NavKey
 

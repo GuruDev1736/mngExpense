@@ -102,7 +102,7 @@ fun TransactionsScreen(
     initialStart: LocalDate?,
     initialEnd: LocalDate?,
     focusSearch: Boolean,
-    onBack: () -> Unit,
+    onBack: (() -> Unit)? = null,
     onOpenExpense: (Long) -> Unit,
     viewModel: TransactionsViewModel = viewModel(
         factory = TransactionsViewModel.factory(initialCategory, initialStart, initialEnd)
@@ -135,7 +135,7 @@ fun TransactionsContent(
     state: TransactionsState,
     filter: TransactionFilter,
     focusSearch: Boolean = false,
-    onBack: () -> Unit = {},
+    onBack: (() -> Unit)? = null,
     onOpenExpense: (Long) -> Unit = {},
     onQueryChange: (String) -> Unit = {},
     onDateChange: (DateFilter) -> Unit = {},
@@ -165,7 +165,8 @@ fun TransactionsContent(
             TopAppBar(
                 title = { Text("Transactions") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    // No arrow when shown as a tab of the bottom bar / side rail
+                    if (onBack != null) IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -342,7 +343,7 @@ private fun categoryChipLabel(categories: Set<Category>): String = when (categor
     0 -> "Category"
     1 -> categories.first().label
     else -> {
-        val first = Category.entries.first { it in categories }
+        val first = categories.minBy { it.order } // a deleted category may still be in the filter
         "${first.label} +${categories.size - 1}"
     }
 }

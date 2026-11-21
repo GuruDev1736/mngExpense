@@ -29,6 +29,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material.icons.filled.Warning
@@ -67,6 +69,10 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import com.guruprasad.mngexpense.util.ShakePrefs
+import com.guruprasad.mngexpense.data.backup.BackupPrefs
+import com.guruprasad.mngexpense.data.backup.BackupSchedule
+import com.guruprasad.mngexpense.ui.screens.backup.formatBackupTime
+import androidx.compose.foundation.clickable
 
 /** Permission status, re-checked every time the user comes back from Settings. */
 private data class PermState(
@@ -89,7 +95,11 @@ private fun readPerms(ctx: Context) = PermState(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShakeSettingsScreen(onBack: () -> Unit = {}) {
+fun ShakeSettingsScreen(
+    onBack: (() -> Unit)? = null,
+    onOpenBackup: () -> Unit = {},
+    onOpenCategories: () -> Unit = {}
+) {
     val context = LocalContext.current
     var enabled by remember { mutableStateOf(ShakePrefs.isEnabled(context)) }
     var sensitivity by remember { mutableFloatStateOf(ShakePrefs.sensitivity(context).toFloat()) }
@@ -122,7 +132,8 @@ fun ShakeSettingsScreen(onBack: () -> Unit = {}) {
             TopAppBar(
                 title = { Text("Settings") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    // No arrow when shown as a tab of the bottom bar / side rail
+                    if (onBack != null) IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -137,10 +148,20 @@ fun ShakeSettingsScreen(onBack: () -> Unit = {}) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            Text("General", style = MaterialTheme.typography.titleMedium)
+
             // ---- Currency ----
             CurrencyCard()
 
+            // ---- Categories ----
+            CategoriesCard(onClick = onOpenCategories)
+
+            // ---- Backup & restore ----
+            BackupCard(onClick = onOpenBackup)
+
             // ---- Quick add: tile + home-screen widget ----
+            Spacer(Modifier.height(4.dp))
+            Text("Quick add", style = MaterialTheme.typography.titleMedium)
             QuickTileCard()
             WidgetCard()
 
@@ -368,6 +389,58 @@ private fun WidgetCard() {
                     style = MaterialTheme.typography.bodySmall
                 )
             }
+        }
+    }
+}
+
+/** Settings → Backup & restore: shows the schedule and last backup, opens the backup screen. */
+@Composable
+private fun BackupCard(onClick: () -> Unit) {
+    val context = LocalContext.current
+    var summary by remember { mutableStateOf("") }
+    // Re-read when coming back from the backup screen
+    LifecycleResumeEffect(Unit) {
+        val schedule = BackupPrefs.schedule(context)
+        val last = BackupPrefs.lastBackupAt(context)?.let { "last backup ${formatBackupTime(it)}" } ?: "no backup yet"
+        summary = (if (schedule == BackupSchedule.OFF) "Scheduled backup off" else "${schedule.label} backup") + " · $last"
+        onPauseOrDispose { }
+    }
+    Card(
+        Modifier.fillMaxWidth().clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+    ) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Filled.Backup, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.width(16.dp))
+            Column(Modifier.weight(1f)) {
+                Text("Backup & restore", style = MaterialTheme.typography.titleSmall)
+                Text(summary, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+        }
+    }
+}
+
+/** Settings → Categories: how many there are; opens the categories screen. */
+@Composable
+private fun CategoriesCard(onClick: () -> Unit) {
+    val count = com.guruprasad.mngexpense.domain.CategoryStore.all.size // Compose state: updates by itself
+    Card(
+        Modifier.fillMaxWidth().clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+    ) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Filled.Category, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.width(16.dp))
+            Column(Modifier.weight(1f)) {
+                Text("Categories", style = MaterialTheme.typography.titleSmall)
+                Text(
+                    "$count categories · add your own, rename, recolour, reorder or delete",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
         }
     }
 }

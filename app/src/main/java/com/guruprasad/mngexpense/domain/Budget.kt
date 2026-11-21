@@ -8,7 +8,7 @@ import java.time.YearMonth
  * The same amount applies every month until the user changes it.
  */
 data class Budget(val category: Category?, val amount: Double) {
-    /** Database key: "OVERALL" or the category's enum name. */
+    /** Database key: "OVERALL" or the category's key. */
     val key: String get() = keyOf(category)
 
     /** "Monthly budget" / "Food budget" — used in titles and notifications. */
@@ -17,10 +17,10 @@ data class Budget(val category: Category?, val amount: Double) {
     companion object {
         const val OVERALL_KEY = "OVERALL"
 
-        fun keyOf(category: Category?): String = category?.name ?: OVERALL_KEY
+        fun keyOf(category: Category?): String = category?.key ?: OVERALL_KEY
 
         fun categoryOf(key: String): Category? =
-            if (key == OVERALL_KEY) null else Category.entries.firstOrNull { it.name == key }
+            if (key == OVERALL_KEY) null else Category.entries.firstOrNull { it.key == key }
     }
 }
 

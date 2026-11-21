@@ -86,7 +86,7 @@ import java.util.Locale
 
 @Composable
 fun BudgetScreen(
-    onBack: () -> Unit,
+    onBack: (() -> Unit)? = null,
     viewModel: BudgetViewModel = viewModel(factory = BudgetViewModel.Factory)
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -139,7 +139,7 @@ fun BudgetContent(
     state: BudgetScreenState,
     alertsEnabled: Boolean = true,
     notificationsAllowed: Boolean = true,
-    onBack: () -> Unit = {},
+    onBack: (() -> Unit)? = null,
     onAlertsChange: (Boolean) -> Unit = {},
     onAllowNotifications: () -> Unit = {},
     onSave: (Category?, Double) -> Unit = { _, _ -> },
@@ -161,7 +161,8 @@ fun BudgetContent(
             TopAppBar(
                 title = { Text("Budgets") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    // No arrow when shown as a tab of the bottom bar / side rail
+                    if (onBack != null) IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -207,7 +208,7 @@ fun BudgetContent(
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
-            items(state.categories, key = { it.category.name }) { row ->
+            items(state.categories, key = { it.category.key }) { row ->
                 CategoryRow(row, onClick = { edit(row.category) })
             }
 
